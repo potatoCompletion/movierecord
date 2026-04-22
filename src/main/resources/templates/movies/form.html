@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${mode == 'edit'} ? '영화 수정' : '영화 등록'">영화 등록</title>
+</head>
+<body>
+<section class="form-page">
+    <h1 th:text="${mode == 'edit'} ? '영화 수정' : '새 영화 기록'">영화 등록</h1>
+
+    <form class="form"
+          th:action="${mode == 'edit'} ? @{/movies/{id}(id=${movieId})} : @{/movies}"
+          th:object="${movieForm}"
+          method="post"
+          enctype="multipart/form-data">
+
+        <div class="form-field">
+            <label for="title">제목 *</label>
+            <input type="text" id="title" th:field="*{title}" maxlength="200" required>
+            <div class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+        </div>
+
+        <div class="form-field">
+            <label for="watchedDate">감상일 *</label>
+            <input type="date" id="watchedDate" th:field="*{watchedDate}" required>
+            <div class="field-error" th:if="${#fields.hasErrors('watchedDate')}" th:errors="*{watchedDate}"></div>
+        </div>
+
+        <div class="form-field">
+            <label>썸네일</label>
+            <div id="thumbPreview" class="thumb-preview"
+                 th:style="${existingThumbnailUrl != null} ? 'background-image:url(' + ${existingThumbnailUrl} + ')' : ''"
+                 th:text="${existingThumbnailUrl == null} ? '미리보기' : ''"></div>
+            <input type="file" id="thumbnail" name="thumbnail" accept="image/*">
+            <small style="color:#6b7280" th:if="${existingThumbnailUrl != null}">
+                새 파일을 선택하면 기존 썸네일이 교체됩니다.
+            </small>
+        </div>
+
+        <div class="form-field">
+            <label for="oneLiner">한줄평</label>
+            <textarea id="oneLiner" th:field="*{oneLiner}" maxlength="1000" data-counter="oneLinerCount"></textarea>
+            <div class="char-counter"><span id="oneLinerCount">0</span>/1000</div>
+            <div class="field-error" th:if="${#fields.hasErrors('oneLiner')}" th:errors="*{oneLiner}"></div>
+        </div>
+
+        <div class="form-field">
+            <label>몰입감 *</label>
+            <div class="chip-group">
+                <label th:each="opt : ${immersionOptions}">
+                    <input type="radio" th:field="*{immersion}" th:value="${opt}">
+                    <span class="chip" th:text="${opt.displayName}"></span>
+                </label>
+            </div>
+            <div class="field-error" th:if="${#fields.hasErrors('immersion')}" th:errors="*{immersion}"></div>
+        </div>
+
+        <div class="form-field">
+            <label>스토리 *</label>
+            <div class="chip-group">
+                <label th:each="opt : ${storyOptions}">
+                    <input type="radio" th:field="*{story}" th:value="${opt}">
+                    <span class="chip" th:text="${opt.displayName}"></span>
+                </label>
+            </div>
+            <div class="field-error" th:if="${#fields.hasErrors('story')}" th:errors="*{story}"></div>
+        </div>
+
+        <div class="form-field">
+            <label>감정 *</label>
+            <div class="chip-group">
+                <label th:each="opt : ${emotionOptions}">
+                    <input type="radio" th:field="*{emotion}" th:value="${opt}">
+                    <span class="chip" th:text="${opt.displayName}"></span>
+                </label>
+            </div>
+            <div class="field-error" th:if="${#fields.hasErrors('emotion')}" th:errors="*{emotion}"></div>
+        </div>
+
+        <div class="form-field">
+            <label for="goodPoints">좋았던 점</label>
+            <textarea id="goodPoints" th:field="*{goodPoints}" maxlength="1000" data-counter="goodCount"></textarea>
+            <div class="char-counter"><span id="goodCount">0</span>/1000</div>
+            <div class="field-error" th:if="${#fields.hasErrors('goodPoints')}" th:errors="*{goodPoints}"></div>
+        </div>
+
+        <div class="form-field">
+            <label for="badPoints">아쉬웠던 점</label>
+            <textarea id="badPoints" th:field="*{badPoints}" maxlength="1000" data-counter="badCount"></textarea>
+            <div class="char-counter"><span id="badCount">0</span>/1000</div>
+            <div class="field-error" th:if="${#fields.hasErrors('badPoints')}" th:errors="*{badPoints}"></div>
+        </div>
+
+        <div class="form-field">
+            <label>내 취향 *</label>
+            <div class="chip-group">
+                <label th:each="opt : ${tasteOptions}">
+                    <input type="radio" th:field="*{taste}" th:value="${opt}">
+                    <span class="chip" th:text="${opt.displayName}"></span>
+                </label>
+            </div>
+            <div class="field-error" th:if="${#fields.hasErrors('taste')}" th:errors="*{taste}"></div>
+        </div>
+
+        <div class="form-field">
+            <label>별점 *</label>
+            <div class="star-rating">
+                <div class="stars" id="starRating">
+                    <span class="stars-bg"></span>
+                    <span class="stars-fg" id="starsFg"></span>
+                    <span class="star-slot" data-value="0.5" style="left:0%;   width:10%"></span>
+                    <span class="star-slot" data-value="1.0" style="left:10%;  width:10%"></span>
+                    <span class="star-slot" data-value="1.5" style="left:20%;  width:10%"></span>
+                    <span class="star-slot" data-value="2.0" style="left:30%;  width:10%"></span>
+                    <span class="star-slot" data-value="2.5" style="left:40%;  width:10%"></span>
+                    <span class="star-slot" data-value="3.0" style="left:50%;  width:10%"></span>
+                    <span class="star-slot" data-value="3.5" style="left:60%;  width:10%"></span>
+                    <span class="star-slot" data-value="4.0" style="left:70%;  width:10%"></span>
+                    <span class="star-slot" data-value="4.5" style="left:80%;  width:10%"></span>
+                    <span class="star-slot" data-value="5.0" style="left:90%;  width:10%"></span>
+                </div>
+                <span class="rating-value" id="ratingValue">0.0</span>
+                <input type="hidden" th:field="*{rating}" id="ratingInput">
+            </div>
+            <div class="field-error" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
+        </div>
+
+        <div class="form-actions">
+            <div class="left">
+                <a class="btn btn-secondary" th:href="@{/movies}">취소</a>
+            </div>
+            <div class="right">
+                <button type="submit" class="btn btn-primary"
+                        th:text="${mode == 'edit'} ? '수정' : '등록'">등록</button>
+            </div>
+        </div>
+    </form>
+
+    <script th:src="@{/js/form.js}"></script>
+</section>
+</body>
+</html>

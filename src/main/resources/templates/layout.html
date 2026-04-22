@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(title, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:replace="${title} ?: '내 영화 기록'">내 영화 기록</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header class="site-header">
+    <div class="container">
+        <a th:href="@{/movies}" class="brand">🎬 내 영화 기록</a>
+    </div>
+</header>
+
+<main class="container">
+    <div th:if="${message}" class="flash-message" th:text="${message}"></div>
+    <div th:replace="${content}"></div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <small>&copy; Movie Record</small>
+    </div>
+</footer>
+</body>
+</html>
