@@ -4,8 +4,15 @@ target
 .git
 .gitignore
 .idea
-*.iml
 Dockerfile
 docker-compose.yml
 docker-compose.yaml
 README.md
+HELP.md
+CLAUDE.md
+plan.txt
+uploads
+data
+nginx
+.claude
+.omc
