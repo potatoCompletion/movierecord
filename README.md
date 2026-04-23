@@ -28,7 +28,7 @@
 ```env
 # Spring
 SPRING_PROFILES_ACTIVE=prod
-SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/{데이터베이스명}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/{데이터베이스명}?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
 SPRING_DATASOURCE_USERNAME={DB 사용자명}
 SPRING_DATASOURCE_PASSWORD={DB 비밀번호}
 
