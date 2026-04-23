@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -75,6 +76,7 @@ public class Movie {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Builder
     public Movie(String title, LocalDate watchedDate, String thumbnailPath,
                  String oneLiner, Immersion immersion, Story story, Emotion emotion,
                  String goodPoints, String badPoints, Taste taste, BigDecimal rating) {

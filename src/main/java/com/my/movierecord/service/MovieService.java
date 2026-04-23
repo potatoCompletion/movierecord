@@ -31,19 +31,19 @@ public class MovieService {
 
     @Transactional
     public Movie create(MovieSaveCommand command) {
-        Movie movie = new Movie(
-                command.title(),
-                command.watchedDate(),
-                command.thumbnailPath(),
-                command.oneLiner(),
-                command.immersion(),
-                command.story(),
-                command.emotion(),
-                command.goodPoints(),
-                command.badPoints(),
-                command.taste(),
-                command.rating()
-        );
+        Movie movie = Movie.builder()
+                .title(command.title())
+                .watchedDate(command.watchedDate())
+                .thumbnailPath(command.thumbnailPath())
+                .oneLiner(command.oneLiner())
+                .immersion(command.immersion())
+                .story(command.story())
+                .emotion(command.emotion())
+                .goodPoints(command.goodPoints())
+                .badPoints(command.badPoints())
+                .taste(command.taste())
+                .rating(command.rating())
+                .build();
         return movieRepository.save(movie);
     }
 
