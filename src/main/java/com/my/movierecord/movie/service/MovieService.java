@@ -2,7 +2,7 @@ package com.my.movierecord.movie.service;
 
 import com.my.movierecord.movie.domain.Movie;
 import com.my.movierecord.movie.repository.MovieRepository;
-import com.my.movierecord.storage.FileStorageService;
+import com.my.movierecord.common.service.FileStorageService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

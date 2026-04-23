@@ -9,7 +9,7 @@ import com.my.movierecord.movie.enums.Immersion;
 import com.my.movierecord.movie.enums.Story;
 import com.my.movierecord.movie.enums.Taste;
 import com.my.movierecord.movie.service.MovieService;
-import com.my.movierecord.storage.FileStorageService;
+import com.my.movierecord.common.service.FileStorageService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.data.domain.Page;

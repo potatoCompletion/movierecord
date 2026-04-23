@@ -1,4 +1,4 @@
-package com.my.movierecord.storage;
+package com.my.movierecord.common.service;
 
 import java.io.IOException;
 import java.nio.file.Files;

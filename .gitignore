@@ -51,3 +51,6 @@ out/
 .env
 .env.*
 !.env.example
+
+### Local planning notes
+plan.txt
