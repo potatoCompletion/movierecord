@@ -1,5 +1,9 @@
-package com.my.movierecord.domain;
+package com.my.movierecord.movie.domain;
 
+import com.my.movierecord.movie.enums.Emotion;
+import com.my.movierecord.movie.enums.Immersion;
+import com.my.movierecord.movie.enums.Story;
+import com.my.movierecord.movie.enums.Taste;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;

@@ -1,9 +1,9 @@
-package com.my.movierecord.service;
+package com.my.movierecord.movie.service;
 
-import com.my.movierecord.domain.Emotion;
-import com.my.movierecord.domain.Immersion;
-import com.my.movierecord.domain.Story;
-import com.my.movierecord.domain.Taste;
+import com.my.movierecord.movie.enums.Emotion;
+import com.my.movierecord.movie.enums.Immersion;
+import com.my.movierecord.movie.enums.Story;
+import com.my.movierecord.movie.enums.Taste;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

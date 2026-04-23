@@ -1,4 +1,4 @@
-package com.my.movierecord.web;
+package com.my.movierecord.movie.dto;
 
 import org.springframework.data.domain.Sort;
 

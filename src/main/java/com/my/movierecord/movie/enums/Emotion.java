@@ -1,4 +1,4 @@
-package com.my.movierecord.domain;
+package com.my.movierecord.movie.enums;
 
 public enum Emotion {
     FUNNY("웃김"),

@@ -1,14 +1,15 @@
-package com.my.movierecord.web;
+package com.my.movierecord.movie.controller;
 
-import com.my.movierecord.domain.Emotion;
-import com.my.movierecord.domain.Immersion;
-import com.my.movierecord.domain.Movie;
-import com.my.movierecord.domain.Story;
-import com.my.movierecord.domain.Taste;
-import com.my.movierecord.service.FileStorageService;
-import com.my.movierecord.service.MovieService;
-import com.my.movierecord.web.dto.MovieForm;
-import com.my.movierecord.web.dto.MovieListItem;
+import com.my.movierecord.movie.domain.Movie;
+import com.my.movierecord.movie.dto.MovieForm;
+import com.my.movierecord.movie.dto.MovieListItem;
+import com.my.movierecord.movie.dto.SortOption;
+import com.my.movierecord.movie.enums.Emotion;
+import com.my.movierecord.movie.enums.Immersion;
+import com.my.movierecord.movie.enums.Story;
+import com.my.movierecord.movie.enums.Taste;
+import com.my.movierecord.movie.service.MovieService;
+import com.my.movierecord.storage.FileStorageService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.data.domain.Page;

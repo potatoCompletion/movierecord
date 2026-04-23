@@ -1,11 +1,11 @@
-package com.my.movierecord.web.dto;
+package com.my.movierecord.movie.dto;
 
-import com.my.movierecord.domain.Emotion;
-import com.my.movierecord.domain.Immersion;
-import com.my.movierecord.domain.Movie;
-import com.my.movierecord.domain.Story;
-import com.my.movierecord.domain.Taste;
-import com.my.movierecord.service.MovieSaveCommand;
+import com.my.movierecord.movie.domain.Movie;
+import com.my.movierecord.movie.enums.Emotion;
+import com.my.movierecord.movie.enums.Immersion;
+import com.my.movierecord.movie.enums.Story;
+import com.my.movierecord.movie.enums.Taste;
+import com.my.movierecord.movie.service.MovieSaveCommand;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

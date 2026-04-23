@@ -1,6 +1,6 @@
-package com.my.movierecord.web.dto;
+package com.my.movierecord.movie.dto;
 
-import com.my.movierecord.domain.Movie;
+import com.my.movierecord.movie.domain.Movie;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

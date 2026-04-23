@@ -1,13 +1,13 @@
-package com.my.movierecord.domain;
+package com.my.movierecord.movie.enums;
 
-public enum Immersion {
-    GOOD("좋음"),
-    NORMAL("보통"),
+public enum Story {
+    CONVINCING("납득됨"),
+    SO_SO("그냥저냥"),
     BAD("별로");
 
     private final String displayName;
 
-    Immersion(String displayName) {
+    Story(String displayName) {
         this.displayName = displayName;
     }
 
