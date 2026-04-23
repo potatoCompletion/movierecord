@@ -46,3 +46,8 @@ out/
 ### Claude Code / OMC local state ###
 .omc/
 .claude/
+
+### env
+.env
+.env.*
+!.env.example
