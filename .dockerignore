@@ -16,3 +16,5 @@ data
 nginx
 .claude
 .omc
+docker/certbot
+docker/certbot/**
