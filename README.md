@@ -13,10 +13,10 @@
 ## 로컬 개발
 
 ```bash
-./gradlew bootRun
+./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 
-`application-local.properties`가 자동으로 적용됩니다. H2 콘솔은 http://localhost:8080/h2-console 에서 확인할 수 있습니다.
+`local` 프로파일을 명시해야 `application-local.properties`가 적용됩니다. H2 콘솔은 http://localhost:8080/h2-console 에서 확인할 수 있습니다.
 
 - JDBC URL: `jdbc:h2:file:./data/movierecord;AUTO_SERVER=TRUE`
 - 사용자명: `sa` / 비밀번호: 없음
