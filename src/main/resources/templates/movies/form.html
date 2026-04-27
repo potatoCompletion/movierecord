@@ -32,7 +32,7 @@
                  th:style="${existingThumbnailUrl != null} ? 'background-image:url(' + ${existingThumbnailUrl} + ')' : ''"
                  th:text="${existingThumbnailUrl == null} ? '미리보기' : ''"></div>
             <input type="file" id="thumbnail" name="thumbnail" accept="image/*">
-            <small style="color:#6b7280" th:if="${existingThumbnailUrl != null}">
+            <small th:if="${existingThumbnailUrl != null}">
                 새 파일을 선택하면 기존 썸네일이 교체됩니다.
             </small>
         </div>

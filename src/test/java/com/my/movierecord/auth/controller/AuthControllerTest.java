@@ -1,6 +1,6 @@
 package com.my.movierecord.auth.controller;
 
-import com.my.movierecord.auth.service.UserAlreadyExistsException;
+import com.my.movierecord.auth.exception.UserAlreadyExistsException;
 import com.my.movierecord.auth.service.UserService;
 import com.my.movierecord.config.PasswordEncoderConfig;
 import com.my.movierecord.config.SecurityConfig;

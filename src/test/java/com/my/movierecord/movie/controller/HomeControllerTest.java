@@ -25,7 +25,7 @@ class HomeControllerTest {
     void GET_루트_미인증_로그인_리다이렉트() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login"));
+                .andExpect(redirectedUrl("/auth/login"));
     }
 
     @Test

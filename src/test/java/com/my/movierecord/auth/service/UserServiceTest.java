@@ -2,6 +2,7 @@ package com.my.movierecord.auth.service;
 
 import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.dto.SignupForm;
+import com.my.movierecord.auth.exception.UserAlreadyExistsException;
 import com.my.movierecord.auth.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

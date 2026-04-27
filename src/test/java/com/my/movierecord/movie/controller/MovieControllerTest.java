@@ -60,7 +60,7 @@ class MovieControllerTest {
     void GET_movies_미인증_로그인_리다이렉트() throws Exception {
         mockMvc.perform(get("/movies"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login"));
+                .andExpect(redirectedUrl("/auth/login"));
     }
 
     @Test

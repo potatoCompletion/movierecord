@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:fragment="layout(title, content)">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:replace="${title} ?: '내 영화 기록'">내 영화 기록</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 <header class="site-header">
-    <div class="container">
+    <div class="container header-inner">
         <a th:href="@{/movies}" class="brand">🎬 내 영화 기록</a>
+        <div class="header-user" sec:authorize="isAuthenticated()">
+            <span class="header-username" sec:authentication="name"></span>
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button type="submit" class="btn btn-secondary btn-sm">로그아웃</button>
+            </form>
+        </div>
     </div>
 </header>
 
