@@ -4,9 +4,9 @@ import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.dto.SignupForm;
 import com.my.movierecord.auth.enums.UserStatus;
 import com.my.movierecord.auth.exception.UserAlreadyExistsException;
+import com.my.movierecord.auth.oauth.CustomUserPrincipal;
 import com.my.movierecord.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,12 +32,10 @@ public class UserService implements UserDetailsService {
             // OAuth-only accounts must use social login, not form login
             throw new UsernameNotFoundException("Use social login for this account");
         }
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .authorities(new SimpleGrantedAuthority(user.getRole()))
-                .disabled(user.getStatus() == UserStatus.PENDING)
-                .build();
+        if (user.getStatus() == UserStatus.PENDING) {
+            throw new org.springframework.security.authentication.DisabledException("Account is awaiting approval");
+        }
+        return new CustomUserPrincipal(user.getUsername(), user.getDisplayNickname(), user.getRole());
     }
 
     @Transactional
@@ -49,10 +47,23 @@ public class UserService implements UserDetailsService {
                 .username(form.getUsername())
                 .password(passwordEncoder.encode(form.getPassword()))
                 .name(form.getName())
+                .nickname(form.getUsername())
                 .status(UserStatus.PENDING)
                 .role("ROLE_USER")
                 .build();
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isNicknameAvailable(String nickname, Long userId) {
+        return !userRepository.existsByNicknameAndIdNot(nickname, userId);
+    }
+
+    @Transactional
+    public void updateNickname(Long userId, String nickname) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다. id=" + userId));
+        user.updateNickname(nickname);
     }
 
     @Transactional(readOnly = true)

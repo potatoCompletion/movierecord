@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>마이 페이지</title>
+</head>
+<body>
+<section>
+    <div class="toolbar">
+        <h1>내가 쓴 영화 기록</h1>
+        <div class="toolbar-right">
+            <form method="get" th:action="@{/my-page}">
+                <input type="hidden" name="page" value="0">
+                <select class="sort-select" name="sort" onchange="this.form.submit()">
+                    <option th:each="opt : ${sortOptions}"
+                            th:value="${opt.code}"
+                            th:text="${opt.label}"
+                            th:selected="${opt.code == currentSort.code}"></option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${items.isEmpty()}" class="empty-state">
+        아직 기록한 영화가 없습니다. <a th:href="@{/movies/new}">첫 영화를 등록</a>해보세요.
+    </div>
+
+    <div th:unless="${items.isEmpty()}" class="movie-grid">
+        <div th:each="item : ${items}"
+             class="movie-card"
+             th:attr="
+                data-id=${item.id},
+                data-title=${item.detail.title},
+                data-watched-date=${#temporals.format(item.detail.watchedDate, 'yyyy-MM-dd')},
+                data-thumbnail-url=${item.detail.thumbnailUrl},
+                data-one-liner=${item.detail.oneLiner},
+                data-immersion=${item.detail.immersion},
+                data-story=${item.detail.story},
+                data-emotion=${item.detail.emotion},
+                data-good-points=${item.detail.goodPoints},
+                data-bad-points=${item.detail.badPoints},
+                data-taste=${item.detail.taste},
+                data-rating=${item.detail.rating}">
+            <div class="movie-thumb"
+                 th:style="${item.thumbnailUrl != null} ? 'background-image:url(' + ${item.thumbnailUrl} + ')' : ''"
+                 th:text="${item.thumbnailUrl == null} ? '이미지 없음' : ''"></div>
+            <div class="movie-info">
+                <h3 class="movie-title" th:text="${item.title}"></h3>
+                <div class="movie-meta">
+                    <span class="card-rating"
+                          th:text="'★ ' + ${#numbers.formatDecimal(item.rating, 1, 1)}"></span>
+                    <span th:text="${#temporals.format(item.watchedDate, 'yyyy-MM-dd')}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="pagination" th:if="${page.totalPages > 1}">
+        <a th:if="${!page.isFirst()}"
+           th:href="@{/my-page(page=${page.number - 1}, sort=${currentSort.code})}">‹</a>
+        <span th:if="${page.isFirst()}" class="disabled">‹</span>
+
+        <th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+            <a th:if="${i != page.number}"
+               th:href="@{/my-page(page=${i}, sort=${currentSort.code})}"
+               th:text="${i + 1}"></a>
+            <span th:if="${i == page.number}" class="active" th:text="${i + 1}"></span>
+        </th:block>
+
+        <a th:if="${!page.isLast()}"
+           th:href="@{/my-page(page=${page.number + 1}, sort=${currentSort.code})}">›</a>
+        <span th:if="${page.isLast()}" class="disabled">›</span>
+    </nav>
+
+    <!-- Modal -->
+    <div id="movieModal" class="modal-overlay" role="dialog" aria-hidden="true">
+        <div class="modal" role="document">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button type="button" class="modal-close" aria-label="닫기" data-modal-close>&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalThumb" class="modal-thumb"></div>
+                <div class="modal-details">
+                    <dl>
+                        <dt>감상일</dt><dd id="modalWatchedDate"></dd>
+                        <dt>별점</dt><dd class="rating-display" id="modalRating"></dd>
+                        <dt>한줄평</dt><dd id="modalOneLiner"></dd>
+                        <dt>몰입감</dt><dd id="modalImmersion"></dd>
+                        <dt>스토리</dt><dd id="modalStory"></dd>
+                        <dt>감정</dt><dd id="modalEmotion"></dd>
+                        <dt>좋았던 점</dt><dd id="modalGood"></dd>
+                        <dt>아쉬웠던 점</dt><dd id="modalBad"></dd>
+                        <dt>내 취향</dt><dd id="modalTaste"></dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form id="modalDeleteForm" method="post" style="display:inline"
+                      onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+                <a id="modalEditLink" class="btn btn-primary">수정</a>
+                <button type="button" class="btn btn-secondary" data-modal-close>닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/app.js}"></script>
+</section>
+</body>
+</html>

@@ -2,21 +2,18 @@ package com.my.movierecord.auth.service;
 
 import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.enums.UserStatus;
+import com.my.movierecord.auth.oauth.CustomUserPrincipal;
 import com.my.movierecord.auth.oauth.OAuthAttributes;
 import com.my.movierecord.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -52,8 +49,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                     new OAuth2Error("account_pending", "Account is awaiting admin approval", null));
         }
 
-        return new DefaultOAuth2User(
-                List.of(new SimpleGrantedAuthority(user.getRole())),
+        return new CustomUserPrincipal(
+                user.getUsername(),
+                user.getDisplayNickname(),
+                user.getRole(),
                 attrs.attributes(),
                 attrs.nameAttributeKey()
         );
@@ -73,6 +72,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 // form-login for OAuth accounts is rejected in UserService.loadUserByUsername
                 .password("{noop}OAUTH_ACCOUNT_NO_PASSWORD")
                 .name(attrs.name() != null ? attrs.name() : "소셜 사용자")
+                .nickname(username)
                 .status(UserStatus.PENDING)
                 .role("ROLE_USER")
                 .provider(attrs.provider())
