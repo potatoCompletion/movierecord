@@ -10,6 +10,7 @@ import com.my.movierecord.movie.service.MovieSaveCommand;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 
 public class MovieFixture {
 
@@ -21,7 +22,7 @@ public class MovieFixture {
                 .oneLiner("재미있었다")
                 .immersion(Immersion.GOOD)
                 .story(Story.CONVINCING)
-                .emotion(Emotion.FUNNY)
+                .emotions(Set.of(Emotion.FUNNY))
                 .goodPoints("연출이 좋았다")
                 .badPoints("결말이 아쉬웠다")
                 .taste(Taste.MATCH)
@@ -43,7 +44,7 @@ public class MovieFixture {
                 .oneLiner("재미있었다")
                 .immersion(Immersion.GOOD)
                 .story(Story.CONVINCING)
-                .emotion(Emotion.FUNNY)
+                .emotions(Set.of(Emotion.FUNNY))
                 .goodPoints("연출이 좋았다")
                 .badPoints("결말이 아쉬웠다")
                 .taste(Taste.MATCH)
@@ -61,7 +62,7 @@ public class MovieFixture {
                 "재미있었다",
                 Immersion.GOOD,
                 Story.CONVINCING,
-                Emotion.FUNNY,
+                Set.of(Emotion.FUNNY),
                 "연출이 좋았다",
                 "결말이 아쉬웠다",
                 Taste.MATCH,
@@ -78,7 +79,7 @@ public class MovieFixture {
                 "재미있었다",
                 Immersion.GOOD,
                 Story.CONVINCING,
-                Emotion.FUNNY,
+                Set.of(Emotion.FUNNY),
                 "연출이 좋았다",
                 "결말이 아쉬웠다",
                 Taste.MATCH,
@@ -94,7 +95,7 @@ public class MovieFixture {
         form.setOneLiner("재미있었다");
         form.setImmersion(Immersion.GOOD);
         form.setStory(Story.CONVINCING);
-        form.setEmotion(Emotion.FUNNY);
+        form.setEmotions(new java.util.HashSet<>(Set.of(Emotion.FUNNY)));
         form.setGoodPoints("연출이 좋았다");
         form.setBadPoints("결말이 아쉬웠다");
         form.setTaste(Taste.MATCH);

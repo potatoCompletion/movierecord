@@ -9,10 +9,13 @@ import com.my.movierecord.movie.service.MovieSaveCommand;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -48,9 +51,9 @@ public class MovieForm {
     @NotNull(message = "스토리를 선택해주세요.")
     private Story story;
 
-    // 감정 반응 (필수)
-    @NotNull(message = "감정을 선택해주세요.")
-    private Emotion emotion;
+    // 감정 반응 (필수, 1개 이상 선택)
+    @NotEmpty(message = "감정을 1개 이상 선택해주세요.")
+    private Set<Emotion> emotions = new HashSet<>();
 
     // 좋았던 점 (선택사항, 최대 1000자)
     @Size(max = 1000, message = "좋았던 점은 1000자 이하로 입력해주세요.")
@@ -81,7 +84,7 @@ public class MovieForm {
         form.oneLiner = movie.getOneLiner();
         form.immersion = movie.getImmersion();
         form.story = movie.getStory();
-        form.emotion = movie.getEmotion();
+        form.emotions = new HashSet<>(movie.getEmotions());
         form.goodPoints = movie.getGoodPoints();
         form.badPoints = movie.getBadPoints();
         form.taste = movie.getTaste();
@@ -102,7 +105,7 @@ public class MovieForm {
                 oneLiner,
                 immersion,
                 story,
-                emotion,
+                emotions,
                 goodPoints,
                 badPoints,
                 taste,

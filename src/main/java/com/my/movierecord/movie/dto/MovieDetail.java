@@ -1,8 +1,10 @@
 package com.my.movierecord.movie.dto;
 
 import com.my.movierecord.movie.domain.Movie;
+import com.my.movierecord.movie.enums.Emotion;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 /**
  * 영화 상세 조회 응답 DTO.
@@ -36,7 +38,9 @@ public record MovieDetail(
                 movie.getOneLiner(),
                 movie.getImmersion().getDisplayName(),
                 movie.getStory().getDisplayName(),
-                movie.getEmotion().getDisplayName(),
+                movie.getEmotions().stream()
+                        .map(Emotion::getDisplayName)
+                        .collect(Collectors.joining(", ")),
                 movie.getGoodPoints(),
                 movie.getBadPoints(),
                 movie.getTaste().getDisplayName(),

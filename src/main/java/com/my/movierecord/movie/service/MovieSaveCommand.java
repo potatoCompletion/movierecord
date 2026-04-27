@@ -6,6 +6,7 @@ import com.my.movierecord.movie.enums.Story;
 import com.my.movierecord.movie.enums.Taste;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * 영화 저장 커맨드 record.
@@ -21,7 +22,7 @@ public record MovieSaveCommand(
         String oneLiner,
         Immersion immersion,
         Story story,
-        Emotion emotion,
+        Set<Emotion> emotions,
         String goodPoints,
         String badPoints,
         Taste taste,

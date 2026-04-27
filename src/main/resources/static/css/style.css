@@ -641,7 +641,8 @@ main.container {
     gap: 0.5rem;
 }
 
-.chip-group input[type="radio"] {
+.chip-group input[type="radio"],
+.chip-group input[type="checkbox"] {
     position: absolute;
     opacity: 0;
     pointer-events: none;
@@ -666,7 +667,8 @@ main.container {
     background-color: rgba(232, 184, 75, 0.06);
 }
 
-.chip-group input[type="radio"]:checked + .chip {
+.chip-group input[type="radio"]:checked + .chip,
+.chip-group input[type="checkbox"]:checked ~ .chip {
     background: linear-gradient(135deg, var(--accent), var(--accent-dark));
     color: #0e0b1a;
     border-color: transparent;

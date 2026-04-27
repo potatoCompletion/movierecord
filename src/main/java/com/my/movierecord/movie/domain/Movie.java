@@ -5,7 +5,9 @@ import com.my.movierecord.movie.enums.Immersion;
 import com.my.movierecord.movie.enums.Story;
 import com.my.movierecord.movie.enums.Taste;
 import com.my.movierecord.auth.domain.User;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -20,6 +22,8 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -70,10 +74,11 @@ public class Movie {
     @Column(nullable = false, length = 20)
     private Story story;
 
-    // 감정 반응 (필수, Emotion enum: FUNNY, TENSE, SAD, LINGERING, NONE)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "movie_emotion", joinColumns = @JoinColumn(name = "movie_id"))
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private Emotion emotion;
+    @Column(name = "emotion", length = 20)
+    private Set<Emotion> emotions = new HashSet<>();
 
     // 좋았던 점 상세 내용 (선택사항)
     @Column(columnDefinition = "TEXT")
@@ -112,7 +117,7 @@ public class Movie {
      */
     @Builder
     public Movie(String title, LocalDate watchedDate, String thumbnailPath,
-                 String oneLiner, Immersion immersion, Story story, Emotion emotion,
+                 String oneLiner, Immersion immersion, Story story, Set<Emotion> emotions,
                  String goodPoints, String badPoints, Taste taste, BigDecimal rating,
                  User user) {
         this.title = title;
@@ -121,7 +126,7 @@ public class Movie {
         this.oneLiner = oneLiner;
         this.immersion = immersion;
         this.story = story;
-        this.emotion = emotion;
+        this.emotions = emotions != null ? new HashSet<>(emotions) : new HashSet<>();
         this.goodPoints = goodPoints;
         this.badPoints = badPoints;
         this.taste = taste;
@@ -135,7 +140,7 @@ public class Movie {
      * updatedAt 필드는 JPA Auditing에 의해 자동으로 갱신된다.
      */
     public void update(String title, LocalDate watchedDate, String thumbnailPath,
-                       String oneLiner, Immersion immersion, Story story, Emotion emotion,
+                       String oneLiner, Immersion immersion, Story story, Set<Emotion> emotions,
                        String goodPoints, String badPoints, Taste taste, BigDecimal rating) {
         this.title = title;
         this.watchedDate = watchedDate;
@@ -143,7 +148,7 @@ public class Movie {
         this.oneLiner = oneLiner;
         this.immersion = immersion;
         this.story = story;
-        this.emotion = emotion;
+        this.emotions = emotions != null ? new HashSet<>(emotions) : new HashSet<>();
         this.goodPoints = goodPoints;
         this.badPoints = badPoints;
         this.taste = taste;

@@ -67,14 +67,14 @@
         </div>
 
         <div class="form-field">
-            <label>감정 *</label>
+            <label>감정 * <small>(중복 선택 가능)</small></label>
             <div class="chip-group">
                 <label th:each="opt : ${emotionOptions}">
-                    <input type="radio" th:field="*{emotion}" th:value="${opt}">
+                    <input type="checkbox" th:field="*{emotions}" th:value="${opt}">
                     <span class="chip" th:text="${opt.displayName}"></span>
                 </label>
             </div>
-            <div class="field-error" th:if="${#fields.hasErrors('emotion')}" th:errors="*{emotion}"></div>
+            <div class="field-error" th:if="${#fields.hasErrors('emotions')}" th:errors="*{emotions}"></div>
         </div>
 
         <div class="form-field">

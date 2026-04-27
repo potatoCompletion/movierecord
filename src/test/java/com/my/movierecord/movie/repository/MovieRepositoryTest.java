@@ -11,6 +11,7 @@ import com.my.movierecord.movie.enums.Taste;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,7 +143,7 @@ class MovieRepositoryTest {
         Movie saved = entityManager.persistAndFlush(buildMovie("원래 제목", LocalDate.of(2024, 1, 1), "4.0"));
 
         saved.update("수정된 제목", LocalDate.of(2024, 6, 1), null, "수정 한줄평",
-                Immersion.NORMAL, Story.SO_SO, Emotion.SAD,
+                Immersion.NORMAL, Story.SO_SO, Set.of(Emotion.SAD),
                 "수정 좋은점", "수정 아쉬운점", Taste.MISMATCH, new BigDecimal("3.0"));
         entityManager.flush();
         entityManager.clear();
@@ -159,7 +160,7 @@ class MovieRepositoryTest {
                 .watchedDate(watchedDate)
                 .immersion(Immersion.GOOD)
                 .story(Story.CONVINCING)
-                .emotion(Emotion.FUNNY)
+                .emotions(Set.of(Emotion.FUNNY))
                 .taste(Taste.MATCH)
                 .rating(new BigDecimal(rating))
                 .user(testUser)

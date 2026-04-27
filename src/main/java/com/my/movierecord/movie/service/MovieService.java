@@ -62,7 +62,7 @@ public class MovieService {
                 .oneLiner(command.oneLiner())
                 .immersion(command.immersion())
                 .story(command.story())
-                .emotion(command.emotion())
+                .emotions(command.emotions())
                 .goodPoints(command.goodPoints())
                 .badPoints(command.badPoints())
                 .taste(command.taste())
@@ -100,7 +100,7 @@ public class MovieService {
                 command.oneLiner(),
                 command.immersion(),
                 command.story(),
-                command.emotion(),
+                command.emotions(),
                 command.goodPoints(),
                 command.badPoints(),
                 command.taste(),

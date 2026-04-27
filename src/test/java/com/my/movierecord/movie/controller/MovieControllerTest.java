@@ -1,6 +1,7 @@
 package com.my.movierecord.movie.controller;
 
 import com.my.movierecord.auth.domain.User;
+import com.my.movierecord.auth.oauth.CustomUserPrincipal;
 import com.my.movierecord.auth.repository.UserRepository;
 import com.my.movierecord.common.service.FileStorageService;
 import com.my.movierecord.config.SecurityConfig;
@@ -86,7 +87,7 @@ class MovieControllerTest {
         given(movieService.list(any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of(movie), PageRequest.of(0, 20), 1));
 
-        mockMvc.perform(get("/movies").with(user("user")))
+        mockMvc.perform(get("/movies").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("movies/list"))
                 .andExpect(model().attributeExists("items", "page", "currentSort", "sortOptions"))
@@ -98,7 +99,7 @@ class MovieControllerTest {
         given(movieService.list(any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/movies").param("sort", "rating").with(user("user")))
+        mockMvc.perform(get("/movies").param("sort", "rating").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("currentSort", SortOption.RATING));
     }
@@ -108,7 +109,7 @@ class MovieControllerTest {
         given(movieService.list(any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/movies").param("sort", "unknown").with(user("user")))
+        mockMvc.perform(get("/movies").param("sort", "unknown").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("currentSort", SortOption.LATEST));
     }
@@ -117,7 +118,7 @@ class MovieControllerTest {
 
     @Test
     void GET_movies_new_폼_초기화() throws Exception {
-        mockMvc.perform(get("/movies/new").with(user("user")))
+        mockMvc.perform(get("/movies/new").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("movies/form"))
                 .andExpect(model().attribute("mode", "create"))
@@ -132,7 +133,7 @@ class MovieControllerTest {
         Movie movie = MovieFixture.createMovieWithThumbnail(1L, "thumb.jpg");
         given(movieService.get(1L)).willReturn(movie);
 
-        mockMvc.perform(get("/movies/1/edit").with(user("user")))
+        mockMvc.perform(get("/movies/1/edit").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("movies/form"))
                 .andExpect(model().attribute("mode", "edit"))
@@ -146,7 +147,7 @@ class MovieControllerTest {
         Movie movie = MovieFixture.createMovieWithId(1L);
         given(movieService.get(1L)).willReturn(movie);
 
-        mockMvc.perform(get("/movies/1/edit").with(user("user")))
+        mockMvc.perform(get("/movies/1/edit").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(result ->
                         assertThat(result.getModelAndView().getModel().get("existingThumbnailUrl")).isNull());
@@ -157,7 +158,7 @@ class MovieControllerTest {
     @Test
     void POST_movies_csrf_없으면_403() throws Exception {
         mockMvc.perform(post("/movies")
-                .with(user("user"))
+                .with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("title", "영화"))
                 .andExpect(status().isForbidden());
@@ -166,7 +167,7 @@ class MovieControllerTest {
     @Test
     void POST_movies_유효한_폼_등록_리다이렉트() throws Exception {
         mockMvc.perform(post("/movies")
-                .with(csrf()).with(user("user"))
+                .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(validFormParams()))
                 .andExpect(status().is3xxRedirection())
@@ -181,7 +182,7 @@ class MovieControllerTest {
         params.set("title", "");
 
         mockMvc.perform(post("/movies")
-                .with(csrf()).with(user("user"))
+                .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(params))
                 .andExpect(status().isOk())
@@ -195,7 +196,7 @@ class MovieControllerTest {
         params.set("rating", "6.0");
 
         mockMvc.perform(post("/movies")
-                .with(csrf()).with(user("user"))
+                .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(params))
                 .andExpect(status().isOk())
@@ -211,7 +212,7 @@ class MovieControllerTest {
 
         mockMvc.perform(multipart("/movies")
                 .file(thumbnail)
-                .with(csrf()).with(user("user"))
+                .with(csrf()).with(user(mockPrincipal()))
                 .params(validFormParams()))
                 .andExpect(status().is3xxRedirection());
 
@@ -221,7 +222,7 @@ class MovieControllerTest {
     @Test
     void POST_movies_썸네일_없으면_store_null_로_create_호출() throws Exception {
         mockMvc.perform(post("/movies")
-                .with(csrf()).with(user("user"))
+                .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(validFormParams()))
                 .andExpect(status().is3xxRedirection());
@@ -234,7 +235,7 @@ class MovieControllerTest {
     @Test
     void POST_movies_id_수정_성공_리다이렉트() throws Exception {
         mockMvc.perform(post("/movies/1")
-                .with(csrf()).with(user("user"))
+                .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(validFormParams()))
                 .andExpect(status().is3xxRedirection())
@@ -252,7 +253,7 @@ class MovieControllerTest {
         params.set("title", "");
 
         mockMvc.perform(post("/movies/1")
-                .with(csrf()).with(user("user"))
+                .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(params))
                 .andExpect(status().isOk())
@@ -270,7 +271,7 @@ class MovieControllerTest {
 
         mockMvc.perform(multipart("/movies/1")
                 .file(thumbnail)
-                .with(csrf()).with(user("user"))
+                .with(csrf()).with(user(mockPrincipal()))
                 .params(validFormParams()))
                 .andExpect(status().is3xxRedirection());
 
@@ -280,7 +281,7 @@ class MovieControllerTest {
     @Test
     void POST_movies_id_수정_썸네일_없으면_replaceThumbnail_false() throws Exception {
         mockMvc.perform(post("/movies/1")
-                .with(csrf()).with(user("user"))
+                .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(validFormParams()))
                 .andExpect(status().is3xxRedirection());
@@ -293,7 +294,7 @@ class MovieControllerTest {
     @Test
     void POST_movies_id_delete_성공_리다이렉트() throws Exception {
         mockMvc.perform(post("/movies/1/delete")
-                .with(csrf()).with(user("user")))
+                .with(csrf()).with(user(mockPrincipal())))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/movies"))
                 .andExpect(flash().attribute("message", "영화가 삭제되었습니다."))
@@ -303,11 +304,15 @@ class MovieControllerTest {
     @Test
     void POST_movies_id_delete_csrf_없으면_403() throws Exception {
         mockMvc.perform(post("/movies/1/delete")
-                .with(user("user")))
+                .with(user(mockPrincipal())))
                 .andExpect(status().isForbidden());
     }
 
     // ===== 헬퍼 =====
+
+    private static CustomUserPrincipal mockPrincipal() {
+        return new CustomUserPrincipal("user", "password", "테스트유저", "ROLE_USER");
+    }
 
     private org.springframework.util.LinkedMultiValueMap<String, String> validFormParams() {
         org.springframework.util.LinkedMultiValueMap<String, String> params = new org.springframework.util.LinkedMultiValueMap<>();
@@ -315,7 +320,7 @@ class MovieControllerTest {
         params.add("watchedDate", "2024-06-01");
         params.add("immersion", "GOOD");
         params.add("story", "CONVINCING");
-        params.add("emotion", "FUNNY");
+        params.add("emotions", "FUNNY");
         params.add("taste", "MATCH");
         params.add("rating", "4.5");
         return params;
