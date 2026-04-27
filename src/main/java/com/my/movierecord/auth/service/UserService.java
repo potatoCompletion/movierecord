@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
         if (user.getStatus() == UserStatus.PENDING) {
             throw new org.springframework.security.authentication.DisabledException("Account is awaiting approval");
         }
-        return new CustomUserPrincipal(user.getUsername(), user.getDisplayNickname(), user.getRole());
+        return new CustomUserPrincipal(user.getUsername(), user.getPassword(), user.getDisplayNickname(), user.getRole());
     }
 
     @Transactional

@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 public class CustomUserPrincipal implements UserDetails, OAuth2User {
 
     private final String username;
+    private final String password;
     private final String displayNickname;
     private final Collection<? extends GrantedAuthority> authorities;
     private final Map<String, Object> attributes;
@@ -19,14 +20,20 @@ public class CustomUserPrincipal implements UserDetails, OAuth2User {
     public CustomUserPrincipal(String username, String displayNickname, String role,
                                Map<String, Object> attributes, String nameAttributeKey) {
         this.username = username;
+        this.password = null;
         this.displayNickname = displayNickname;
         this.authorities = List.of(new SimpleGrantedAuthority(role));
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
     }
 
-    public CustomUserPrincipal(String username, String displayNickname, String role) {
-        this(username, displayNickname, role, Map.of(), "");
+    public CustomUserPrincipal(String username, String password, String displayNickname, String role) {
+        this.username = username;
+        this.password = password;
+        this.displayNickname = displayNickname;
+        this.authorities = List.of(new SimpleGrantedAuthority(role));
+        this.attributes = Map.of();
+        this.nameAttributeKey = "";
     }
 
     public String getDisplayNickname() { return displayNickname; }
@@ -44,7 +51,7 @@ public class CustomUserPrincipal implements UserDetails, OAuth2User {
     public Collection<? extends GrantedAuthority> getAuthorities() { return authorities; }
 
     @Override
-    public String getPassword() { return null; }
+    public String getPassword() { return password; }
 
     @Override
     public String getUsername() { return username; }
