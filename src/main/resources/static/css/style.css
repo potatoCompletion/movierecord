@@ -59,6 +59,12 @@ body {
     color: var(--accent-hover);
 }
 
+.brand-logo {
+    height: 100px;
+    width: auto;
+    display: block;
+}
+
 .header-inner {
     display: flex;
     align-items: center;
