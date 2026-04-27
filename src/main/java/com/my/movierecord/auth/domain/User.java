@@ -31,6 +31,9 @@ public class User {
     @Column(name = "full_name", nullable = false, length = 50)
     private String name;
 
+    @Column(length = 50, unique = true)
+    private String nickname;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private UserStatus status;
@@ -49,10 +52,11 @@ public class User {
     private LocalDateTime createdAt;
 
     @Builder
-    private User(String username, String password, String name, UserStatus status, String role, String provider, String providerId) {
+    private User(String username, String password, String name, String nickname, UserStatus status, String role, String provider, String providerId) {
         this.username = username;
         this.password = password;
         this.name = name;
+        this.nickname = nickname;
         this.status = status != null ? status : UserStatus.PENDING;
         this.role = role != null ? role : "ROLE_USER";
         this.provider = provider;
@@ -61,5 +65,13 @@ public class User {
 
     public void approve() {
         this.status = UserStatus.ACTIVE;
+    }
+
+    public String getDisplayNickname() {
+        return nickname != null ? nickname : username;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
 }
