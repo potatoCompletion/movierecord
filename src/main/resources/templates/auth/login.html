@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>로그인</title>
+</head>
+<body>
+<section>
+    <div class="auth-container">
+        <h2 class="auth-title">로그인</h2>
+
+        <div th:if="${param.error}" class="flash-message error">
+            아이디 또는 비밀번호가 올바르지 않습니다.
+        </div>
+        <div th:if="${param.logout}" class="flash-message">
+            로그아웃되었습니다.
+        </div>
+        <div th:if="${param.signupSuccess}" class="flash-message">
+            회원가입이 완료되었습니다. 로그인해주세요.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">아이디</label>
+                <input type="text" id="username" name="username"
+                       class="form-control" autofocus autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password"
+                       class="form-control" autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">로그인</button>
+        </form>
+
+        <p class="auth-link">계정이 없으신가요? <a th:href="@{/auth/signup}">회원가입</a></p>
+    </div>
+</section>
+</body>
+</html>

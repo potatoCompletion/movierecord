@@ -1,0 +1,103 @@
+package com.my.movierecord.auth.controller;
+
+import com.my.movierecord.auth.service.UserAlreadyExistsException;
+import com.my.movierecord.auth.service.UserService;
+import com.my.movierecord.config.PasswordEncoderConfig;
+import com.my.movierecord.config.SecurityConfig;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+@WebMvcTest(AuthController.class)
+@Import({SecurityConfig.class, PasswordEncoderConfig.class})
+class AuthControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockitoBean
+    UserService userService;
+
+    @Test
+    void GET_auth_login_폼_렌더링() throws Exception {
+        mockMvc.perform(get("/auth/login"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/login"));
+    }
+
+    @Test
+    void GET_auth_signup_폼_초기화() throws Exception {
+        mockMvc.perform(get("/auth/signup"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/signup"))
+                .andExpect(model().attributeExists("signupForm"));
+    }
+
+    @Test
+    void POST_auth_signup_성공_리다이렉트() throws Exception {
+        mockMvc.perform(post("/auth/signup")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("username", "newuser")
+                        .param("password", "pass1234")
+                        .param("passwordConfirm", "pass1234"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/auth/login?signupSuccess"));
+    }
+
+    @Test
+    void POST_auth_signup_빈_아이디_검증_실패() throws Exception {
+        mockMvc.perform(post("/auth/signup")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("username", "")
+                        .param("password", "pass1234")
+                        .param("passwordConfirm", "pass1234"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/signup"))
+                .andExpect(model().attributeHasFieldErrors("signupForm", "username"));
+    }
+
+    @Test
+    void POST_auth_signup_비밀번호_불일치_검증_실패() throws Exception {
+        mockMvc.perform(post("/auth/signup")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("username", "validuser")
+                        .param("password", "pass1234")
+                        .param("passwordConfirm", "different"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/signup"))
+                .andExpect(model().attributeHasFieldErrors("signupForm", "passwordConfirm"));
+    }
+
+    @Test
+    void POST_auth_signup_중복_아이디_검증_실패() throws Exception {
+        willThrow(new UserAlreadyExistsException("existinguser"))
+                .given(userService).signup(any());
+
+        mockMvc.perform(post("/auth/signup")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("username", "existinguser")
+                        .param("password", "pass1234")
+                        .param("passwordConfirm", "pass1234"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/signup"))
+                .andExpect(model().attributeHasFieldErrors("signupForm", "username"));
+    }
+}
