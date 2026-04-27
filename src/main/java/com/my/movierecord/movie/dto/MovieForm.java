@@ -94,7 +94,7 @@ public class MovieForm {
      * 폼 유효성 검증이 완료된 후 서비스 계층에 전달할 커맨드 객체를 생성한다.
      * thumbnailPath는 FileStorageService에서 처리된 파일 경로가 전달된다.
      */
-    public MovieSaveCommand toCommand(String thumbnailPath) {
+    public MovieSaveCommand toCommand(String thumbnailPath, Long userId) {
         return new MovieSaveCommand(
                 title,
                 watchedDate,
@@ -106,7 +106,8 @@ public class MovieForm {
                 goodPoints,
                 badPoints,
                 taste,
-                rating
+                rating,
+                userId
         );
     }
 }

@@ -1,8 +1,10 @@
 package com.my.movierecord.movie.service;
 
+import com.my.movierecord.auth.domain.User;
+import com.my.movierecord.auth.repository.UserRepository;
+import com.my.movierecord.common.service.FileStorageService;
 import com.my.movierecord.movie.domain.Movie;
 import com.my.movierecord.movie.repository.MovieRepository;
-import com.my.movierecord.common.service.FileStorageService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +22,13 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
     private final FileStorageService fileStorageService;
+    private final UserRepository userRepository;
 
-    // 생성자 주입
-    public MovieService(MovieRepository movieRepository, FileStorageService fileStorageService) {
+    public MovieService(MovieRepository movieRepository, FileStorageService fileStorageService,
+                        UserRepository userRepository) {
         this.movieRepository = movieRepository;
         this.fileStorageService = fileStorageService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -48,8 +52,9 @@ public class MovieService {
      * 새 영화 기록을 생성한다.
      * MovieSaveCommand의 모든 정보를 이용하여 Movie 엔티티를 빌더로 구성한다.
      */
-    @Transactional  // 데이터 쓰기이므로 명시적으로 쓰기 트랜잭션 지정
+    @Transactional
     public Movie create(MovieSaveCommand command) {
+        User user = userRepository.getReferenceById(command.userId());
         Movie movie = Movie.builder()
                 .title(command.title())
                 .watchedDate(command.watchedDate())
@@ -62,8 +67,13 @@ public class MovieService {
                 .badPoints(command.badPoints())
                 .taste(command.taste())
                 .rating(command.rating())
+                .user(user)
                 .build();
         return movieRepository.save(movie);
+    }
+
+    public Page<Movie> listByUser(Long userId, Pageable pageable) {
+        return movieRepository.findByUserId(userId, pageable);
     }
 
     /**

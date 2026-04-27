@@ -25,5 +25,6 @@ public record MovieSaveCommand(
         String goodPoints,
         String badPoints,
         Taste taste,
-        BigDecimal rating
+        BigDecimal rating,
+        Long userId
 ) {}

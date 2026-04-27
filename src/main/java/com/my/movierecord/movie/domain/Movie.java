@@ -4,14 +4,18 @@ import com.my.movierecord.movie.enums.Emotion;
 import com.my.movierecord.movie.enums.Immersion;
 import com.my.movierecord.movie.enums.Story;
 import com.my.movierecord.movie.enums.Taste;
+import com.my.movierecord.auth.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -88,6 +92,10 @@ public class Movie {
     @Column(nullable = false, precision = 2, scale = 1)
     private BigDecimal rating;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     // 생성 일시 (JPA Auditing에 의해 자동 설정, 수정 불가)
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -105,7 +113,8 @@ public class Movie {
     @Builder
     public Movie(String title, LocalDate watchedDate, String thumbnailPath,
                  String oneLiner, Immersion immersion, Story story, Emotion emotion,
-                 String goodPoints, String badPoints, Taste taste, BigDecimal rating) {
+                 String goodPoints, String badPoints, Taste taste, BigDecimal rating,
+                 User user) {
         this.title = title;
         this.watchedDate = watchedDate;
         this.thumbnailPath = thumbnailPath;
@@ -117,6 +126,7 @@ public class Movie {
         this.badPoints = badPoints;
         this.taste = taste;
         this.rating = rating;
+        this.user = user;
     }
 
     /**

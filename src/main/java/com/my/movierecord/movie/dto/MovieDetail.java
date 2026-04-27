@@ -22,15 +22,12 @@ public record MovieDetail(
         String goodPoints,
         String badPoints,
         String taste,
-        BigDecimal rating
+        BigDecimal rating,
+        String nickname
 ) {
-    /**
-     * Movie 엔티티를 MovieDetail DTO로 변환한다.
-     * - enum 필드(immersion, story, emotion, taste): displayName으로 변환하여 클라이언트가 읽기 좋은 한글 문자열을 제공
-     * - thumbnailPath: null이면 null, 아니면 /uploads/ 경로로 변환하여 웹에서 접근 가능하도록 함
-     */
     public static MovieDetail from(Movie movie) {
         String thumbnailUrl = movie.getThumbnailPath() == null ? null : "/uploads/" + movie.getThumbnailPath();
+        String nickname = movie.getUser() != null ? movie.getUser().getDisplayNickname() : null;
         return new MovieDetail(
                 movie.getId(),
                 movie.getTitle(),
@@ -43,7 +40,8 @@ public record MovieDetail(
                 movie.getGoodPoints(),
                 movie.getBadPoints(),
                 movie.getTaste().getDisplayName(),
-                movie.getRating()
+                movie.getRating(),
+                nickname
         );
     }
 }
