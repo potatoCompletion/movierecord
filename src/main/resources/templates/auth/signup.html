@@ -45,9 +45,17 @@
 
             <form th:action="@{/auth/signup}" th:object="${signupForm}" method="post">
                 <div class="form-group">
+                    <label for="name">이름</label>
+                    <input type="text" id="name" th:field="*{name}"
+                           class="form-control" autofocus autocomplete="name"
+                           placeholder="실명을 입력하세요">
+                    <span class="field-error" th:if="${#fields.hasErrors('name')}"
+                          th:errors="*{name}"></span>
+                </div>
+                <div class="form-group">
                     <label for="username">아이디</label>
                     <input type="text" id="username" th:field="*{username}"
-                           class="form-control" autofocus autocomplete="username"
+                           class="form-control" autocomplete="username"
                            placeholder="사용할 아이디를 입력하세요">
                     <span class="field-error" th:if="${#fields.hasErrors('username')}"
                           th:errors="*{username}"></span>
