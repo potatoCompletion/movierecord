@@ -65,7 +65,8 @@ public class MovieFixture {
                 "연출이 좋았다",
                 "결말이 아쉬웠다",
                 Taste.MATCH,
-                new BigDecimal("4.5")
+                new BigDecimal("4.5"),
+                1L
         );
     }
 
@@ -81,7 +82,8 @@ public class MovieFixture {
                 "연출이 좋았다",
                 "결말이 아쉬웠다",
                 Taste.MATCH,
-                new BigDecimal("4.5")
+                new BigDecimal("4.5"),
+                1L
         );
     }
 

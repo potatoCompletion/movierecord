@@ -1,5 +1,6 @@
 package com.my.movierecord.movie.repository;
 
+import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.config.JpaAuditingConfig;
 import com.my.movierecord.movie.domain.Movie;
 import com.my.movierecord.movie.dto.SortOption;
@@ -10,6 +11,7 @@ import com.my.movierecord.movie.enums.Taste;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -30,6 +32,17 @@ class MovieRepositoryTest {
 
     @Autowired
     MovieRepository movieRepository;
+
+    User testUser;
+
+    @BeforeEach
+    void setUp() {
+        testUser = entityManager.persistAndFlush(User.builder()
+                .username("testuser")
+                .password("password")
+                .name("테스트유저")
+                .build());
+    }
 
     @Test
     void save_후_createdAt_updatedAt_자동_설정() {
@@ -149,6 +162,7 @@ class MovieRepositoryTest {
                 .emotion(Emotion.FUNNY)
                 .taste(Taste.MATCH)
                 .rating(new BigDecimal(rating))
+                .user(testUser)
                 .build();
     }
 }

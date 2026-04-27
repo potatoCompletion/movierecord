@@ -1,5 +1,7 @@
 package com.my.movierecord.movie.controller;
 
+import com.my.movierecord.auth.domain.User;
+import com.my.movierecord.auth.repository.UserRepository;
 import com.my.movierecord.common.service.FileStorageService;
 import com.my.movierecord.config.SecurityConfig;
 import com.my.movierecord.movie.domain.Movie;
@@ -8,6 +10,8 @@ import com.my.movierecord.movie.service.MovieSaveCommand;
 import com.my.movierecord.movie.service.MovieService;
 import com.my.movierecord.support.MovieFixture;
 import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs;
@@ -53,6 +57,19 @@ class MovieControllerTest {
 
     @MockitoBean
     FileStorageService fileStorageService;
+
+    @MockitoBean
+    UserRepository userRepository;
+
+    @BeforeEach
+    void setUp() {
+        User mockUser = User.builder()
+                .username("user")
+                .password("password")
+                .name("테스트유저")
+                .build();
+        given(userRepository.findByUsername(any(String.class))).willReturn(Optional.of(mockUser));
+    }
 
     // ===== GET /movies =====
 

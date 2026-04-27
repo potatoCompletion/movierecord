@@ -1,5 +1,7 @@
 package com.my.movierecord.movie.service;
 
+import com.my.movierecord.auth.domain.User;
+import com.my.movierecord.auth.repository.UserRepository;
 import com.my.movierecord.common.service.FileStorageService;
 import com.my.movierecord.movie.domain.Movie;
 import com.my.movierecord.movie.repository.MovieRepository;
@@ -32,6 +34,9 @@ class MovieServiceTest {
 
     @Mock
     FileStorageService fileStorageService;
+
+    @Mock
+    UserRepository userRepository;
 
     @InjectMocks
     MovieService movieService;
@@ -71,6 +76,7 @@ class MovieServiceTest {
     void create_save_호출_및_반환() {
         MovieSaveCommand command = MovieFixture.createCommand();
         Movie movie = MovieFixture.createMovieWithId(1L);
+        given(userRepository.getReferenceById(1L)).willReturn(org.mockito.Mockito.mock(User.class));
         given(movieRepository.save(any(Movie.class))).willReturn(movie);
 
         Movie result = movieService.create(command);
