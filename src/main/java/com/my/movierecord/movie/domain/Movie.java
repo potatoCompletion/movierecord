@@ -24,6 +24,11 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+/**
+ * 영화 기록 엔티티.
+ * 사용자가 감상한 영화의 정보를 저장하고 관리한다.
+ * JPA Auditing을 통해 생성일시와 수정일시를 자동으로 관리한다.
+ */
 @Entity
 @Table(name = "movie")
 @Getter
@@ -35,51 +40,68 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 영화 제목 (필수, 최대 200자)
     @Column(nullable = false, length = 200)
     private String title;
 
+    // 영화를 감상한 날짜 (필수)
     @Column(nullable = false)
     private LocalDate watchedDate;
 
+    // 썸네일 이미지 파일 경로 (UUID 파일명으로 저장됨, 선택사항)
     @Column(length = 500)
     private String thumbnailPath;
 
+    // 한줄평 (선택사항)
     @Column(columnDefinition = "TEXT")
     private String oneLiner;
 
+    // 몰입감 정도 (필수, Immersion enum: GOOD, NORMAL, BAD)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Immersion immersion;
 
+    // 스토리 평가 (필수, Story enum: CONVINCING, SO_SO, BAD)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Story story;
 
+    // 감정 반응 (필수, Emotion enum: FUNNY, TENSE, SAD, LINGERING, NONE)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Emotion emotion;
 
+    // 좋았던 점 상세 내용 (선택사항)
     @Column(columnDefinition = "TEXT")
     private String goodPoints;
 
+    // 아쉬웠던 점 상세 내용 (선택사항)
     @Column(columnDefinition = "TEXT")
     private String badPoints;
 
+    // 개인 취향과의 일치도 (필수, Taste enum: MATCH, MISMATCH)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Taste taste;
 
+    // 별점 (필수, 0.0 ~ 5.0, 소수점 첫째 자리까지)
     @Column(nullable = false, precision = 2, scale = 1)
     private BigDecimal rating;
 
+    // 생성 일시 (JPA Auditing에 의해 자동 설정, 수정 불가)
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // 마지막 수정 일시 (JPA Auditing에 의해 자동 갱신)
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    /**
+     * 빌더 패턴을 이용한 생성자.
+     * MovieService에서 MovieSaveCommand로부터 영화 엔티티를 생성할 때 사용된다.
+     */
     @Builder
     public Movie(String title, LocalDate watchedDate, String thumbnailPath,
                  String oneLiner, Immersion immersion, Story story, Emotion emotion,
@@ -97,6 +119,11 @@ public class Movie {
         this.rating = rating;
     }
 
+    /**
+     * 기존 영화 기록을 업데이트한다.
+     * 모든 필드를 새로운 값으로 변경한다.
+     * updatedAt 필드는 JPA Auditing에 의해 자동으로 갱신된다.
+     */
     public void update(String title, LocalDate watchedDate, String thumbnailPath,
                        String oneLiner, Immersion immersion, Story story, Emotion emotion,
                        String goodPoints, String badPoints, Taste taste, BigDecimal rating) {
