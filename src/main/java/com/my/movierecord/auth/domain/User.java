@@ -1,5 +1,6 @@
 package com.my.movierecord.auth.domain;
 
+import com.my.movierecord.auth.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,12 +11,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-/**
- * 사용자 정보를 저장하는 JPA 엔티티.
- * 사용자명, 비밀번호, 생성 시간 정보를 관리한다.
- */
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(name = "uk_user_provider", columnNames = {"provider", "provider_id"}))
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,22 +22,44 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 고유한 사용자명 (최대 50자)
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
-    // 암호화된 비밀번호
     @Column(nullable = false)
     private String password;
 
-    // JPA Auditing으로 자동 관리되는 생성 시간
+    @Column(name = "full_name", nullable = false, length = 50)
+    private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private UserStatus status;
+
+    @Column(nullable = false, length = 20)
+    private String role;
+
+    @Column(length = 10)
+    private String provider;
+
+    @Column(name = "provider_id")
+    private String providerId;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    private User(String username, String password) {
+    private User(String username, String password, String name, UserStatus status, String role, String provider, String providerId) {
         this.username = username;
         this.password = password;
+        this.name = name;
+        this.status = status != null ? status : UserStatus.PENDING;
+        this.role = role != null ? role : "ROLE_USER";
+        this.provider = provider;
+        this.providerId = providerId;
+    }
+
+    public void approve() {
+        this.status = UserStatus.ACTIVE;
     }
 }
