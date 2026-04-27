@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@org.springframework.context.annotation.Profile("local")
 @RequiredArgsConstructor
 public class DataInitializer implements ApplicationRunner {
 
