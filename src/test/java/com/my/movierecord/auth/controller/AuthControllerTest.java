@@ -1,6 +1,7 @@
 package com.my.movierecord.auth.controller;
 
 import com.my.movierecord.auth.exception.UserAlreadyExistsException;
+import com.my.movierecord.auth.service.CustomOAuth2UserService;
 import com.my.movierecord.auth.service.UserService;
 import com.my.movierecord.config.PasswordEncoderConfig;
 import com.my.movierecord.config.SecurityConfig;
@@ -32,6 +33,9 @@ class AuthControllerTest {
     @MockitoBean
     UserService userService;
 
+    @MockitoBean
+    CustomOAuth2UserService customOAuth2UserService;
+
     @Test
     void GET_auth_login_폼_렌더링() throws Exception {
         mockMvc.perform(get("/auth/login"))
@@ -52,6 +56,7 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/signup")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("name", "홍길동")
                         .param("username", "newuser")
                         .param("password", "pass1234")
                         .param("passwordConfirm", "pass1234"))
@@ -60,10 +65,25 @@ class AuthControllerTest {
     }
 
     @Test
+    void POST_auth_signup_빈_이름_검증_실패() throws Exception {
+        mockMvc.perform(post("/auth/signup")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("name", "")
+                        .param("username", "newuser")
+                        .param("password", "pass1234")
+                        .param("passwordConfirm", "pass1234"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/signup"))
+                .andExpect(model().attributeHasFieldErrors("signupForm", "name"));
+    }
+
+    @Test
     void POST_auth_signup_빈_아이디_검증_실패() throws Exception {
         mockMvc.perform(post("/auth/signup")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("name", "홍길동")
                         .param("username", "")
                         .param("password", "pass1234")
                         .param("passwordConfirm", "pass1234"))
@@ -77,6 +97,7 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/signup")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("name", "홍길동")
                         .param("username", "validuser")
                         .param("password", "pass1234")
                         .param("passwordConfirm", "different"))
@@ -93,6 +114,7 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/signup")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("name", "홍길동")
                         .param("username", "existinguser")
                         .param("password", "pass1234")
                         .param("passwordConfirm", "pass1234"))

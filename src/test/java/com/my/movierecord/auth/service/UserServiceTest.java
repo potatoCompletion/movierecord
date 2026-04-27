@@ -2,6 +2,7 @@ package com.my.movierecord.auth.service;
 
 import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.dto.SignupForm;
+import com.my.movierecord.auth.enums.UserStatus;
 import com.my.movierecord.auth.exception.UserAlreadyExistsException;
 import com.my.movierecord.auth.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ class UserServiceTest {
     @Test
     void signup_새사용자_인코딩된_비밀번호로_저장() {
         SignupForm form = new SignupForm();
+        form.setName("홍길동");
         form.setUsername("newuser");
         form.setPassword("pass1234");
         form.setPasswordConfirm("pass1234");
@@ -51,6 +53,7 @@ class UserServiceTest {
     @Test
     void signup_중복_아이디_예외_발생() {
         SignupForm form = new SignupForm();
+        form.setName("홍길동");
         form.setUsername("existing");
         form.setPassword("pass1234");
         form.setPasswordConfirm("pass1234");
@@ -68,6 +71,9 @@ class UserServiceTest {
         User user = User.builder()
                 .username("testuser")
                 .password("encoded_pw")
+                .name("테스터")
+                .status(UserStatus.ACTIVE)
+                .role("ROLE_USER")
                 .build();
         given(userRepository.findByUsername("testuser")).willReturn(Optional.of(user));
 
@@ -75,6 +81,7 @@ class UserServiceTest {
 
         assertThat(result.getUsername()).isEqualTo("testuser");
         assertThat(result.getPassword()).isEqualTo("encoded_pw");
+        assertThat(result.isEnabled()).isTrue();
     }
 
     @Test
@@ -84,5 +91,22 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.loadUserByUsername("unknown"))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessageContaining("unknown");
+    }
+
+    @Test
+    void loadUserByUsername_OAuth계정_폼로그인_거부() {
+        User oauthUser = User.builder()
+                .username("google_g001")
+                .password("{noop}OAUTH_ACCOUNT_NO_PASSWORD")
+                .name("소셜사용자")
+                .status(UserStatus.ACTIVE)
+                .role("ROLE_USER")
+                .provider("GOOGLE")
+                .providerId("g001")
+                .build();
+        given(userRepository.findByUsername("google_g001")).willReturn(Optional.of(oauthUser));
+
+        assertThatThrownBy(() -> userService.loadUserByUsername("google_g001"))
+                .isInstanceOf(UsernameNotFoundException.class);
     }
 }
