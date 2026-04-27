@@ -19,7 +19,9 @@
             <img th:src="@{/images/murabel_logo.png}" alt="내 영화 기록" class="brand-logo">
         </a>
         <div class="header-user" sec:authorize="isAuthenticated()">
-            <span class="header-username" sec:authentication="name"></span>
+            <span class="header-username" sec:authentication="principal.displayNickname"></span>
+            <a th:href="@{/my-page}" class="btn btn-secondary btn-sm">마이 페이지</a>
+            <a th:href="@{/admin/users}" class="btn btn-secondary btn-sm" sec:authorize="hasRole('ADMIN')">관리자 페이지</a>
             <form th:action="@{/logout}" method="post" class="logout-form">
                 <button type="submit" class="btn btn-secondary btn-sm">로그아웃</button>
             </form>
@@ -34,7 +36,7 @@
 
 <footer class="site-footer">
     <div class="container">
-        <small>&copy; Movie Record</small>
+        <small>&copy; potatoCompletion</small>
     </div>
 </footer>
 </body>

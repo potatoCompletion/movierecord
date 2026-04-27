@@ -7,7 +7,7 @@
 <body>
 <section>
     <div class="toolbar">
-        <h1>내 영화 기록</h1>
+        <h1>영화 감상평</h1>
         <div class="toolbar-right">
             <form method="get" th:action="@{/movies}">
                 <input type="hidden" name="page" value="0">
@@ -41,7 +41,8 @@
                 data-good-points=${item.detail.goodPoints},
                 data-bad-points=${item.detail.badPoints},
                 data-taste=${item.detail.taste},
-                data-rating=${item.detail.rating}">
+                data-rating=${item.detail.rating},
+                data-nickname=${item.detail.nickname}">
             <div class="movie-thumb"
                  th:style="${item.thumbnailUrl != null} ? 'background-image:url(' + ${item.thumbnailUrl} + ')' : ''"
                  th:text="${item.thumbnailUrl == null} ? '이미지 없음' : ''"></div>
@@ -52,6 +53,8 @@
                           th:text="'★ ' + ${#numbers.formatDecimal(item.rating, 1, 1)}"></span>
                     <span th:text="${#temporals.format(item.watchedDate, 'yyyy-MM-dd')}"></span>
                 </div>
+                <div class="card-nickname" th:if="${item.detail.nickname != null}"
+                     th:text="'by ' + ${item.detail.nickname}"></div>
             </div>
         </div>
     </div>
@@ -84,6 +87,7 @@
                 <div id="modalThumb" class="modal-thumb"></div>
                 <div class="modal-details">
                     <dl>
+                        <dt>작성자</dt><dd id="modalNickname"></dd>
                         <dt>감상일</dt><dd id="modalWatchedDate"></dd>
                         <dt>별점</dt><dd class="rating-display" id="modalRating"></dd>
                         <dt>한줄평</dt><dd id="modalOneLiner"></dd>

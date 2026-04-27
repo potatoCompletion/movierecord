@@ -14,6 +14,7 @@
         good: document.getElementById('modalGood'),
         bad: document.getElementById('modalBad'),
         taste: document.getElementById('modalTaste'),
+        nickname: document.getElementById('modalNickname'),
         editLink: document.getElementById('modalEditLink'),
         deleteForm: document.getElementById('modalDeleteForm'),
     };
@@ -23,7 +24,13 @@
         const full = Math.floor(r);
         const half = r - full >= 0.5 ? 1 : 0;
         const empty = 5 - full - half;
-        return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty) + '  ' + r.toFixed(1);
+        let html = '<span class="modal-stars">';
+        for (let i = 0; i < full; i++) html += '<span class="modal-star full">★</span>';
+        if (half) html += '<span class="modal-star half"><span class="half-inner">★</span>★</span>';
+        for (let i = 0; i < empty; i++) html += '<span class="modal-star empty">★</span>';
+        html += '<span class="modal-star-value">' + r.toFixed(1) + '</span>';
+        html += '</span>';
+        return html;
     }
 
     function textOrDash(value) {
@@ -43,7 +50,7 @@
             els.thumb.classList.add('no-thumb');
         }
         els.watchedDate.textContent = d.watchedDate || '-';
-        els.rating.textContent = renderStars(d.rating);
+        els.rating.innerHTML = renderStars(d.rating);
         els.oneLiner.textContent = textOrDash(d.oneLiner);
         els.immersion.textContent = d.immersion || '-';
         els.story.textContent = d.story || '-';
@@ -51,6 +58,7 @@
         els.good.textContent = textOrDash(d.goodPoints);
         els.bad.textContent = textOrDash(d.badPoints);
         els.taste.textContent = d.taste || '-';
+        if (els.nickname) els.nickname.textContent = d.nickname || '-';
         els.editLink.href = `/movies/${d.id}/edit`;
         els.deleteForm.action = `/movies/${d.id}/delete`;
 

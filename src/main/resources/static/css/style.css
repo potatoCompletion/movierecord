@@ -976,3 +976,217 @@ main.container {
     .auth-title  { font-size: 1.35rem; }
     .auth-scene  { padding: 2rem 1rem 3rem; }
 }
+
+/* ── My Page: Sidebar Layout ─────────────────────────────────── */
+.my-page-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    align-items: start;
+    margin-top: 2rem;
+}
+
+.my-page-sidebar {
+    position: sticky;
+    top: 5rem;
+}
+
+.side-nav {
+    display: flex;
+    flex-direction: column;
+    background: rgba(20, 19, 32, 0.85);
+    border: 1px solid rgba(232, 184, 75, 0.12);
+    border-radius: 14px;
+    overflow: hidden;
+    padding: 0.5rem 0;
+}
+
+.side-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.1rem;
+    color: rgba(240, 235, 224, 0.55);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border-left: 3px solid transparent;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.side-nav-link:hover {
+    color: rgba(240, 235, 224, 0.85);
+    background: rgba(232, 184, 75, 0.06);
+    border-left-color: rgba(232, 184, 75, 0.35);
+}
+
+.side-nav-link.active {
+    color: #e8b84b;
+    background: rgba(232, 184, 75, 0.08);
+    border-left-color: #e8b84b;
+    font-weight: 600;
+}
+
+.my-page-content {
+    min-width: 0;
+}
+
+/* ── My Page: Card nickname ──────────────────────────────────── */
+.card-nickname {
+    font-size: 0.73rem;
+    color: rgba(240, 235, 224, 0.38);
+    margin-top: 0.25rem;
+    letter-spacing: 0.01em;
+}
+
+/* ── My Page: Profile form ───────────────────────────────────── */
+.profile-card {
+    background: rgba(20, 19, 32, 0.85);
+    border: 1px solid rgba(232, 184, 75, 0.12);
+    border-radius: 16px;
+    padding: 2rem 2rem 1.75rem;
+    max-width: 480px;
+}
+
+.current-nickname-label {
+    font-size: 0.85rem;
+    color: rgba(240, 235, 224, 0.5);
+    margin-bottom: 1.5rem;
+}
+
+.current-nickname-label strong {
+    color: rgba(240, 235, 224, 0.85);
+    font-weight: 600;
+}
+
+.input-row {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+}
+
+.input-row .form-control {
+    flex: 1;
+}
+
+.input-row .btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.field-hint {
+    display: block;
+    font-size: 0.78rem;
+    margin-top: 0.4rem;
+    color: rgba(240, 235, 224, 0.45);
+    min-height: 1.1em;
+}
+
+.field-hint.field-success {
+    color: #6ee7a0;
+}
+
+.field-hint.field-error {
+    color: #ff8585;
+}
+
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-size: 0.84rem;
+    margin-bottom: 1.25rem;
+}
+
+.alert-success {
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.22);
+    color: #6ee7a0;
+}
+
+/* ── Modal: Star Rating ──────────────────────────────────────── */
+.modal-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+}
+
+.modal-star {
+    position: relative;
+    font-size: 1.05rem;
+    line-height: 1;
+    color: rgba(240, 235, 224, 0.2);
+    display: inline-block;
+}
+
+.modal-star.full {
+    color: #e8b84b;
+}
+
+.modal-star.empty {
+    color: rgba(240, 235, 224, 0.2);
+}
+
+.modal-star.half {
+    color: rgba(240, 235, 224, 0.2);
+}
+
+.half-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 52%;
+    overflow: hidden;
+    color: #e8b84b;
+    display: inline-block;
+    line-height: inherit;
+}
+
+.modal-star-value {
+    font-size: 0.8rem;
+    color: rgba(240, 235, 224, 0.55);
+    margin-left: 0.4rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+}
+
+/* ── Responsive: My Page ─────────────────────────────────────── */
+@media (max-width: 768px) {
+    .my-page-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .my-page-sidebar {
+        position: static;
+    }
+
+    .side-nav {
+        flex-direction: row;
+        border-radius: 10px;
+        padding: 0;
+    }
+
+    .side-nav-link {
+        flex: 1;
+        justify-content: center;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        padding: 0.65rem 0.5rem;
+        font-size: 0.82rem;
+    }
+
+    .side-nav-link:hover {
+        border-left-color: transparent;
+        border-bottom-color: rgba(232, 184, 75, 0.35);
+    }
+
+    .side-nav-link.active {
+        border-left-color: transparent;
+        border-bottom-color: #e8b84b;
+    }
+
+    .profile-card {
+        padding: 1.5rem 1.25rem;
+    }
+}
