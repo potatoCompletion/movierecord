@@ -1,5 +1,8 @@
 package com.my.movierecord.movie.controller;
 
+import com.my.movierecord.auth.domain.User;
+import com.my.movierecord.auth.repository.UserRepository;
+import com.my.movierecord.common.service.FileStorageService;
 import com.my.movierecord.movie.domain.Movie;
 import com.my.movierecord.movie.dto.MovieForm;
 import com.my.movierecord.movie.dto.MovieListItem;
@@ -9,14 +12,14 @@ import com.my.movierecord.movie.enums.Immersion;
 import com.my.movierecord.movie.enums.Story;
 import com.my.movierecord.movie.enums.Taste;
 import com.my.movierecord.movie.service.MovieService;
-import com.my.movierecord.common.service.FileStorageService;
 import jakarta.validation.Valid;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,6 +46,7 @@ public class MovieController {
 
     private final MovieService movieService;
     private final FileStorageService fileStorageService;
+    private final UserRepository userRepository;
 
     /**
      * 영화 목록을 페이지 단위로 조회하고 정렬하여 표시한다.
@@ -91,6 +95,7 @@ public class MovieController {
     public String create(@Valid @ModelAttribute("movieForm") MovieForm form,
                          BindingResult bindingResult,
                          @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
+                         @AuthenticationPrincipal UserDetails userDetails,
                          Model model,
                          RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
@@ -99,9 +104,10 @@ public class MovieController {
             model.addAttribute("existingThumbnailUrl", null);
             return "movies/form";
         }
-        // 썸네일 파일 저장 (파일이 없으면 null)
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalStateException("로그인된 사용자를 찾을 수 없습니다."));
         String thumbnailFilename = fileStorageService.store(thumbnail);
-        movieService.create(form.toCommand(thumbnailFilename));
+        movieService.create(form.toCommand(thumbnailFilename, user.getId()));
         redirectAttributes.addFlashAttribute("message", "영화가 등록되었습니다.");
         return "redirect:/movies";
     }
@@ -148,7 +154,7 @@ public class MovieController {
         // 썸네일이 새로 업로드되었는지 확인
         boolean replaceThumbnail = thumbnail != null && !thumbnail.isEmpty();
         String thumbnailFilename = replaceThumbnail ? fileStorageService.store(thumbnail) : null;
-        movieService.update(id, form.toCommand(thumbnailFilename), replaceThumbnail);
+        movieService.update(id, form.toCommand(thumbnailFilename, null), replaceThumbnail);
         redirectAttributes.addFlashAttribute("message", "영화가 수정되었습니다.");
         return "redirect:/movies";
     }
