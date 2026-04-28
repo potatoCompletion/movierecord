@@ -7,6 +7,8 @@ import com.my.movierecord.auth.service.UserService;
 import com.my.movierecord.record.dto.RecordListItem;
 import com.my.movierecord.record.dto.SortOption;
 import com.my.movierecord.record.service.WatchRecordService;
+import com.my.movierecord.record.stats.MyPageStats;
+import com.my.movierecord.record.stats.MyPageStatsService;
 import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -39,12 +41,26 @@ public class MyPageController {
     private final WatchRecordService watchRecordService;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final MyPageStatsService myPageStatsService;
 
     @GetMapping
-    public String myPage(@RequestParam(defaultValue = "0") int page,
-                         @RequestParam(defaultValue = "latest") String sort,
-                         @AuthenticationPrincipal UserDetails userDetails,
-                         Model model) {
+    public String statsPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalStateException("로그인된 사용자를 찾을 수 없습니다."));
+
+        MyPageStats stats = myPageStatsService.getStats(user.getId());
+        model.addAttribute("stats", stats);
+        model.addAttribute("activeTab", "stats");
+        model.addAttribute("currentUserId", user.getId());
+        model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
+        return "contents/my-page";
+    }
+
+    @GetMapping("/records")
+    public String recordsPage(@RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "latest") String sort,
+                              @AuthenticationPrincipal UserDetails userDetails,
+                              Model model) {
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalStateException("로그인된 사용자를 찾을 수 없습니다."));
 
@@ -60,7 +76,9 @@ public class MyPageController {
         model.addAttribute("page", recordPage);
         model.addAttribute("currentSort", sortOption);
         model.addAttribute("sortOptions", SortOption.values());
-        model.addAttribute("activeTab", "movies");
+        model.addAttribute("activeTab", "records");
+        model.addAttribute("currentUserId", user.getId());
+        model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
         return "contents/my-page";
     }
 

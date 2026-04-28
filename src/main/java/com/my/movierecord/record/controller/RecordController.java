@@ -4,6 +4,7 @@ import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.repository.UserRepository;
 import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.dto.RecordForm;
+import com.my.movierecord.record.dto.RecordDetail;
 import com.my.movierecord.record.dto.RecordListItem;
 import com.my.movierecord.record.dto.SortOption;
 import com.my.movierecord.record.enums.Emotion;
@@ -46,24 +47,42 @@ public class RecordController {
     @GetMapping
     public String list(@RequestParam(defaultValue = "0") int page,
                        @RequestParam(defaultValue = "latest") String sort,
+                       @RequestParam(defaultValue = "all") String filter,
                        @AuthenticationPrincipal UserDetails userDetails,
                        Model model) {
         SortOption sortOption = SortOption.from(sort);
         Pageable pageable = PageRequest.of(Math.max(page, 0), PAGE_SIZE, sortOption.getSort());
-        Page<WatchRecord> recordPage = watchRecordService.list(pageable);
+        User user = currentUser(userDetails);
+
+        Page<WatchRecord> recordPage = "mine".equals(filter)
+                ? watchRecordService.listByUser(user.getId(), pageable)
+                : watchRecordService.list(pageable);
 
         List<RecordListItem> items = recordPage.getContent().stream()
                 .map(RecordListItem::from)
                 .toList();
 
-        User user = currentUser(userDetails);
         model.addAttribute("items", items);
         model.addAttribute("page", recordPage);
         model.addAttribute("currentSort", sortOption);
         model.addAttribute("sortOptions", SortOption.values());
+        model.addAttribute("currentFilter", filter);
+        model.addAttribute("recordCount", recordPage.getTotalElements());
         model.addAttribute("currentUserId", user.getId());
         model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
         return "contents/list";
+    }
+
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id,
+                         @AuthenticationPrincipal UserDetails userDetails,
+                         Model model) {
+        WatchRecord record = watchRecordService.get(id);
+        User user = currentUser(userDetails);
+        model.addAttribute("item", RecordDetail.from(record));
+        model.addAttribute("currentUserId", user.getId());
+        model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
+        return "contents/detail";
     }
 
     @GetMapping("/new")
@@ -92,7 +111,7 @@ public class RecordController {
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalStateException("로그인된 사용자를 찾을 수 없습니다."));
         watchRecordService.create(form.toCommand(user.getId()));
-        redirectAttributes.addFlashAttribute("message", "감상평이 등록되었습니다.");
+        redirectAttributes.addFlashAttribute("success", "감상평이 등록되었습니다.");
         return "redirect:/contents";
     }
 
@@ -138,7 +157,7 @@ public class RecordController {
             return "contents/form";
         }
         watchRecordService.update(id, form.toCommand(null));
-        redirectAttributes.addFlashAttribute("message", "감상평이 수정되었습니다.");
+        redirectAttributes.addFlashAttribute("success", "감상평이 수정되었습니다.");
         return "redirect:/contents";
     }
 
@@ -153,7 +172,7 @@ public class RecordController {
             return "redirect:/contents";
         }
         watchRecordService.delete(id);
-        redirectAttributes.addFlashAttribute("message", "감상평이 삭제되었습니다.");
+        redirectAttributes.addFlashAttribute("success", "감상평이 삭제되었습니다.");
         return "redirect:/contents";
     }
 
