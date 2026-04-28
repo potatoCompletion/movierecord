@@ -1,80 +1,48 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
-<head>
-    <title>회원가입</title>
-</head>
-<body>
-<section>
-    <style>
-        body { background-color: #0c0b18; }
-        main.container { padding-top: 0; padding-bottom: 0; }
-        .site-header {
-            background-color: #100f1c;
-            border-bottom: 1px solid rgba(232, 184, 75, 0.1);
-        }
-        .brand { color: #e8b84b !important; }
-        .site-footer {
-            background-color: #0c0b18;
-            border-top: 1px solid rgba(232, 184, 75, 0.06);
-            margin-top: 0;
-        }
-        .site-footer small { color: rgba(240, 235, 224, 0.2); }
-    </style>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('회원가입 — Murabel')}"></head>
+<body class="page-auth">
 
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="container">
     <div class="auth-scene">
         <div class="auth-container">
-
             <div class="auth-brand">
-                <div class="film-icon">🎬</div>
+                <img th:src="@{/images/murabel_logo.png}" alt="Murabel" class="auth-logo">
             </div>
-
             <div class="film-strip">
-                <span class="film-hole"></span>
-                <span class="film-hole"></span>
-                <span class="film-hole"></span>
-                <span class="film-hole"></span>
-                <span class="film-hole"></span>
-                <span class="film-hole"></span>
-                <span class="film-hole"></span>
-                <span class="film-hole"></span>
+                <span class="film-hole"></span><span class="film-hole"></span><span class="film-hole"></span>
+                <span class="film-hole"></span><span class="film-hole"></span><span class="film-hole"></span>
+                <span class="film-hole"></span><span class="film-hole"></span>
             </div>
-
             <h2 class="auth-title">새로운 여정의 시작</h2>
             <p class="auth-subtitle">나만의 영화 기록을 시작해보세요</p>
 
             <form th:action="@{/auth/signup}" th:object="${signupForm}" method="post">
                 <div class="form-group">
                     <label for="name">이름</label>
-                    <input type="text" id="name" th:field="*{name}"
-                           class="form-control" autofocus autocomplete="name"
-                           placeholder="실명을 입력하세요">
-                    <span class="field-error" th:if="${#fields.hasErrors('name')}"
-                          th:errors="*{name}"></span>
+                    <input type="text" id="name" th:field="*{name}" class="form-control"
+                           placeholder="실명을 입력하세요" autofocus autocomplete="name">
+                    <span class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
                 </div>
                 <div class="form-group">
                     <label for="username">아이디</label>
-                    <input type="text" id="username" th:field="*{username}"
-                           class="form-control" autocomplete="username"
-                           placeholder="사용할 아이디를 입력하세요">
-                    <span class="field-error" th:if="${#fields.hasErrors('username')}"
-                          th:errors="*{username}"></span>
+                    <input type="text" id="username" th:field="*{username}" class="form-control"
+                           placeholder="사용할 아이디를 입력하세요" autocomplete="username">
+                    <span class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
                 </div>
                 <div class="form-group">
                     <label for="password">비밀번호</label>
-                    <input type="password" id="password" th:field="*{password}"
-                           class="form-control" autocomplete="new-password"
-                           placeholder="비밀번호를 입력하세요">
-                    <span class="field-error" th:if="${#fields.hasErrors('password')}"
-                          th:errors="*{password}"></span>
+                    <input type="password" id="password" th:field="*{password}" class="form-control"
+                           placeholder="비밀번호를 입력하세요" autocomplete="new-password">
+                    <span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
                 </div>
                 <div class="form-group">
                     <label for="passwordConfirm">비밀번호 확인</label>
-                    <input type="password" id="passwordConfirm" th:field="*{passwordConfirm}"
-                           class="form-control" autocomplete="new-password"
-                           placeholder="비밀번호를 다시 입력하세요">
-                    <span class="field-error" th:if="${#fields.hasErrors('passwordConfirm')}"
-                          th:errors="*{passwordConfirm}"></span>
+                    <input type="password" id="passwordConfirm" th:field="*{passwordConfirm}" class="form-control"
+                           placeholder="비밀번호를 다시 입력하세요" autocomplete="new-password">
+                    <span class="field-error" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}"></span>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">회원가입</button>
             </form>
@@ -82,6 +50,8 @@
             <p class="auth-link">이미 계정이 있으신가요? <a th:href="@{/auth/login}">로그인</a></p>
         </div>
     </div>
-</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
 </body>
 </html>

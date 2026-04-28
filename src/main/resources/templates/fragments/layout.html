@@ -6,33 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title} ?: 'Murabel'">Murabel</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="icon" type="image/png" th:href="@{/img/murabel_logo.png}">
+    <link rel="icon" type="image/png" th:href="@{/images/murabel_logo.png}">
 </head>
 <body>
 
 <header th:fragment="header" class="site-header">
     <div class="container header-inner">
         <a th:href="@{/contents}" class="brand">
-            <img th:src="@{/img/murabel_logo.png}" alt="Murabel" class="brand-logo">
+            <img th:src="@{/images/murabel_logo.png}" alt="Murabel" class="brand-logo">
         </a>
         <div class="header-user" sec:authorize="isAuthenticated()">
-            <span class="header-username" sec:authentication="name"></span>
+            <span class="header-username" sec:authentication="principal.displayNickname"></span>
             <a th:href="@{/my-page}" class="btn btn-ghost btn-sm">마이페이지</a>
+            <a th:href="@{/admin/users}" class="btn btn-ghost btn-sm" sec:authorize="hasRole('ADMIN')">관리자 페이지</a>
             <form th:action="@{/logout}" method="post" style="display:inline">
                 <button type="submit" class="btn btn-secondary btn-sm">로그아웃</button>
             </form>
-            <a th:href="@{/my-page}" class="header-avatar" sec:authentication="name"
-               th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">U</a>
+            <a th:href="@{/my-page}" class="header-avatar"
+               th:text="${#strings.substring(#authentication.principal.displayNickname, 0, 1).toUpperCase()}">U</a>
         </div>
         <div class="header-user" sec:authorize="!isAuthenticated()">
-            <a th:href="@{/login}" class="btn btn-secondary btn-sm">로그인</a>
+            <a th:href="@{/auth/login}" class="btn btn-secondary btn-sm">로그인</a>
         </div>
     </div>
 
     <nav class="tab-bar" sec:authorize="isAuthenticated()">
         <div class="tab-bar-inner">
             <a th:href="@{/contents}" class="tab-link"
-               th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/contents') and not #strings.startsWith(#httpServletRequest.requestURI, '/contents/new')} ? ' active'">
+               th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/contents') and not #strings.startsWith(#httpServletRequest.requestURI, '/contents/new')} ? ' active'">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
                 </svg>
@@ -47,7 +48,7 @@
                 <span class="label">기록</span>
             </a>
             <a th:href="@{/my-page}" class="tab-link"
-               th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/my-page')} ? ' active'">
+               th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/my-page')} ? ' active'">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
@@ -58,10 +59,18 @@
 </header>
 
 <footer th:fragment="footer" class="site-footer">
+    <div class="tmdb-attribution">
+        <img src="/images/tmdb-logo.svg" alt="TMDB" style="height: 20px;">
+        <p>
+            이 서비스는 TMDB API를 사용하지만, TMDB의 공식 인증이나 승인을 받은 서비스는 아닙니다.
+        </p>
+        <p>
+            This product uses the TMDB API but is not endorsed or certified by TMDB.
+        </p>
+    </div>
+
     <div class="container">
-        <div class="tmdb-attribution">
-            <p>© <span th:text="${#dates.year(#dates.createNow())}">2025</span> Murabel · 당신의 영화 한 편이, 한 줄의 기억으로.</p>
-        </div>
+        <small>&copy; potatoCompletion</small>
     </div>
 </footer>
 
