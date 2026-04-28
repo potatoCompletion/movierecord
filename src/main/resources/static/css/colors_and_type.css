@@ -7,23 +7,24 @@
 
 :root {
     /* ── Color: surfaces ───────────────────────────── */
-    --bg:               #0c0b18;   /* midnight ink — page bg */
-    --bg-alt:           #100f1c;   /* header / footer fill, slightly lifted */
-    --surface:          #141320;   /* cards, sidebars, dropdowns */
+    --bg:               #0c0b18;
+    --bg-alt:           #100f1c;
+    --surface:          #141320;
+    --surface-2:        #181626;
     --surface-alpha:    rgba(20, 19, 32, 0.85);
-    --elevated:         #1e1c2e;   /* nested surfaces, thumbnails */
+    --elevated:         #1e1c2e;
 
     /* ── Color: borders / hairlines ────────────────── */
     --border:           rgba(240, 235, 224, 0.09);
-    --border-strong:    rgba(240, 235, 224, 0.25);
+    --border-strong:    rgba(240, 235, 224, 0.18);
     --border-gold:      rgba(232, 184, 75, 0.20);
     --border-gold-mid:  rgba(232, 184, 75, 0.55);
 
     /* ── Color: text ───────────────────────────────── */
-    --fg:               #f0ebe0;                       /* primary text — warm cream */
-    --fg-muted:         rgba(240, 235, 224, 0.48);     /* secondary text */
-    --fg-dim:           rgba(240, 235, 224, 0.24);     /* tertiary, dividers, placeholder */
-    --fg-faint:         rgba(240, 235, 224, 0.17);     /* placeholder ghost */
+    --fg:               #f0ebe0;
+    --fg-muted:         rgba(240, 235, 224, 0.62);
+    --fg-dim:           rgba(240, 235, 224, 0.40);
+    --fg-faint:         rgba(240, 235, 224, 0.20);
 
     /* ── Color: accent (gold marquee) ──────────────── */
     --accent:           #e8b84b;
@@ -39,8 +40,8 @@
     --error:            #ff7575;
     --error-soft:       #ff8585;
     --success:          #6ee7a0;
-    --success-bg:       rgba(74, 222, 128, 0.08);
-    --success-border:   rgba(74, 222, 128, 0.25);
+    --success-bg:       rgba(110, 231, 160, 0.08);
+    --success-border:   rgba(110, 231, 160, 0.25);
 
     /* ── Color: overlay ────────────────────────────── */
     --overlay:          rgba(6, 5, 20, 0.82);
@@ -50,6 +51,15 @@
     --grad-panel:       linear-gradient(158deg, #1c1a2e 0%, #131220 100%);
     --grad-panel-soft:  linear-gradient(158deg, #1a1828 0%, #131220 100%);
     --grad-spotlight:   radial-gradient(ellipse, rgba(232, 184, 75, 0.07) 0%, transparent 68%);
+
+    /* ── Domain colors ─────────────────────────────── */
+    --emo-funny:        #f0c674;
+    --emo-tense:        #d97757;
+    --emo-sad:          #7aa9d4;
+    --emo-linger:       #b08fc7;
+    --emo-none:         #8a8578;
+    --taste-yes:        #6ee7a0;
+    --taste-no:         #ff8585;
 
     /* ── Type: families ────────────────────────────── */
     --font-display:     'Playfair Display', Georgia, 'Noto Serif KR', serif;
@@ -78,6 +88,10 @@
     --radius-md:        12px;
     --radius-lg:        18px;
     --radius-pill:      999px;
+    --r-sm:             var(--radius-sm);
+    --r-md:             var(--radius-md);
+    --r-lg:             var(--radius-lg);
+    --r-pill:           var(--radius-pill);
 
     /* ── Shadows ───────────────────────────────────── */
     --shadow-card:           0 14px 38px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--border-gold);
@@ -93,7 +107,8 @@
     --shadow-cta-strong-hov: 0 8px 30px rgba(232, 184, 75, 0.52);
 
     /* ── Motion ────────────────────────────────────── */
-    --ease-snap:        ease;
+    --ease:             cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-snap:        cubic-bezier(0.4, 0, 0.2, 1);
     --ease-settle:      cubic-bezier(0.16, 1, 0.3, 1);
     --dur-quick:        0.15s;
     --dur-base:         0.20s;
@@ -115,32 +130,7 @@
     /* ── Layout ────────────────────────────────────── */
     --container-max:    1200px;
     --container-pad:    1.5rem;
-}
-
-/* =========================================================
-   SEMANTIC ELEMENTS
-   ========================================================= */
-
-html { color-scheme: dark; }
-
-body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-::selection { background: var(--accent); color: #0e0b1a; }
-
-.label {
-    font-size: var(--fs-label);
-    font-weight: 600;
-    letter-spacing: var(--tracking-loose);
-    text-transform: uppercase;
-    color: var(--fg-muted);
-}
-
-.brand-wordmark {
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: -0.01em;
+    --container:        var(--container-max);
+    --tab-bar-h:        64px;
+    --grid-cols:        5;
 }
