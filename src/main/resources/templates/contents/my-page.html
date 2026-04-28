@@ -38,9 +38,26 @@
 
                 <div th:if="${stats.totalCount == 0}" class="empty-state">
                     <div class="empty-illustration">
-                        <svg viewBox="0 0 120 120" width="120" height="120">
-                            <rect x="20" y="30" width="80" height="60" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-                            <text x="60" y="65" text-anchor="middle" font-family="Playfair Display" font-size="14" fill="currentColor" opacity="0.7">EMPTY REEL</text>
+                        <svg viewBox="0 0 100 100" width="140" height="140" aria-hidden="true">
+                            <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.15" stroke-dasharray="2 6"/>
+                            <g class="empty-reel-spin">
+                                <circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.35"/>
+                                <circle cx="50"   cy="14"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <circle cx="81.2" cy="32"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <circle cx="81.2" cy="68"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <circle cx="50"   cy="86"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <circle cx="18.8" cy="68"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <circle cx="18.8" cy="32"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <line x1="50"   y1="41"   x2="50"   y2="22"   stroke="currentColor" stroke-width="1.2" stroke-opacity="0.22"/>
+                                <line x1="57.8" y1="54.5" x2="74.2" y2="64"   stroke="currentColor" stroke-width="1.2" stroke-opacity="0.22"/>
+                                <line x1="42.2" y1="54.5" x2="25.8" y2="64"   stroke="currentColor" stroke-width="1.2" stroke-opacity="0.22"/>
+                                <circle cx="50" cy="50" r="9"   fill="none"         stroke="currentColor" stroke-width="1.5" stroke-opacity="0.55"/>
+                                <circle cx="50" cy="50" r="3.5" fill="currentColor" fill-opacity="0.35"/>
+                            </g>
+                            <text x="50" y="52.5" text-anchor="middle"
+                                  font-family="'Playfair Display', Georgia, serif"
+                                  font-size="7" fill="currentColor" fill-opacity="0.45"
+                                  letter-spacing="1.8" font-style="italic">EMPTY REEL</text>
                         </svg>
                     </div>
                     <h2>아직 기록된 감상평이 없어요</h2>
@@ -138,15 +155,26 @@
 
                 <div th:if="${items.isEmpty()}" class="empty-state">
                     <div class="empty-illustration">
-                        <svg viewBox="0 0 120 120" width="120" height="120">
-                            <rect x="20" y="30" width="80" height="60" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-                            <circle cx="35" cy="45" r="3" fill="currentColor" opacity="0.4"/>
-                            <circle cx="35" cy="60" r="3" fill="currentColor" opacity="0.4"/>
-                            <circle cx="35" cy="75" r="3" fill="currentColor" opacity="0.4"/>
-                            <circle cx="85" cy="45" r="3" fill="currentColor" opacity="0.4"/>
-                            <circle cx="85" cy="60" r="3" fill="currentColor" opacity="0.4"/>
-                            <circle cx="85" cy="75" r="3" fill="currentColor" opacity="0.4"/>
-                            <text x="60" y="65" text-anchor="middle" font-family="Playfair Display" font-size="14" fill="currentColor" opacity="0.7">EMPTY REEL</text>
+                        <svg viewBox="0 0 100 100" width="140" height="140" aria-hidden="true">
+                            <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.15" stroke-dasharray="2 6"/>
+                            <g class="empty-reel-spin">
+                                <circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.35"/>
+                                <circle cx="50"   cy="14"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <circle cx="81.2" cy="32"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <circle cx="81.2" cy="68"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <circle cx="50"   cy="86"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <circle cx="18.8" cy="68"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <circle cx="18.8" cy="32"   r="3.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+                                <line x1="50"   y1="41"   x2="50"   y2="22"   stroke="currentColor" stroke-width="1.2" stroke-opacity="0.22"/>
+                                <line x1="57.8" y1="54.5" x2="74.2" y2="64"   stroke="currentColor" stroke-width="1.2" stroke-opacity="0.22"/>
+                                <line x1="42.2" y1="54.5" x2="25.8" y2="64"   stroke="currentColor" stroke-width="1.2" stroke-opacity="0.22"/>
+                                <circle cx="50" cy="50" r="9"   fill="none"         stroke="currentColor" stroke-width="1.5" stroke-opacity="0.55"/>
+                                <circle cx="50" cy="50" r="3.5" fill="currentColor" fill-opacity="0.35"/>
+                            </g>
+                            <text x="50" y="52.5" text-anchor="middle"
+                                  font-family="'Playfair Display', Georgia, serif"
+                                  font-size="7" fill="currentColor" fill-opacity="0.45"
+                                  letter-spacing="1.8" font-style="italic">EMPTY REEL</text>
                         </svg>
                     </div>
                     <h2>아직 기록된 감상평이 없어요</h2>

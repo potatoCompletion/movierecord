@@ -677,29 +677,70 @@ main.container {
     color: var(--fg-muted);
 }
 .empty-illustration {
-    width: 140px;
-    height: 140px;
-    margin: 0 auto 1.5rem;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    background: radial-gradient(circle at center, rgba(232, 184, 75, 0.08), transparent 65%);
+    position: relative;
+    color: var(--accent);
 }
+.empty-illustration::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 68%);
+    animation: empty-glow-pulse 3.5s ease-in-out infinite;
+}
+.empty-state h2,
 .empty-state h3 {
     margin: 0 0 0.5rem;
     font-family: var(--font-display);
     font-size: 1.3rem;
+    font-style: italic;
     color: var(--fg);
     font-weight: 600;
 }
 .empty-state p {
-    margin: 0 0 1.5rem;
+    margin: 0 0 2rem;
     color: var(--fg-muted);
     font-size: 0.92rem;
 }
-.empty-state a { color: var(--accent); text-decoration: none; font-weight: 600; }
-.empty-state a:hover { color: var(--accent-hover); text-decoration: underline; }
+.empty-state a:not(.btn) { color: var(--accent); text-decoration: none; font-weight: 600; }
+.empty-state a:not(.btn):hover { color: var(--accent-hover); text-decoration: underline; }
+.empty-state .btn-primary {
+    position: relative;
+    overflow: hidden;
+    padding: 0.7rem 2rem;
+    letter-spacing: 0.04em;
+}
+.empty-state .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,0.22) 50%, transparent 75%);
+    transform: translateX(-200%);
+    animation: empty-btn-shimmer 4s ease-in-out infinite 1s;
+}
+.empty-reel-spin {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: reel-spin 16s linear infinite;
+}
+@keyframes empty-glow-pulse {
+    0%, 100% { opacity: 0.5; transform: scale(0.92); }
+    50%       { opacity: 1;   transform: scale(1.06); }
+}
+@keyframes reel-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+@keyframes empty-btn-shimmer {
+    0%, 55% { transform: translateX(-200%); }
+    100%    { transform: translateX(200%); }
+}
 
 /* ── Chips ────────────────────────────────────────── */
 .chip-group {
