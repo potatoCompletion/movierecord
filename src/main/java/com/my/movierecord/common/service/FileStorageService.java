@@ -66,6 +66,27 @@ public class FileStorageService {
         }
     }
 
+    public String storeBytes(byte[] bytes, String extension) {
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        if (extension == null || !ALLOWED_EXTENSIONS.contains(extension.toLowerCase())) {
+            throw new IllegalArgumentException("허용되지 않는 이미지 형식입니다.");
+        }
+        try {
+            Files.createDirectories(rootLocation);
+            String newFilename = UUID.randomUUID() + "." + extension.toLowerCase();
+            Path target = rootLocation.resolve(newFilename).normalize();
+            if (!target.startsWith(rootLocation)) {
+                throw new IllegalArgumentException("잘못된 업로드 경로입니다.");
+            }
+            Files.write(target, bytes);
+            return newFilename;
+        } catch (IOException e) {
+            throw new IllegalStateException("파일 저장 실패: " + e.getMessage(), e);
+        }
+    }
+
     /**
      * 파일을 삭제한다.
      * 파일명이 null이거나 비어있으면 아무것도 하지 않는다.
