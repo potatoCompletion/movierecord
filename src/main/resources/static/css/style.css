@@ -302,7 +302,7 @@ main.container {
     line-height: 1.6;
 }
 
-input[type="date"].form-control { min-width: 0; }
+input[type="date"].form-control { min-width: 0; max-width: 100%; }
 
 .form-control:focus,
 .form-field input:focus,
