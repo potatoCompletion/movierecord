@@ -10,7 +10,8 @@
 </head>
 <body>
 
-<header th:fragment="header" class="site-header">
+<th:block th:fragment="header">
+<header class="site-header">
     <div class="container header-inner">
         <a th:href="@{/contents}" class="brand">
             <img th:src="@{/images/murabel_logo.png}" alt="Murabel" class="brand-logo">
@@ -29,34 +30,35 @@
             <a th:href="@{/auth/login}" class="btn btn-secondary btn-sm">로그인</a>
         </div>
     </div>
-
-    <nav class="tab-bar" sec:authorize="isAuthenticated()">
-        <div class="tab-bar-inner">
-            <a th:href="@{/contents}" class="tab-link"
-               th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/contents') and not #strings.startsWith(#httpServletRequest.requestURI, '/contents/new')} ? ' active'">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-                </svg>
-                <span class="label">감상평</span>
-            </a>
-            <a th:href="@{/contents/new}" class="tab-link tab-add">
-                <span class="tab-add-circle">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M12 5v14M5 12h14"/>
-                    </svg>
-                </span>
-                <span class="label">기록</span>
-            </a>
-            <a th:href="@{/my-page}" class="tab-link"
-               th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/my-page')} ? ' active'">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-                <span class="label">나의시네마</span>
-            </a>
-        </div>
-    </nav>
 </header>
+
+<nav class="tab-bar" sec:authorize="isAuthenticated()">
+    <div class="tab-bar-inner">
+        <a th:href="@{/contents}" class="tab-link"
+           th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/contents') and not #strings.startsWith(#httpServletRequest.requestURI, '/contents/new')} ? ' active'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+            </svg>
+            <span class="label">감상평</span>
+        </a>
+        <a th:href="@{/contents/new}" class="tab-link tab-add">
+            <span class="tab-add-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+            </span>
+            <span class="label">기록</span>
+        </a>
+        <a th:href="@{/my-page}" class="tab-link"
+           th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/my-page')} ? ' active'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="label">나의시네마</span>
+        </a>
+    </div>
+</nav>
+</th:block>
 
 <footer th:fragment="footer" class="site-footer">
     <div class="tmdb-attribution">
