@@ -1,0 +1,146 @@
+/* =========================================================
+   MURABEL · DESIGN TOKENS
+   colors, type, radii, shadows, motion, semantic styles
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* ── Color: surfaces ───────────────────────────── */
+    --bg:               #0c0b18;   /* midnight ink — page bg */
+    --bg-alt:           #100f1c;   /* header / footer fill, slightly lifted */
+    --surface:          #141320;   /* cards, sidebars, dropdowns */
+    --surface-alpha:    rgba(20, 19, 32, 0.85);
+    --elevated:         #1e1c2e;   /* nested surfaces, thumbnails */
+
+    /* ── Color: borders / hairlines ────────────────── */
+    --border:           rgba(240, 235, 224, 0.09);
+    --border-strong:    rgba(240, 235, 224, 0.25);
+    --border-gold:      rgba(232, 184, 75, 0.20);
+    --border-gold-mid:  rgba(232, 184, 75, 0.55);
+
+    /* ── Color: text ───────────────────────────────── */
+    --fg:               #f0ebe0;                       /* primary text — warm cream */
+    --fg-muted:         rgba(240, 235, 224, 0.48);     /* secondary text */
+    --fg-dim:           rgba(240, 235, 224, 0.24);     /* tertiary, dividers, placeholder */
+    --fg-faint:         rgba(240, 235, 224, 0.17);     /* placeholder ghost */
+
+    /* ── Color: accent (gold marquee) ──────────────── */
+    --accent:           #e8b84b;
+    --accent-hover:     #f2c85c;
+    --accent-dark:      #c4901f;
+    --accent-bg:        rgba(232, 184, 75, 0.06);      /* hover wash */
+    --accent-bg-strong: rgba(232, 184, 75, 0.15);
+    --accent-glow:      rgba(232, 184, 75, 0.25);
+
+    /* ── Color: semantic ───────────────────────────── */
+    --danger:           #e05252;
+    --danger-hover:     #c94040;
+    --error:            #ff7575;
+    --error-soft:       #ff8585;
+    --success:          #6ee7a0;
+    --success-bg:       rgba(74, 222, 128, 0.08);
+    --success-border:   rgba(74, 222, 128, 0.25);
+
+    /* ── Color: overlay ────────────────────────────── */
+    --overlay:          rgba(6, 5, 20, 0.82);
+
+    /* ── Gradients ─────────────────────────────────── */
+    --grad-gold:        linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    --grad-panel:       linear-gradient(158deg, #1c1a2e 0%, #131220 100%);
+    --grad-panel-soft:  linear-gradient(158deg, #1a1828 0%, #131220 100%);
+    --grad-spotlight:   radial-gradient(ellipse, rgba(232, 184, 75, 0.07) 0%, transparent 68%);
+
+    /* ── Type: families ────────────────────────────── */
+    --font-display:     'Playfair Display', Georgia, 'Noto Serif KR', serif;
+    --font-body:        'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Roboto, sans-serif;
+    --font-mono:        ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+    /* ── Type: scale ───────────────────────────────── */
+    --fs-hero:          1.85rem;   /* page H1 */
+    --fs-h2:            1.55rem;   /* auth title */
+    --fs-h3:            1.20rem;   /* modal/section title */
+    --fs-body:          0.93rem;
+    --fs-sm:            0.88rem;   /* buttons, sort-select */
+    --fs-xs:            0.83rem;   /* subtitles, alerts */
+    --fs-meta:          0.78rem;   /* meta, char counter */
+    --fs-label:         0.72rem;   /* uppercase form label */
+
+    --lh-tight:         1.2;
+    --lh-base:          1.5;
+
+    --tracking-tight:   -0.02em;   /* large display */
+    --tracking-tight-2: -0.015em;  /* h2 display */
+    --tracking-loose:   0.09em;    /* uppercase labels */
+
+    /* ── Radii ─────────────────────────────────────── */
+    --radius-sm:        8px;
+    --radius-md:        12px;
+    --radius-lg:        18px;
+    --radius-pill:      999px;
+
+    /* ── Shadows ───────────────────────────────────── */
+    --shadow-card:           0 14px 38px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--border-gold);
+    --shadow-modal:          0 0 0 1px rgba(0, 0, 0, 0.5),
+                              0 30px 80px rgba(0, 0, 0, 0.7),
+                              0 0 80px rgba(232, 184, 75, 0.04);
+    --shadow-auth:           0 0 0 1px rgba(0, 0, 0, 0.45),
+                              0 28px 72px rgba(0, 0, 0, 0.65),
+                              0 0 90px rgba(232, 184, 75, 0.05);
+    --shadow-cta:            0 2px 12px rgba(232, 184, 75, 0.25);
+    --shadow-cta-hover:      0 4px 20px rgba(232, 184, 75, 0.42);
+    --shadow-cta-strong:     0 4px 20px rgba(232, 184, 75, 0.38);
+    --shadow-cta-strong-hov: 0 8px 30px rgba(232, 184, 75, 0.52);
+
+    /* ── Motion ────────────────────────────────────── */
+    --ease-snap:        ease;
+    --ease-settle:      cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-quick:        0.15s;
+    --dur-base:         0.20s;
+    --dur-entry:        0.30s;
+    --dur-page:         0.55s;
+
+    /* ── Spacing rhythm ────────────────────────────── */
+    --space-1:          0.25rem;
+    --space-2:          0.5rem;
+    --space-3:          0.75rem;
+    --space-4:          1rem;
+    --space-5:          1.25rem;
+    --space-6:          1.5rem;
+    --space-8:          2rem;
+    --space-10:         2.5rem;
+    --space-12:         3rem;
+    --space-16:         4rem;
+
+    /* ── Layout ────────────────────────────────────── */
+    --container-max:    1200px;
+    --container-pad:    1.5rem;
+}
+
+/* =========================================================
+   SEMANTIC ELEMENTS
+   ========================================================= */
+
+html { color-scheme: dark; }
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: var(--accent); color: #0e0b1a; }
+
+.label {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: var(--tracking-loose);
+    text-transform: uppercase;
+    color: var(--fg-muted);
+}
+
+.brand-wordmark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+}

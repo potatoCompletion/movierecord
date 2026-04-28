@@ -1,0 +1,90 @@
+package com.my.movierecord.mypage.controller;
+
+import com.my.movierecord.auth.oauth.CustomUserPrincipal;
+import com.my.movierecord.auth.repository.UserRepository;
+import com.my.movierecord.auth.service.UserService;
+import com.my.movierecord.config.SecurityConfig;
+import com.my.movierecord.record.domain.WatchRecord;
+import com.my.movierecord.record.dto.SortOption;
+import com.my.movierecord.record.service.WatchRecordService;
+import com.my.movierecord.support.WatchRecordFixture;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+@WebMvcTest(MyPageController.class)
+@Import(SecurityConfig.class)
+class MyPageControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockitoBean
+    WatchRecordService watchRecordService;
+
+    @MockitoBean
+    UserRepository userRepository;
+
+    @MockitoBean
+    UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        given(userRepository.findByUsername(any(String.class)))
+                .willReturn(Optional.of(WatchRecordFixture.createUser()));
+    }
+
+    @Test
+    void GET_my_page_미인증_로그인_리다이렉트() throws Exception {
+        mockMvc.perform(get("/my-page"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/auth/login"));
+    }
+
+    @Test
+    void GET_my_page_목록_모달_렌더링() throws Exception {
+        WatchRecord record = WatchRecordFixture.createWatchRecordWithId(1L);
+        given(watchRecordService.listByUser(any(Long.class), any(Pageable.class)))
+                .willReturn(new PageImpl<>(List.of(record), PageRequest.of(0, 20), 1));
+
+        mockMvc.perform(get("/my-page").with(user(mockPrincipal())))
+                .andExpect(status().isOk())
+                .andExpect(view().name("contents/my-page"))
+                .andExpect(model().attribute("activeTab", "movies"))
+                .andExpect(model().attribute("currentSort", SortOption.LATEST))
+                .andExpect(model().attributeExists("items", "page", "sortOptions", "currentUserId", "isAdmin"))
+                .andExpect(result -> {
+                    String html = result.getResponse().getContentAsString();
+                    assertThat(html).contains(
+                            "id=\"movieModal\"",
+                            "src=\"/js/app.js\"",
+                            "data-id=\"1\"",
+                            "data-owner-id=\"1\"",
+                            "data-rating=\"4.5\"");
+                    assertThat(html).doesNotContain("location.href='/contents/1'");
+                });
+    }
+
+    private static CustomUserPrincipal mockPrincipal() {
+        return new CustomUserPrincipal("user", "password", "테스트유저", "ROLE_USER");
+    }
+}

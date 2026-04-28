@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="detailModal">
+    <div id="movieModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true"
+         aria-labelledby="modalTitle">
+        <div class="modal" role="document">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button type="button" class="modal-close" aria-label="닫기" data-modal-close>&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalThumb" class="modal-thumb"></div>
+                <div class="modal-details">
+                    <dl>
+                        <dt>작성자</dt><dd id="modalNickname"></dd>
+                        <dt>감상일</dt><dd id="modalWatchedDate"></dd>
+                        <dt>별점</dt><dd class="rating-display" id="modalRating"></dd>
+                        <dt>한줄평</dt><dd id="modalOneLiner"></dd>
+                        <dt>몰입감</dt><dd id="modalImmersion"></dd>
+                        <dt>스토리</dt><dd id="modalStory"></dd>
+                        <dt>감정</dt><dd id="modalEmotion"></dd>
+                        <dt>좋았던 점</dt><dd id="modalGood"></dd>
+                        <dt>아쉬웠던 점</dt><dd id="modalBad"></dd>
+                        <dt>내 취향</dt><dd id="modalTaste"></dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form id="modalDeleteForm" method="post" style="display:inline"
+                      onsubmit="return confirm('정말 삭제하시겠어요?')">
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+                <a id="modalEditLink" class="btn btn-primary">수정</a>
+                <button type="button" class="btn btn-secondary" data-modal-close>닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="currentUser" hidden
+         th:attr="data-user-id=${currentUserId},data-is-admin=${isAdmin}"></div>
+    <script th:src="@{/js/app.js}"></script>
+</div>
+
+</body>
+</html>

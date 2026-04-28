@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('감상평 상세 — Murabel')}"></head>
+<body class="page-detail">
+
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+    <div class="detail-header">
+        <a th:href="@{/contents}" class="back-link">← 목록으로</a>
+    </div>
+
+    <article class="review-detail">
+        <div class="review-detail-poster"
+             th:style="${item.thumbnailUrl != null} ? 'background-image:url(' + ${item.thumbnailUrl} + ')' : ''"></div>
+
+        <div class="review-detail-body">
+            <h1 th:text="${item.title}">영화 제목</h1>
+
+            <dl class="review-meta-list">
+                <dt>작성자</dt><dd th:text="${item.nickname}">작성자</dd>
+                <dt>감상일</dt><dd th:text="${#temporals.format(item.watchedDate, 'yyyy년 M월 d일')}">2025년 1월 1일</dd>
+                <dt>별점</dt>
+                <dd>
+                    <span class="rating-display-compact">
+                        <span style="color:var(--accent);letter-spacing:1px">★</span>
+                        <span style="color:var(--fg-muted);font-size:0.85rem;margin-left:4px"
+                              th:text="${#numbers.formatDecimal(item.rating, 1, 1)}">0.0</span>
+                    </span>
+                </dd>
+                <dt>한줄평</dt><dd th:text="${item.oneLiner} ?: '—'">—</dd>
+                <dt>몰입감</dt><dd th:text="${item.immersion} ?: '—'">—</dd>
+                <dt>스토리</dt><dd th:text="${item.story} ?: '—'">—</dd>
+                <dt>감정</dt><dd th:text="${item.emotion} ?: '—'">—</dd>
+                <dt>좋았던 점</dt><dd th:text="${item.goodPoints} ?: '—'">—</dd>
+                <dt>아쉬웠던 점</dt><dd th:text="${item.badPoints} ?: '—'">—</dd>
+                <dt>내 취향</dt><dd th:text="${item.taste} ?: '—'">—</dd>
+            </dl>
+
+            <div class="review-actions"
+                 th:if="${isAdmin or (currentUserId != null and currentUserId == item.userId)}">
+                <form th:action="@{/contents/{id}/delete(id=${item.id})}" method="post"
+                      onsubmit="return confirm('정말 삭제하시겠어요?')" style="display:inline">
+                    <button type="submit" class="btn btn-danger">삭제</button>
+                </form>
+                <a th:href="@{/contents/{id}/edit(id=${item.id})}" class="btn btn-primary">수정</a>
+                <a th:href="@{/contents}" class="btn btn-secondary">목록으로</a>
+            </div>
+        </div>
+    </article>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
