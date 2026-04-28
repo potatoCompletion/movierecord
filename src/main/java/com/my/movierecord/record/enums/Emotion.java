@@ -16,4 +16,8 @@ public enum Emotion {
     public String getDisplayName() {
         return displayName;
     }
+
+    public String getCode() {
+        return this == LINGERING ? "linger" : name().toLowerCase();
+    }
 }

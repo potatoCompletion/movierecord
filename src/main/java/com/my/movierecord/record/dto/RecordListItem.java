@@ -1,8 +1,10 @@
 package com.my.movierecord.record.dto;
 
 import com.my.movierecord.record.domain.WatchRecord;
+import com.my.movierecord.record.enums.Emotion;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public record RecordListItem(
         Long id,
@@ -10,19 +12,24 @@ public record RecordListItem(
         LocalDate watchedDate,
         String thumbnailUrl,
         BigDecimal rating,
-        RecordDetail detail
+        RecordDetail detail,
+        List<String> emotionCodes
 ) {
     public static RecordListItem from(WatchRecord wr) {
         String thumbnailUrl = (wr.getContent() != null && wr.getContent().getThumbnailPath() != null)
                 ? "/uploads/" + wr.getContent().getThumbnailPath()
                 : null;
+        List<String> emotionCodes = (wr.getEmotions() != null)
+                ? wr.getEmotions().stream().map(Emotion::getCode).toList()
+                : List.of();
         return new RecordListItem(
                 wr.getId(),
                 wr.getTitle(),
                 wr.getWatchedDate(),
                 thumbnailUrl,
                 wr.getRating(),
-                RecordDetail.from(wr)
+                RecordDetail.from(wr),
+                emotionCodes
         );
     }
 }

@@ -79,8 +79,21 @@
         modal.setAttribute('aria-hidden', 'true');
     }
 
+    function shouldIgnoreCardEvent(event) {
+        return event.target.closest('a, button, input, select, textarea, form');
+    }
+
     document.querySelectorAll('.movie-card').forEach(card => {
-        card.addEventListener('click', () => openModal(card));
+        card.addEventListener('click', (event) => {
+            if (shouldIgnoreCardEvent(event)) return;
+            openModal(card);
+        });
+        card.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            if (shouldIgnoreCardEvent(event)) return;
+            event.preventDefault();
+            openModal(card);
+        });
     });
 
     modal.querySelectorAll('[data-modal-close]').forEach(btn => {

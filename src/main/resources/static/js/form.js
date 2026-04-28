@@ -11,7 +11,7 @@
     // Star rating
     const stars = document.getElementById('starRating');
     const starsFg = document.getElementById('starsFg');
-    const ratingInput = document.getElementById('ratingInput');
+    const ratingInput = document.querySelector('input[name="rating"]');
     const ratingValue = document.getElementById('ratingValue');
 
     if (stars && starsFg && ratingInput && ratingValue) {

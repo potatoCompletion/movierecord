@@ -34,14 +34,16 @@ public record RecordDetail(
                 wr.getWatchedDate(),
                 thumbnailUrl,
                 wr.getOneLiner(),
-                wr.getImmersion().getDisplayName(),
-                wr.getStory().getDisplayName(),
-                wr.getEmotions().stream()
-                        .map(Emotion::getDisplayName)
-                        .collect(Collectors.joining(", ")),
+                wr.getImmersion() != null ? wr.getImmersion().getDisplayName() : null,
+                wr.getStory() != null ? wr.getStory().getDisplayName() : null,
+                wr.getEmotions() != null && !wr.getEmotions().isEmpty()
+                        ? wr.getEmotions().stream()
+                                .map(Emotion::getDisplayName)
+                                .collect(Collectors.joining(", "))
+                        : null,
                 wr.getGoodPoints(),
                 wr.getBadPoints(),
-                wr.getTaste().getDisplayName(),
+                wr.getTaste() != null ? wr.getTaste().getDisplayName() : null,
                 wr.getRating(),
                 nickname,
                 userId

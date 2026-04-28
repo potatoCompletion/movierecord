@@ -33,7 +33,7 @@ public class WatchRecordService {
     }
 
     public WatchRecord get(Long id) {
-        return watchRecordRepository.findById(id)
+        return watchRecordRepository.findByIdWithFetch(id)
                 .orElseThrow(() -> new EntityNotFoundException("영화를 찾을 수 없습니다. id=" + id));
     }
 
