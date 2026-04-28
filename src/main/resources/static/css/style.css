@@ -305,12 +305,6 @@ main.container {
 input[type="date"].form-control { min-width: 0; max-width: 100%; }
 .form-group-date {
     min-width: 0;
-    overflow-x: clip;
-}
-.form-group-date .form-control[type="date"] {
-    inline-size: 100%;
-    max-inline-size: 100%;
-    min-inline-size: 0;
 }
 
 .form-control:focus,
@@ -1720,6 +1714,8 @@ button.side-nav-link {
     .form-group-date .form-control[type="date"] {
         padding-inline: 0.85rem;
         font-size: 16px;
+        appearance: none;
+        -webkit-appearance: none;
     }
 }
 
