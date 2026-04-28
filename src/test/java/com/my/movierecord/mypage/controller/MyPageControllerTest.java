@@ -7,6 +7,8 @@ import com.my.movierecord.config.SecurityConfig;
 import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.dto.SortOption;
 import com.my.movierecord.record.service.WatchRecordService;
+import com.my.movierecord.record.stats.MyPageStats;
+import com.my.movierecord.record.stats.MyPageStatsService;
 import com.my.movierecord.support.WatchRecordFixture;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SecurityConfig.class)
 class MyPageControllerTest {
 
+    private static final MyPageStats EMPTY_STATS =
+            new MyPageStats(0L, 0L, 0L, null, null, List.of(), 0L, List.of());
+
     @Autowired
     MockMvc mockMvc;
 
@@ -47,10 +52,15 @@ class MyPageControllerTest {
     @MockitoBean
     UserService userService;
 
+    @MockitoBean
+    MyPageStatsService myPageStatsService;
+
     @BeforeEach
     void setUp() {
         given(userRepository.findByUsername(any(String.class)))
                 .willReturn(Optional.of(WatchRecordFixture.createUser()));
+        given(myPageStatsService.getStats(any(Long.class)))
+                .willReturn(EMPTY_STATS);
     }
 
     @Test
@@ -61,15 +71,24 @@ class MyPageControllerTest {
     }
 
     @Test
-    void GET_my_page_목록_모달_렌더링() throws Exception {
+    void GET_my_page_통계_탭_렌더링() throws Exception {
+        mockMvc.perform(get("/my-page").with(user(mockPrincipal())))
+                .andExpect(status().isOk())
+                .andExpect(view().name("contents/my-page"))
+                .andExpect(model().attribute("activeTab", "stats"))
+                .andExpect(model().attributeExists("stats", "currentUserId", "isAdmin"));
+    }
+
+    @Test
+    void GET_my_page_records_목록_모달_렌더링() throws Exception {
         WatchRecord record = WatchRecordFixture.createWatchRecordWithId(1L);
         given(watchRecordService.listByUser(any(Long.class), any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of(record), PageRequest.of(0, 20), 1));
 
-        mockMvc.perform(get("/my-page").with(user(mockPrincipal())))
+        mockMvc.perform(get("/my-page/records").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("contents/my-page"))
-                .andExpect(model().attribute("activeTab", "movies"))
+                .andExpect(model().attribute("activeTab", "records"))
                 .andExpect(model().attribute("currentSort", SortOption.LATEST))
                 .andExpect(model().attributeExists("items", "page", "sortOptions", "currentUserId", "isAdmin"))
                 .andExpect(result -> {

@@ -78,6 +78,16 @@ class RecordControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("contents/list"))
                 .andExpect(model().attributeExists("items", "page", "currentSort", "sortOptions"))
+                .andExpect(result -> {
+                    String html = result.getResponse().getContentAsString();
+                    assertThat(html).contains(
+                            "id=\"movieModal\"",
+                            "src=\"/js/app.js\"",
+                            "data-id=\"1\"",
+                            "data-owner-id=\"1\"",
+                            "data-rating=\"4.5\"");
+                    assertThat(html).doesNotContain("location.href='/contents/1'");
+                })
                 .andDo(document("contents/list"));
     }
 
@@ -159,7 +169,7 @@ class RecordControllerTest {
                 .params(validFormParams()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/contents"))
-                .andExpect(flash().attribute("message", "감상평이 등록되었습니다."))
+                .andExpect(flash().attribute("success", "감상평이 등록되었습니다."))
                 .andDo(document("contents/create"));
     }
 
@@ -214,7 +224,7 @@ class RecordControllerTest {
                 .params(validFormParams()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/contents"))
-                .andExpect(flash().attribute("message", "감상평이 수정되었습니다."))
+                .andExpect(flash().attribute("success", "감상평이 수정되었습니다."))
                 .andDo(document("contents/update"));
     }
 
@@ -260,7 +270,7 @@ class RecordControllerTest {
                 .with(csrf()).with(user(mockPrincipal())))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/contents"))
-                .andExpect(flash().attribute("message", "감상평이 삭제되었습니다."))
+                .andExpect(flash().attribute("success", "감상평이 삭제되었습니다."))
                 .andDo(document("contents/delete"));
     }
 

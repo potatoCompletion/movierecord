@@ -55,7 +55,7 @@ class WatchRecordServiceTest {
     @Test
     void get_존재하는_id_반환() {
         WatchRecord record = WatchRecordFixture.createWatchRecordWithId(1L);
-        given(watchRecordRepository.findById(1L)).willReturn(Optional.of(record));
+        given(watchRecordRepository.findByIdWithFetch(1L)).willReturn(Optional.of(record));
 
         WatchRecord result = watchRecordService.get(1L);
 
@@ -64,7 +64,7 @@ class WatchRecordServiceTest {
 
     @Test
     void get_없는_id_EntityNotFoundException() {
-        given(watchRecordRepository.findById(99L)).willReturn(Optional.empty());
+        given(watchRecordRepository.findByIdWithFetch(99L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> watchRecordService.get(99L))
                 .isInstanceOf(EntityNotFoundException.class)
@@ -87,7 +87,7 @@ class WatchRecordServiceTest {
     @Test
     void update_성공() {
         WatchRecord record = WatchRecordFixture.createWatchRecordWithId(1L);
-        given(watchRecordRepository.findById(1L)).willReturn(Optional.of(record));
+        given(watchRecordRepository.findByIdWithFetch(1L)).willReturn(Optional.of(record));
 
         WatchRecord result = watchRecordService.update(1L, WatchRecordFixture.createCommand());
 
@@ -97,7 +97,7 @@ class WatchRecordServiceTest {
     @Test
     void delete_성공() {
         WatchRecord record = WatchRecordFixture.createWatchRecordWithId(1L);
-        given(watchRecordRepository.findById(1L)).willReturn(Optional.of(record));
+        given(watchRecordRepository.findByIdWithFetch(1L)).willReturn(Optional.of(record));
 
         watchRecordService.delete(1L);
 
@@ -106,7 +106,7 @@ class WatchRecordServiceTest {
 
     @Test
     void delete_없는_id_예외_전파() {
-        given(watchRecordRepository.findById(99L)).willReturn(Optional.empty());
+        given(watchRecordRepository.findByIdWithFetch(99L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> watchRecordService.delete(99L))
                 .isInstanceOf(EntityNotFoundException.class);
