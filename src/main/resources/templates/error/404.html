@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('페이지를 찾을 수 없습니다 — Murabel')}"></head>
+<body class="page-error">
+
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="container">
+    <div class="error-scene">
+        <div class="error-card">
+            <div style="font-family:var(--font-display);color:var(--fg-dim);letter-spacing:0.2em;font-size:0.78rem;margin-bottom:0.5rem">SCENE NOT FOUND</div>
+            <h1 class="error-code">404</h1>
+            <h2 class="error-title">필름이 끊겼습니다</h2>
+            <p class="error-desc">
+                찾으시는 페이지가 영사기에 걸리지 않았어요.<br>
+                잠시 자리를 옮겨보시는 건 어떨까요?
+            </p>
+            <div class="error-actions">
+                <a class="btn btn-primary" th:href="@{/contents}">감상평으로 돌아가기</a>
+                <a class="btn btn-secondary" href="javascript:history.back()">이전 페이지</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
