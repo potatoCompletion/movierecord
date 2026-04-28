@@ -1,0 +1,183 @@
+package com.my.movierecord.record.controller;
+
+import com.my.movierecord.auth.domain.User;
+import com.my.movierecord.auth.repository.UserRepository;
+import com.my.movierecord.record.domain.WatchRecord;
+import com.my.movierecord.record.dto.RecordForm;
+import com.my.movierecord.record.dto.RecordListItem;
+import com.my.movierecord.record.dto.SortOption;
+import com.my.movierecord.record.enums.Emotion;
+import com.my.movierecord.record.enums.Immersion;
+import com.my.movierecord.record.enums.Story;
+import com.my.movierecord.record.enums.Taste;
+import com.my.movierecord.record.service.WatchRecordService;
+import jakarta.validation.Valid;
+import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/contents")
+public class RecordController {
+
+    private static final int PAGE_SIZE = 20;
+
+    private final WatchRecordService watchRecordService;
+    private final UserRepository userRepository;
+
+    public RecordController(WatchRecordService watchRecordService, UserRepository userRepository) {
+        this.watchRecordService = watchRecordService;
+        this.userRepository = userRepository;
+    }
+
+    @GetMapping
+    public String list(@RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "latest") String sort,
+                       @AuthenticationPrincipal UserDetails userDetails,
+                       Model model) {
+        SortOption sortOption = SortOption.from(sort);
+        Pageable pageable = PageRequest.of(Math.max(page, 0), PAGE_SIZE, sortOption.getSort());
+        Page<WatchRecord> recordPage = watchRecordService.list(pageable);
+
+        List<RecordListItem> items = recordPage.getContent().stream()
+                .map(RecordListItem::from)
+                .toList();
+
+        User user = currentUser(userDetails);
+        model.addAttribute("items", items);
+        model.addAttribute("page", recordPage);
+        model.addAttribute("currentSort", sortOption);
+        model.addAttribute("sortOptions", SortOption.values());
+        model.addAttribute("currentUserId", user.getId());
+        model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
+        return "contents/list";
+    }
+
+    @GetMapping("/new")
+    public String newForm(Model model) {
+        if (!model.containsAttribute("movieForm")) {
+            model.addAttribute("movieForm", new RecordForm());
+        }
+        populateFormReferences(model);
+        model.addAttribute("mode", "create");
+        model.addAttribute("existingThumbnailUrl", null);
+        return "contents/form";
+    }
+
+    @PostMapping
+    public String create(@Valid @ModelAttribute("movieForm") RecordForm form,
+                         BindingResult bindingResult,
+                         @AuthenticationPrincipal UserDetails userDetails,
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            populateFormReferences(model);
+            model.addAttribute("mode", "create");
+            model.addAttribute("existingThumbnailUrl", null);
+            return "contents/form";
+        }
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalStateException("로그인된 사용자를 찾을 수 없습니다."));
+        watchRecordService.create(form.toCommand(user.getId()));
+        redirectAttributes.addFlashAttribute("message", "감상평이 등록되었습니다.");
+        return "redirect:/contents";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String editForm(@PathVariable Long id,
+                           @AuthenticationPrincipal UserDetails userDetails,
+                           Model model,
+                           RedirectAttributes redirectAttributes) {
+        WatchRecord record = watchRecordService.get(id);
+        User user = currentUser(userDetails);
+        if (!isAuthorized(record, user)) {
+            redirectAttributes.addFlashAttribute("error", "본인의 감상평만 수정할 수 있습니다.");
+            return "redirect:/contents";
+        }
+        if (!model.containsAttribute("movieForm")) {
+            model.addAttribute("movieForm", RecordForm.fromEntity(record));
+        }
+        populateFormReferences(model);
+        model.addAttribute("mode", "edit");
+        model.addAttribute("movieId", id);
+        model.addAttribute("existingThumbnailUrl", thumbnailUrl(record));
+        return "contents/form";
+    }
+
+    @PostMapping("/{id}")
+    public String update(@PathVariable Long id,
+                         @Valid @ModelAttribute("movieForm") RecordForm form,
+                         BindingResult bindingResult,
+                         @AuthenticationPrincipal UserDetails userDetails,
+                         Model model,
+                         RedirectAttributes redirectAttributes) {
+        WatchRecord record = watchRecordService.get(id);
+        User user = currentUser(userDetails);
+        if (!isAuthorized(record, user)) {
+            redirectAttributes.addFlashAttribute("error", "본인의 감상평만 수정할 수 있습니다.");
+            return "redirect:/contents";
+        }
+        if (bindingResult.hasErrors()) {
+            populateFormReferences(model);
+            model.addAttribute("mode", "edit");
+            model.addAttribute("movieId", id);
+            model.addAttribute("existingThumbnailUrl", thumbnailUrl(record));
+            return "contents/form";
+        }
+        watchRecordService.update(id, form.toCommand(null));
+        redirectAttributes.addFlashAttribute("message", "감상평이 수정되었습니다.");
+        return "redirect:/contents";
+    }
+
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id,
+                         @AuthenticationPrincipal UserDetails userDetails,
+                         RedirectAttributes redirectAttributes) {
+        WatchRecord record = watchRecordService.get(id);
+        User user = currentUser(userDetails);
+        if (!isAuthorized(record, user)) {
+            redirectAttributes.addFlashAttribute("error", "본인의 감상평만 삭제할 수 있습니다.");
+            return "redirect:/contents";
+        }
+        watchRecordService.delete(id);
+        redirectAttributes.addFlashAttribute("message", "감상평이 삭제되었습니다.");
+        return "redirect:/contents";
+    }
+
+    private User currentUser(UserDetails userDetails) {
+        return userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalStateException("로그인된 사용자를 찾을 수 없습니다."));
+    }
+
+    private boolean isAuthorized(WatchRecord record, User user) {
+        return "ROLE_ADMIN".equals(user.getRole())
+                || record.getUser().getId().equals(user.getId());
+    }
+
+    private void populateFormReferences(Model model) {
+        model.addAttribute("immersionOptions", Immersion.values());
+        model.addAttribute("storyOptions", Story.values());
+        model.addAttribute("emotionOptions", Emotion.values());
+        model.addAttribute("tasteOptions", Taste.values());
+    }
+
+    private String thumbnailUrl(WatchRecord record) {
+        if (record.getContent() == null || record.getContent().getThumbnailPath() == null) {
+            return null;
+        }
+        return "/uploads/" + record.getContent().getThumbnailPath();
+    }
+}
