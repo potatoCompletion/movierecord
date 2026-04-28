@@ -1224,6 +1224,14 @@ main.container {
     transition: all 0.15s;
     min-height: 44px;
 }
+.side-nav-form { display: contents; }
+button.side-nav-link {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
 .side-nav-link:hover { color: var(--fg); background: var(--accent-bg); }
 .side-nav-link.active {
     color: var(--accent);
