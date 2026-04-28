@@ -8,22 +8,6 @@
         update();
     });
 
-    // Thumbnail preview
-    const thumbInput = document.getElementById('thumbnail');
-    const thumbPreview = document.getElementById('thumbPreview');
-    if (thumbInput && thumbPreview) {
-        thumbInput.addEventListener('change', () => {
-            const file = thumbInput.files && thumbInput.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                thumbPreview.style.backgroundImage = `url(${e.target.result})`;
-                thumbPreview.textContent = '';
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-
     // Star rating
     const stars = document.getElementById('starRating');
     const starsFg = document.getElementById('starsFg');

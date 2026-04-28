@@ -295,6 +295,7 @@ main.container {
     background-color: var(--elevated);
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -479,6 +480,7 @@ main.container {
     background-color: var(--elevated);
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
 }
@@ -737,6 +739,7 @@ main.container {
     background-color: var(--elevated);
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -744,6 +747,101 @@ main.container {
     font-size: 0.85rem;
     margin-bottom: 0.5rem;
     border: 1px dashed var(--border-gold);
+}
+
+/* ── TMDB search ──────────────────────────────────── */
+
+.tmdb-search-wrap {
+    position: relative;
+    margin-bottom: 0.75rem;
+}
+
+.tmdb-search-wrap input[type="text"] {
+    width: 100%;
+}
+
+.tmdb-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--elevated);
+    border: 1px solid var(--border-gold);
+    border-radius: var(--radius-sm);
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.tmdb-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.tmdb-item + .tmdb-item {
+    border-top: 1px solid var(--border);
+}
+
+.tmdb-item:hover,
+.tmdb-item--active {
+    background: rgba(232, 184, 75, 0.08);
+}
+
+.tmdb-item-poster {
+    flex-shrink: 0;
+    width: 36px;
+    height: 54px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tmdb-item-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-poster {
+    color: var(--text-dim);
+    font-size: 1.1rem;
+}
+
+.tmdb-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.tmdb-item-title {
+    font-size: 0.9rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tmdb-item-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.tmdb-badge {
+    display: inline-block;
+    padding: 0.05rem 0.35rem;
+    border-radius: 3px;
+    background: rgba(232, 184, 75, 0.15);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 600;
 }
 
 .form-actions {

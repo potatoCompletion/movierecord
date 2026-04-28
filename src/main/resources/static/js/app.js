@@ -2,6 +2,10 @@
     const modal = document.getElementById('movieModal');
     if (!modal) return;
 
+    const currentUserEl = document.getElementById('currentUser');
+    const currentUserId = currentUserEl ? currentUserEl.dataset.userId : null;
+    const isAdmin = currentUserEl ? currentUserEl.dataset.isAdmin === 'true' : false;
+
     const els = {
         title: document.getElementById('modalTitle'),
         thumb: document.getElementById('modalThumb'),
@@ -42,7 +46,7 @@
         els.title.textContent = d.title || '';
         if (d.thumbnailUrl) {
             els.thumb.style.backgroundImage = `url(${d.thumbnailUrl})`;
-            els.thumb.textContent = '';
+            els.thumb.innerHTML = '';
             els.thumb.classList.remove('no-thumb');
         } else {
             els.thumb.style.backgroundImage = '';
@@ -59,8 +63,12 @@
         els.bad.textContent = textOrDash(d.badPoints);
         els.taste.textContent = d.taste || '-';
         if (els.nickname) els.nickname.textContent = d.nickname || '-';
-        els.editLink.href = `/movies/${d.id}/edit`;
-        els.deleteForm.action = `/movies/${d.id}/delete`;
+        els.editLink.href = `/contents/${d.id}/edit`;
+        els.deleteForm.action = `/contents/${d.id}/delete`;
+
+        const canEdit = isAdmin || (currentUserId && String(d.ownerId) === currentUserId);
+        els.editLink.style.display = canEdit ? '' : 'none';
+        els.deleteForm.style.display = canEdit ? 'inline' : 'none';
 
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');

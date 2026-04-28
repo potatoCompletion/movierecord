@@ -15,7 +15,7 @@
 <body>
 <header class="site-header">
     <div class="container header-inner">
-        <a th:href="@{/movies}" class="brand">
+        <a th:href="@{/contents}" class="brand">
             <img th:src="@{/images/murabel_logo.png}" alt="내 영화 기록" class="brand-logo">
         </a>
         <div class="header-user" sec:authorize="isAuthenticated()">
@@ -35,10 +35,6 @@
 </main>
 
 <footer class="site-footer">
-    <div class="container">
-        <small>&copy; potatoCompletion</small>
-    </div>
-
     <div class="tmdb-attribution">
         <img src="/images/tmdb-logo.svg" alt="TMDB" style="height: 20px;">
         <p>
@@ -47,6 +43,10 @@
         <p>
             This product uses the TMDB API but is not endorsed or certified by TMDB.
         </p>
+    </div>
+
+    <div class="container">
+        <small>&copy; potatoCompletion</small>
     </div>
 </footer>
 </body>
