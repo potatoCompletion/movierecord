@@ -1428,6 +1428,7 @@ button.side-nav-link {
     font-size: 0.74rem;
     color: var(--fg-dim);
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
 }
 
 .donut-row {
