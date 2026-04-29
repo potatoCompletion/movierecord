@@ -4,17 +4,22 @@ import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.dto.NicknameUpdateForm;
 import com.my.movierecord.auth.repository.UserRepository;
 import com.my.movierecord.auth.service.UserService;
+import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.dto.RecordListItem;
+import com.my.movierecord.record.dto.RecordPageDto;
 import com.my.movierecord.record.dto.SortOption;
 import com.my.movierecord.record.service.WatchRecordService;
 import com.my.movierecord.record.stats.MyPageStats;
 import com.my.movierecord.record.stats.MyPageStatsService;
 import jakarta.validation.Valid;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -67,10 +72,10 @@ public class MyPageController {
         SortOption sortOption = SortOption.from(sort);
         Pageable pageable = PageRequest.of(Math.max(page, 0), PAGE_SIZE, sortOption.getSort());
 
-        var recordPage = watchRecordService.listByUser(user.getId(), pageable);
-        List<RecordListItem> items = recordPage.getContent().stream()
-                .map(RecordListItem::from)
-                .toList();
+        RecordPageDto recordPageDto = watchRecordService.listByUser(user.getId(), pageable);
+
+        Page<WatchRecord> recordPage = recordPageDto.getPage();
+        List<RecordListItem> items = recordPageDto.getItems();
 
         model.addAttribute("items", items);
         model.addAttribute("page", recordPage);
@@ -126,7 +131,7 @@ public class MyPageController {
     @GetMapping("/check-nickname")
     @ResponseBody
     public Map<String, Object> checkNickname(@RequestParam String nickname,
-                                              @AuthenticationPrincipal UserDetails userDetails) {
+                                             @AuthenticationPrincipal UserDetails userDetails) {
         Map<String, Object> result = new HashMap<>();
         if (nickname == null || nickname.isBlank()
                 || nickname.length() < 2 || nickname.length() > 50
