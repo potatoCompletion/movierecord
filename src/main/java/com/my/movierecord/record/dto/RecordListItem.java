@@ -13,14 +13,14 @@ public record RecordListItem(
         String thumbnailUrl,
         BigDecimal rating,
         RecordDetail detail,
-        List<String> emotionCodes
+        List<Emotion> emotions
 ) {
     public static RecordListItem from(WatchRecord wr) {
         String thumbnailUrl = (wr.getContent() != null && wr.getContent().getThumbnailPath() != null)
                 ? "/uploads/" + wr.getContent().getThumbnailPath()
                 : null;
-        List<String> emotionCodes = (wr.getEmotions() != null)
-                ? wr.getEmotions().stream().map(Emotion::getCode).toList()
+        List<Emotion> emotions = (wr.getEmotions() != null)
+                ? wr.getEmotions().stream().toList()
                 : List.of();
         return new RecordListItem(
                 wr.getId(),
@@ -29,7 +29,7 @@ public record RecordListItem(
                 thumbnailUrl,
                 wr.getRating(),
                 RecordDetail.from(wr),
-                emotionCodes
+                emotions
         );
     }
 }

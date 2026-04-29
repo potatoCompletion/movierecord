@@ -41,6 +41,31 @@
         return value && value.trim().length > 0 ? value : '-';
     }
 
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function renderEmotionBadges(emotionsText) {
+        if (!emotionsText) {
+            return '-';
+        }
+
+        return emotionsText
+            .split('|')
+            .filter(Boolean)
+            .map(item => {
+                const [code, displayName] = item.split(':');
+
+                return `<span class="card-emotion-badge" style="background:var(--emo-${escapeHtml(code)});">${escapeHtml(displayName)}</span>`;
+            })
+            .join('');
+    }
+
     function openModal(card) {
         const d = card.dataset;
         els.title.textContent = d.title || '';
@@ -58,7 +83,10 @@
         els.oneLiner.textContent = textOrDash(d.oneLiner);
         els.immersion.textContent = d.immersion || '-';
         els.story.textContent = d.story || '-';
-        els.emotion.textContent = d.emotion || '-';
+
+        els.emotion.innerHTML = renderEmotionBadges(d.emotions);
+        // els.emotion.textContent = d.emotion || '-';
+
         els.good.textContent = textOrDash(d.goodPoints);
         els.bad.textContent = textOrDash(d.badPoints);
         els.taste.textContent = d.taste || '-';

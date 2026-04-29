@@ -3,10 +3,7 @@ package com.my.movierecord.record.controller;
 import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.repository.UserRepository;
 import com.my.movierecord.record.domain.WatchRecord;
-import com.my.movierecord.record.dto.RecordForm;
-import com.my.movierecord.record.dto.RecordDetail;
-import com.my.movierecord.record.dto.RecordListItem;
-import com.my.movierecord.record.dto.SortOption;
+import com.my.movierecord.record.dto.*;
 import com.my.movierecord.record.enums.Emotion;
 import com.my.movierecord.record.enums.Immersion;
 import com.my.movierecord.record.enums.Story;
@@ -54,13 +51,12 @@ public class RecordController {
         Pageable pageable = PageRequest.of(Math.max(page, 0), PAGE_SIZE, sortOption.getSort());
         User user = currentUser(userDetails);
 
-        Page<WatchRecord> recordPage = "mine".equals(filter)
+        RecordPageDto recordPageDto = "mine".equals(filter)
                 ? watchRecordService.listByUser(user.getId(), pageable)
                 : watchRecordService.list(pageable);
 
-        List<RecordListItem> items = recordPage.getContent().stream()
-                .map(RecordListItem::from)
-                .toList();
+        Page<WatchRecord> recordPage = recordPageDto.getPage();
+        List<RecordListItem> items = recordPageDto.getItems();
 
         model.addAttribute("items", items);
         model.addAttribute("page", recordPage);

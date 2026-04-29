@@ -5,12 +5,16 @@ import com.my.movierecord.auth.repository.UserRepository;
 import com.my.movierecord.content.domain.Content;
 import com.my.movierecord.content.service.ContentService;
 import com.my.movierecord.record.domain.WatchRecord;
+import com.my.movierecord.record.dto.RecordListItem;
+import com.my.movierecord.record.dto.RecordPageDto;
 import com.my.movierecord.record.repository.WatchRecordRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,8 +32,10 @@ public class WatchRecordService {
         this.userRepository = userRepository;
     }
 
-    public Page<WatchRecord> list(Pageable pageable) {
-        return watchRecordRepository.findAll(pageable);
+    public RecordPageDto list(Pageable pageable) {
+        Page<WatchRecord> page = watchRecordRepository.findAll(pageable);
+        List<RecordListItem> items = page.map(RecordListItem::from).toList();
+        return RecordPageDto.of(page, items);
     }
 
     public WatchRecord get(Long id) {
@@ -58,8 +64,10 @@ public class WatchRecordService {
         return watchRecordRepository.save(record);
     }
 
-    public Page<WatchRecord> listByUser(Long userId, Pageable pageable) {
-        return watchRecordRepository.findByUserId(userId, pageable);
+    public RecordPageDto listByUser(Long userId, Pageable pageable) {
+        Page<WatchRecord> page = watchRecordRepository.findByUserId(userId, pageable);
+        List<RecordListItem> items = page.map(RecordListItem::from).toList();
+        return RecordPageDto.of(page, items);
     }
 
     @Transactional
