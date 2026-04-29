@@ -67,7 +67,7 @@ main.container {
 }
 
 .brand-logo {
-    height: 80px;
+    height: 100px;
     width: auto;
 }
 
@@ -84,7 +84,7 @@ main.container {
 }
 
 @media (max-width: 720px) {
-    .brand-logo { height: 40px; }
+    .brand-logo { height: 70px; }
     .header-username { display: none; }
     .header-user .btn { display: none; }
     .header-user .header-avatar { display: inline-flex; }
@@ -483,15 +483,25 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
     -webkit-tap-highlight-color: transparent;
 }
 .movie-card:nth-child(1) { animation-delay: 0ms; }
-.movie-card:nth-child(2) { animation-delay: 40ms; }
-.movie-card:nth-child(3) { animation-delay: 80ms; }
-.movie-card:nth-child(4) { animation-delay: 120ms; }
-.movie-card:nth-child(5) { animation-delay: 160ms; }
-.movie-card:nth-child(6) { animation-delay: 200ms; }
-.movie-card:nth-child(7) { animation-delay: 240ms; }
-.movie-card:nth-child(8) { animation-delay: 280ms; }
-.movie-card:nth-child(9) { animation-delay: 320ms; }
-.movie-card:nth-child(10) { animation-delay: 360ms; }
+.movie-card:nth-child(2) { animation-delay: 25ms; }
+.movie-card:nth-child(3) { animation-delay: 50ms; }
+.movie-card:nth-child(4) { animation-delay: 75ms; }
+.movie-card:nth-child(5) { animation-delay: 100ms; }
+.movie-card:nth-child(6) { animation-delay: 125ms; }
+.movie-card:nth-child(7) { animation-delay: 150ms; }
+.movie-card:nth-child(8) { animation-delay: 175ms; }
+.movie-card:nth-child(9) { animation-delay: 200ms; }
+.movie-card:nth-child(10) { animation-delay: 225ms; }
+.movie-card:nth-child(11) { animation-delay: 250ms; }
+.movie-card:nth-child(12) { animation-delay: 275ms; }
+.movie-card:nth-child(13) { animation-delay: 300ms; }
+.movie-card:nth-child(14) { animation-delay: 325ms; }
+.movie-card:nth-child(15) { animation-delay: 350ms; }
+.movie-card:nth-child(16) { animation-delay: 375ms; }
+.movie-card:nth-child(17) { animation-delay: 400ms; }
+.movie-card:nth-child(18) { animation-delay: 425ms; }
+.movie-card:nth-child(19) { animation-delay: 450ms; }
+.movie-card:nth-child(20) { animation-delay: 475ms; }
 
 /* Card style 0 — poster + side-info (per user pick) */
 .movie-card.style-side {
@@ -630,11 +640,27 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
     margin-top: 0.35rem;
     flex-wrap: wrap;
 }
-.card-emotion-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    display: inline-block;
+#modalEmotion {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.card-emotion-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 28px;
+    height: 18px;
+    padding: 0 7px;
+
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1;
+    color: #111;
+    white-space: nowrap;
 }
 
 /* ── Pagination ───────────────────────────────────── */
@@ -790,12 +816,14 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
 .chip[data-emo="tense"]:hover  { color: var(--emo-tense);  border-color: var(--emo-tense); background: rgba(217, 119, 87, 0.07); }
 .chip[data-emo="sad"]:hover    { color: var(--emo-sad);    border-color: var(--emo-sad);   background: rgba(122, 169, 212, 0.08); }
 .chip[data-emo="linger"]:hover { color: var(--emo-linger); border-color: var(--emo-linger); background: rgba(176, 143, 199, 0.08); }
+.chip[data-emo="scary"]:hover  { color: var(--emo-scary);  border-color: var(--emo-scary); background: rgba(224, 82, 82, 0.07); }
 .chip[data-emo="none"]:hover   { color: var(--emo-none);   border-color: var(--emo-none); background: rgba(138, 133, 120, 0.06); }
 
 .chip-group input:checked ~ .chip[data-emo="funny"]  { background: var(--emo-funny);  color: #1a1003; box-shadow: 0 2px 12px rgba(240, 198, 116, 0.32); }
 .chip-group input:checked ~ .chip[data-emo="tense"]  { background: var(--emo-tense);  color: #1a0805; box-shadow: 0 2px 12px rgba(217, 119, 87, 0.32); }
 .chip-group input:checked ~ .chip[data-emo="sad"]    { background: var(--emo-sad);    color: #06121e; box-shadow: 0 2px 12px rgba(122, 169, 212, 0.32); }
 .chip-group input:checked ~ .chip[data-emo="linger"] { background: var(--emo-linger); color: #150a1c; box-shadow: 0 2px 12px rgba(176, 143, 199, 0.32); }
+.chip-group input:checked ~ .chip[data-emo="scary"]  { background: var(--emo-scary);  color: #1a0404; box-shadow: 0 2px 12px rgba(224, 82, 82, 0.32); }
 .chip-group input:checked ~ .chip[data-emo="none"]   { background: var(--emo-none);   color: #0c0c0a; }
 
 /* ── Star rating (interactive, with hover anim) ──── */
