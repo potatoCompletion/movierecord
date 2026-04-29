@@ -212,10 +212,12 @@
                                 <div class="movie-meta">
                                     <span th:text="${#temporals.format(item.watchedDate, 'yyyy-MM-dd')}">2025-01-01</span>
                                 </div>
-                                <div class="card-emotions" th:if="${!item.emotionCodes.isEmpty()}">
-                                    <span th:each="code : ${item.emotionCodes}"
-                                          class="card-emotion-dot"
-                                          th:style="'background:var(--emo-' + ${code} + ')'"></span>
+                                <div class="card-emotions" th:if="${!item.emotions.isEmpty()}">
+                                    <span th:each="emotion : ${item.emotions}"
+                                          class="card-emotion-badge"
+                                          th:style="${'background:var(--emo-' + emotion.code + ')'}"
+                                          th:text="${emotion.displayName}">
+                                    </span>
                                 </div>
                             </div>
                             <div class="card-nickname" th:if="${item.detail.nickname != null}">
