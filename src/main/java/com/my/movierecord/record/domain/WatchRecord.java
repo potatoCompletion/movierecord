@@ -61,7 +61,7 @@ public class WatchRecord {
     @Column(nullable = false, length = 20)
     private Story story;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "watch_record_emotion", joinColumns = @JoinColumn(name = "watch_record_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "emotion", length = 20)

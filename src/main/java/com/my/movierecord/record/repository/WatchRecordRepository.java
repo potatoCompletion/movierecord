@@ -14,10 +14,10 @@ public interface WatchRecordRepository extends JpaRepository<WatchRecord, Long> 
     @Query("SELECT wr FROM WatchRecord wr LEFT JOIN FETCH wr.content LEFT JOIN FETCH wr.user LEFT JOIN FETCH wr.emotions WHERE wr.id = :id")
     Optional<WatchRecord> findByIdWithFetch(@Param("id") Long id);
 
-    @EntityGraph(attributePaths = {"user", "content", "emotions"})
+    @EntityGraph(attributePaths = {"user", "content"})
     @Override
     Page<WatchRecord> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"user", "content", "emotions"})
+    @EntityGraph(attributePaths = {"user", "content"})
     Page<WatchRecord> findByUserId(Long userId, Pageable pageable);
 }
