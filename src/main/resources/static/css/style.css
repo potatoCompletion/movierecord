@@ -1931,10 +1931,26 @@ button.side-nav-link {
     border: 1px solid var(--border);
     flex-shrink: 0;
 }
+.boxoffice-rank-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    flex-wrap: wrap;
+}
 .boxoffice-rank {
     font-family: var(--font-display);
     font-size: 1.1rem;
     color: var(--border-gold-mid, var(--accent));
+    line-height: 1;
+}
+.boxoffice-audi {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.65rem;
+    color: var(--fg-muted, var(--fg));
+    opacity: 0.7;
+    font-family: var(--font-sans, sans-serif);
     line-height: 1;
 }
 .boxoffice-title {

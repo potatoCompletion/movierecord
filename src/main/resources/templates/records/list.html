@@ -16,14 +16,20 @@
                     <div class="boxoffice-poster"
                          th:style="${item.posterUrl != null} ? 'background-image:url(' + ${item.posterUrl} + ')' : ''">
                     </div>
-                    <span class="boxoffice-rank" th:text="${item.rank}">1</span>
+                    <div class="boxoffice-rank-row">
+                        <span class="boxoffice-rank" th:text="${item.rank}">1</span>
+                        <span class="boxoffice-audi" th:if="${item.audiAcc != null}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="10" height="10" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span th:text="${#numbers.formatInteger(item.audiAcc, 1, 'COMMA')}">0</span></span>
+                    </div>
                     <span class="boxoffice-title" th:text="${item.movieNm}">영화제목</span>
                 </div>
                 <div class="boxoffice-card" th:each="item : ${boxOffice}" aria-hidden="true">
                     <div class="boxoffice-poster"
                          th:style="${item.posterUrl != null} ? 'background-image:url(' + ${item.posterUrl} + ')' : ''">
                     </div>
-                    <span class="boxoffice-rank" th:text="${item.rank}">1</span>
+                    <div class="boxoffice-rank-row">
+                        <span class="boxoffice-rank" th:text="${item.rank}">1</span>
+                        <span class="boxoffice-audi" th:if="${item.audiAcc != null}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="10" height="10" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span th:text="${#numbers.formatInteger(item.audiAcc, 1, 'COMMA')}">0</span></span>
+                    </div>
                     <span class="boxoffice-title" th:text="${item.movieNm}">영화제목</span>
                 </div>
             </div>

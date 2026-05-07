@@ -1,4 +1,4 @@
-package com.my.movierecord.kobis;
+package com.my.movierecord.kobis.service;
 
 import tools.jackson.databind.ObjectMapper;
 import com.my.movierecord.movie.domain.Content;
@@ -37,7 +37,7 @@ public class KobisService {
         LocalDate targetDt = LocalDate.now().minusDays(1);
         List<DailyBoxOffice> cached = dailyBoxOfficeRepository.findByTargetDtOrderByRankAsc(targetDt);
         if (!cached.isEmpty()) {
-            return toDto(cached);
+            return cached.stream().map(BoxOfficeItemDto::fromEntity).toList();
         }
         return fetchAndSave(targetDt);
     }
@@ -62,7 +62,9 @@ public class KobisService {
                 entities.add(DailyBoxOffice.of(targetDt, rank, item.movieNm(), audiAcc, content));
             }
 
-            return toDto(dailyBoxOfficeRepository.saveAll(entities));
+            return dailyBoxOfficeRepository.saveAll(entities).stream()
+                    .map(BoxOfficeItemDto::fromEntity)
+                    .toList();
         } catch (Exception e) {
             log.warn("KOBIS box office fetch failed for {}: {}", targetDt, e.getMessage());
             return List.of();
@@ -94,14 +96,4 @@ public class KobisService {
         }
     }
 
-    private List<BoxOfficeItemDto> toDto(List<DailyBoxOffice> entities) {
-        return entities.stream()
-                .map(e -> new BoxOfficeItemDto(
-                        e.getRank(),
-                        e.getMovieNm(),
-                        e.getContent() != null && e.getContent().getThumbnailPath() != null
-                                ? "/uploads/" + e.getContent().getThumbnailPath()
-                                : null))
-                .toList();
-    }
 }

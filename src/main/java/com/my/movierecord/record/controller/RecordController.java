@@ -2,7 +2,7 @@ package com.my.movierecord.record.controller;
 
 import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.repository.UserRepository;
-import com.my.movierecord.kobis.KobisService;
+import com.my.movierecord.kobis.service.KobisService;
 import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.dto.*;
 import com.my.movierecord.record.enums.Emotion;

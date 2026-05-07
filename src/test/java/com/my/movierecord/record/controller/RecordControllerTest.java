@@ -4,7 +4,7 @@ import com.my.movierecord.auth.oauth.CustomUserPrincipal;
 import com.my.movierecord.auth.repository.UserRepository;
 import com.my.movierecord.auth.service.CustomOAuth2UserService;
 import com.my.movierecord.config.SecurityConfig;
-import com.my.movierecord.kobis.KobisService;
+import com.my.movierecord.kobis.service.KobisService;
 import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.dto.RecordListItem;
 import com.my.movierecord.record.dto.RecordPageDto;
