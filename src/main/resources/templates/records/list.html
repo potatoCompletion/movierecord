@@ -185,6 +185,76 @@
         };
         probe.src = m[1];
     });
+
+    // Boxoffice carousel drag (desktop mouse + mobile touch)
+    (function () {
+        const wrapper = document.querySelector('.boxoffice-wrapper');
+        const track   = document.querySelector('.boxoffice-track');
+        if (!wrapper || !track) return;
+
+        const LOOP_PX  = 1320;   // 10 cards × (120px + 12px gap)
+        const ANIM_MS  = 28000;  // matches animation-duration in CSS
+
+        let active   = false;
+        let startX   = 0;
+        let startOff = 0;
+        let curOff   = 0;
+        let dragged  = false;
+
+        function readOffset() {
+            return new DOMMatrix(getComputedStyle(track).transform).m41;
+        }
+
+        function wrap(x) {
+            return ((x % LOOP_PX) + LOOP_PX) % LOOP_PX - LOOP_PX;
+        }
+
+        wrapper.addEventListener('pointerdown', e => {
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            active   = true;
+            dragged  = false;
+            startX   = e.clientX;
+            startOff = readOffset();
+            curOff   = startOff;
+            // CSS 애니메이션은 인라인 style보다 우선순위가 높으므로
+            // pause가 아닌 animationName을 제거해야 inline transform이 적용됨
+            track.style.animationName = 'none';
+            track.style.transform = `translateX(${startOff}px)`;
+            wrapper.setPointerCapture(e.pointerId);
+            wrapper.classList.add('is-dragging');
+            e.preventDefault();
+        }, { passive: false });
+
+        wrapper.addEventListener('pointermove', e => {
+            if (!active) return;
+            const delta = e.clientX - startX;
+            if (Math.abs(delta) > 4) dragged = true;
+            curOff = wrap(startOff + delta);
+            track.style.transform = `translateX(${curOff}px)`;
+        });
+
+        function onEnd() {
+            if (!active) return;
+            active = false;
+            wrapper.classList.remove('is-dragging');
+            const progress = Math.abs(curOff) / LOOP_PX;
+            track.style.animationName = '';
+            track.style.transform = '';
+            // 애니메이션이 재등록된 후 드래그 위치로 seek
+            requestAnimationFrame(() => {
+                const anims = track.getAnimations();
+                if (anims.length) anims[0].currentTime = progress * ANIM_MS;
+            });
+        }
+
+        wrapper.addEventListener('pointerup',     onEnd);
+        wrapper.addEventListener('pointercancel', onEnd);
+
+        // Suppress click propagation if the pointer actually moved (drag vs click)
+        wrapper.addEventListener('click', e => {
+            if (dragged) e.stopPropagation();
+        }, true);
+    })();
 </script>
 
 </body>

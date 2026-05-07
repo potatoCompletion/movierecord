@@ -1886,6 +1886,9 @@ button.side-nav-link {
 .boxoffice-wrapper {
     position: relative;
     overflow: hidden;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
 }
 .boxoffice-wrapper::before,
 .boxoffice-wrapper::after {
@@ -1914,12 +1917,15 @@ button.side-nav-link {
 .boxoffice-wrapper:hover .boxoffice-track {
     animation-play-state: paused;
 }
+.boxoffice-wrapper.is-dragging {
+    cursor: grabbing;
+}
 .boxoffice-card {
     flex: 0 0 120px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    cursor: default;
+    cursor: inherit;
 }
 .boxoffice-poster {
     width: 120px;
