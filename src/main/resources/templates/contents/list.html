@@ -7,6 +7,29 @@
 <div th:replace="~{fragments/layout :: flash}"></div>
 
 <main class="container">
+
+    <section class="boxoffice-section" th:if="${!#lists.isEmpty(boxOffice)}" aria-label="박스오피스 TOP 10">
+        <h2 class="boxoffice-heading">박스오피스 TOP 10</h2>
+        <div class="boxoffice-wrapper">
+            <div class="boxoffice-track">
+                <div class="boxoffice-card" th:each="item : ${boxOffice}">
+                    <div class="boxoffice-poster"
+                         th:style="${item.posterUrl != null} ? 'background-image:url(' + ${item.posterUrl} + ')' : ''">
+                    </div>
+                    <span class="boxoffice-rank" th:text="${item.rank}">1</span>
+                    <span class="boxoffice-title" th:text="${item.movieNm}">영화제목</span>
+                </div>
+                <div class="boxoffice-card" th:each="item : ${boxOffice}" aria-hidden="true">
+                    <div class="boxoffice-poster"
+                         th:style="${item.posterUrl != null} ? 'background-image:url(' + ${item.posterUrl} + ')' : ''">
+                    </div>
+                    <span class="boxoffice-rank" th:text="${item.rank}">1</span>
+                    <span class="boxoffice-title" th:text="${item.movieNm}">영화제목</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <div class="toolbar">
         <div class="toolbar-left">
             <h1>감상평</h1>
