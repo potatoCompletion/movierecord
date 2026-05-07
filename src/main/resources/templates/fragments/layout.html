@@ -19,7 +19,7 @@
         <div class="header-user" sec:authorize="isAuthenticated()">
             <span class="header-username" sec:authentication="principal.displayNickname"></span>
             <a th:href="@{/my-page}" class="btn btn-ghost btn-sm">마이페이지</a>
-            <a th:href="@{/admin/users}" class="btn btn-ghost btn-sm" sec:authorize="hasRole('ADMIN')">관리자 페이지</a>
+            <a th:href="@{/admin/members}" class="btn btn-ghost btn-sm" sec:authorize="hasRole('ADMIN')">관리자 페이지</a>
             <form th:action="@{/logout}" method="post" style="display:inline">
                 <button type="submit" class="btn btn-secondary btn-sm">로그아웃</button>
             </form>
@@ -54,7 +54,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
             </svg>
-            <span class="label">나의시네마</span>
+            <span class="label">마이페이지</span>
         </a>
     </div>
 </nav>
