@@ -2,9 +2,12 @@ package com.my.movierecord.mypage.controller;
 
 import com.my.movierecord.auth.oauth.CustomUserPrincipal;
 import com.my.movierecord.auth.repository.UserRepository;
+import com.my.movierecord.auth.service.CustomOAuth2UserService;
 import com.my.movierecord.auth.service.UserService;
 import com.my.movierecord.config.SecurityConfig;
 import com.my.movierecord.record.domain.WatchRecord;
+import com.my.movierecord.record.dto.RecordListItem;
+import com.my.movierecord.record.dto.RecordPageDto;
 import com.my.movierecord.record.dto.SortOption;
 import com.my.movierecord.record.service.WatchRecordService;
 import com.my.movierecord.record.stats.MyPageStats;
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(MyPageController.class)
 @Import(SecurityConfig.class)
+@ActiveProfiles("test")
 class MyPageControllerTest {
 
     private static final MyPageStats EMPTY_STATS =
@@ -55,6 +60,9 @@ class MyPageControllerTest {
     @MockitoBean
     MyPageStatsService myPageStatsService;
 
+    @MockitoBean
+    CustomOAuth2UserService customOAuth2UserService;
+
     @BeforeEach
     void setUp() {
         given(userRepository.findByUsername(any(String.class)))
@@ -74,7 +82,7 @@ class MyPageControllerTest {
     void GET_my_page_통계_탭_렌더링() throws Exception {
         mockMvc.perform(get("/my-page").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
-                .andExpect(view().name("contents/my-page"))
+                .andExpect(view().name("my-page/my-page"))
                 .andExpect(model().attribute("activeTab", "stats"))
                 .andExpect(model().attributeExists("stats", "currentUserId", "isAdmin"));
     }
@@ -82,12 +90,13 @@ class MyPageControllerTest {
     @Test
     void GET_my_page_records_목록_모달_렌더링() throws Exception {
         WatchRecord record = WatchRecordFixture.createWatchRecordWithId(1L);
+        PageImpl<WatchRecord> page = new PageImpl<>(List.of(record), PageRequest.of(0, 20), 1);
         given(watchRecordService.listByUser(any(Long.class), any(Pageable.class)))
-                .willReturn(new PageImpl<>(List.of(record), PageRequest.of(0, 20), 1));
+                .willReturn(RecordPageDto.of(page, page.map(RecordListItem::from).toList()));
 
         mockMvc.perform(get("/my-page/records").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
-                .andExpect(view().name("contents/my-page"))
+                .andExpect(view().name("my-page/my-page"))
                 .andExpect(model().attribute("activeTab", "records"))
                 .andExpect(model().attribute("currentSort", SortOption.LATEST))
                 .andExpect(model().attributeExists("items", "page", "sortOptions", "currentUserId", "isAdmin"))
@@ -99,7 +108,7 @@ class MyPageControllerTest {
                             "data-id=\"1\"",
                             "data-owner-id=\"1\"",
                             "data-rating=\"4.5\"");
-                    assertThat(html).doesNotContain("location.href='/contents/1'");
+                    assertThat(html).doesNotContain("location.href='/records/1'");
                 });
     }
 

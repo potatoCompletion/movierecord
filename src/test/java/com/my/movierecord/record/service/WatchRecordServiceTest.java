@@ -4,6 +4,7 @@ import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.repository.UserRepository;
 import com.my.movierecord.movie.service.ContentService;
 import com.my.movierecord.record.domain.WatchRecord;
+import com.my.movierecord.record.dto.RecordPageDto;
 import com.my.movierecord.record.repository.WatchRecordRepository;
 import com.my.movierecord.support.WatchRecordFixture;
 import jakarta.persistence.EntityNotFoundException;
@@ -46,9 +47,9 @@ class WatchRecordServiceTest {
         Page<WatchRecord> page = new PageImpl<>(List.of(WatchRecordFixture.createWatchRecordWithId(1L)), pageable, 1);
         given(watchRecordRepository.findAll(pageable)).willReturn(page);
 
-        Page<WatchRecord> result = watchRecordService.list(pageable);
+        RecordPageDto result = watchRecordService.list(pageable);
 
-        assertThat(result).isEqualTo(page);
+        assertThat(result.getPage()).isEqualTo(page);
         then(watchRecordRepository).should().findAll(pageable);
     }
 

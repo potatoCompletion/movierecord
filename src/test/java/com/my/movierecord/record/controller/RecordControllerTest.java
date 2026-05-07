@@ -2,8 +2,12 @@ package com.my.movierecord.record.controller;
 
 import com.my.movierecord.auth.oauth.CustomUserPrincipal;
 import com.my.movierecord.auth.repository.UserRepository;
+import com.my.movierecord.auth.service.CustomOAuth2UserService;
 import com.my.movierecord.config.SecurityConfig;
+import com.my.movierecord.kobis.KobisService;
 import com.my.movierecord.record.domain.WatchRecord;
+import com.my.movierecord.record.dto.RecordListItem;
+import com.my.movierecord.record.dto.RecordPageDto;
 import com.my.movierecord.record.dto.SortOption;
 import com.my.movierecord.record.service.WatchRecordSaveCommand;
 import com.my.movierecord.record.service.WatchRecordService;
@@ -16,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(RecordController.class)
 @Import(SecurityConfig.class)
 @AutoConfigureRestDocs(outputDir = "build/generated-snippets")
+@ActiveProfiles("test")
 class RecordControllerTest {
 
     @Autowired
@@ -52,6 +58,12 @@ class RecordControllerTest {
 
     @MockitoBean
     UserRepository userRepository;
+
+    @MockitoBean
+    KobisService kobisService;
+
+    @MockitoBean
+    CustomOAuth2UserService customOAuth2UserService;
 
     @BeforeEach
     void setUp() {
@@ -71,8 +83,9 @@ class RecordControllerTest {
     @Test
     void GET_contents_200_목록_반환() throws Exception {
         WatchRecord record = WatchRecordFixture.createWatchRecordWithId(1L);
+        PageImpl<WatchRecord> page = new PageImpl<>(List.of(record), PageRequest.of(0, 20), 1);
         given(watchRecordService.list(any(Pageable.class)))
-                .willReturn(new PageImpl<>(List.of(record), PageRequest.of(0, 20), 1));
+                .willReturn(RecordPageDto.of(page, page.map(RecordListItem::from).toList()));
 
         mockMvc.perform(get("/records").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
@@ -93,8 +106,9 @@ class RecordControllerTest {
 
     @Test
     void GET_contents_sort_파라미터_적용() throws Exception {
+        PageImpl<WatchRecord> emptyPage = new PageImpl<>(List.of());
         given(watchRecordService.list(any(Pageable.class)))
-                .willReturn(new PageImpl<>(List.of()));
+                .willReturn(RecordPageDto.of(emptyPage, List.of()));
 
         mockMvc.perform(get("/records").param("sort", "rating").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
@@ -103,8 +117,9 @@ class RecordControllerTest {
 
     @Test
     void GET_contents_잘못된_sort_LATEST_기본값() throws Exception {
+        PageImpl<WatchRecord> emptyPage = new PageImpl<>(List.of());
         given(watchRecordService.list(any(Pageable.class)))
-                .willReturn(new PageImpl<>(List.of()));
+                .willReturn(RecordPageDto.of(emptyPage, List.of()));
 
         mockMvc.perform(get("/records").param("sort", "unknown").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
@@ -115,7 +130,7 @@ class RecordControllerTest {
 
     @Test
     void GET_contents_new_폼_초기화() throws Exception {
-        mockMvc.perform(get("/contents/new").with(user(mockPrincipal())))
+        mockMvc.perform(get("/records/new").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("records/form"))
                 .andExpect(model().attribute("mode", "create"))
@@ -130,7 +145,7 @@ class RecordControllerTest {
         WatchRecord record = WatchRecordFixture.createWatchRecordWithContent(1L, "thumb.jpg");
         given(watchRecordService.get(1L)).willReturn(record);
 
-        mockMvc.perform(get("/contents/1/edit").with(user(mockPrincipal())))
+        mockMvc.perform(get("/records/1/edit").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("records/form"))
                 .andExpect(model().attribute("mode", "edit"))
@@ -144,7 +159,7 @@ class RecordControllerTest {
         WatchRecord record = WatchRecordFixture.createWatchRecordWithId(1L);
         given(watchRecordService.get(1L)).willReturn(record);
 
-        mockMvc.perform(get("/contents/1/edit").with(user(mockPrincipal())))
+        mockMvc.perform(get("/records/1/edit").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(result ->
                         assertThat(result.getModelAndView().getModel().get("existingThumbnailUrl")).isNull());
@@ -218,7 +233,7 @@ class RecordControllerTest {
     void POST_contents_id_수정_성공_리다이렉트() throws Exception {
         given(watchRecordService.get(1L)).willReturn(WatchRecordFixture.createWatchRecordWithId(1L));
 
-        mockMvc.perform(post("/contents/1")
+        mockMvc.perform(post("/records/1")
                 .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(validFormParams()))
@@ -232,7 +247,7 @@ class RecordControllerTest {
     void POST_contents_id_수정_service_호출() throws Exception {
         given(watchRecordService.get(1L)).willReturn(WatchRecordFixture.createWatchRecordWithId(1L));
 
-        mockMvc.perform(post("/contents/1")
+        mockMvc.perform(post("/records/1")
                 .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(validFormParams()))
@@ -249,7 +264,7 @@ class RecordControllerTest {
         org.springframework.util.LinkedMultiValueMap<String, String> params = validFormParams();
         params.set("title", "");
 
-        mockMvc.perform(post("/contents/1")
+        mockMvc.perform(post("/records/1")
                 .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(params))
@@ -266,7 +281,7 @@ class RecordControllerTest {
     void POST_contents_id_delete_성공_리다이렉트() throws Exception {
         given(watchRecordService.get(1L)).willReturn(WatchRecordFixture.createWatchRecordWithId(1L));
 
-        mockMvc.perform(post("/contents/1/delete")
+        mockMvc.perform(post("/records/1/delete")
                 .with(csrf()).with(user(mockPrincipal())))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/records"))
@@ -276,7 +291,7 @@ class RecordControllerTest {
 
     @Test
     void POST_contents_id_delete_csrf_없으면_403() throws Exception {
-        mockMvc.perform(post("/contents/1/delete")
+        mockMvc.perform(post("/records/1/delete")
                 .with(user(mockPrincipal())))
                 .andExpect(status().isForbidden());
     }

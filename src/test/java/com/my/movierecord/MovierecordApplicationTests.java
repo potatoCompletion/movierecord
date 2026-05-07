@@ -2,8 +2,10 @@ package com.my.movierecord;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(properties = "app.upload.dir=${java.io.tmpdir}/movierecord-test")
+@SpringBootTest
+@ActiveProfiles("test")
 class MovierecordApplicationTests {
 
     @Test
