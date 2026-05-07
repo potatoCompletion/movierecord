@@ -32,7 +32,7 @@ public class DailyBoxOffice {
     @Column(name = "target_dt", nullable = false)
     private LocalDate targetDt;
 
-    @Column(nullable = false)
+    @Column(name = "`rank`", nullable = false)
     private int rank;
 
     @Column(name = "movie_nm", nullable = false, length = 200)
