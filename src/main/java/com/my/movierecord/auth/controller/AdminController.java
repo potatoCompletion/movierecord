@@ -16,6 +16,12 @@ public class AdminController {
 
     private final UserService userService;
 
+    @GetMapping("/members")
+    public String memberList(Model model) {
+        model.addAttribute("users", userService.findAllUsers());
+        return "admin/members";
+    }
+
     @GetMapping("/users")
     public String pendingUsers(Model model) {
         model.addAttribute("pendingUsers", userService.findPendingUsers());

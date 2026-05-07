@@ -8,7 +8,12 @@
 
 <main class="container">
     <div class="admin-container">
-        <h2 class="admin-title">가입 승인 대기 목록</h2>
+        <h2 class="admin-title">회원 관리</h2>
+
+        <div class="admin-tabs">
+            <a th:href="@{/admin/members}" class="admin-tab">회원 목록</a>
+            <a th:href="@{/admin/users}" class="admin-tab active">승인 대기</a>
+        </div>
 
         <div th:if="${#lists.isEmpty(pendingUsers)}" class="empty-msg">
             승인 대기 중인 회원이 없습니다.

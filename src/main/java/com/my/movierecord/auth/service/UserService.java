@@ -67,6 +67,11 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
+    public List<User> findAllUsers() {
+        return userRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    @Transactional(readOnly = true)
     public List<User> findPendingUsers() {
         return userRepository.findAllByStatus(UserStatus.PENDING);
     }
