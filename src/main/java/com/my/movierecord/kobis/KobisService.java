@@ -1,6 +1,6 @@
 package com.my.movierecord.kobis;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.my.movierecord.movie.domain.Content;
 import com.my.movierecord.movie.service.ContentService;
 import com.my.movierecord.kobis.config.KobisProperties;
@@ -72,10 +72,10 @@ public class KobisService {
     private Content findContent(String movieNm) {
         try {
             List<TmdbSearchItem> results = tmdbClient.search(movieNm);
-            if (results.isEmpty() || results.get(0).id() == null) {
+            if (results.isEmpty() || results.getFirst().id() == null) {
                 return null;
             }
-            TmdbSearchItem first = results.get(0);
+            TmdbSearchItem first = results.getFirst();
             return contentService.findOrCreate(first.id(), first.mediaType(), first.posterPath());
         } catch (Exception e) {
             log.warn("TMDB search failed for '{}': {}", movieNm, e.getMessage());
