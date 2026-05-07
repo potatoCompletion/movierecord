@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/contents", true)
+                        .defaultSuccessUrl("/records", true)
                         .failureHandler((request, response, exception) -> {
                             String url = (exception instanceof DisabledException)
                                     ? "/auth/login?disabled"
@@ -57,7 +57,7 @@ public class SecurityConfig {
         if (clientRegistrationRepository != null) {
             http.oauth2Login(oauth2 -> oauth2
                     .loginPage("/auth/login")
-                    .defaultSuccessUrl("/contents", true)
+                    .defaultSuccessUrl("/records", true)
                     .userInfoEndpoint(userInfo -> userInfo
                             .userService(customOAuth2UserService)
                     )

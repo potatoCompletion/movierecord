@@ -1,6 +1,6 @@
 package com.my.movierecord.kobis.domain;
 
-import com.my.movierecord.content.domain.Content;
+import com.my.movierecord.movie.domain.Content;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

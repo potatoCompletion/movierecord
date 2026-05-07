@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/contents")
+@RequestMapping("/records")
 public class RecordController {
 
     private static final int PAGE_SIZE = 20;
@@ -71,7 +71,7 @@ public class RecordController {
         model.addAttribute("recordCount", recordPage.getTotalElements());
         model.addAttribute("currentUserId", user.getId());
         model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
-        return "contents/list";
+        return "records/list";
     }
 
     @GetMapping("/{id}")
@@ -83,7 +83,7 @@ public class RecordController {
         model.addAttribute("item", RecordDetail.from(record));
         model.addAttribute("currentUserId", user.getId());
         model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
-        return "contents/detail";
+        return "records/detail";
     }
 
     @GetMapping("/new")
@@ -94,7 +94,7 @@ public class RecordController {
         populateFormReferences(model);
         model.addAttribute("mode", "create");
         model.addAttribute("existingThumbnailUrl", null);
-        return "contents/form";
+        return "records/form";
     }
 
     @PostMapping
@@ -107,13 +107,13 @@ public class RecordController {
             populateFormReferences(model);
             model.addAttribute("mode", "create");
             model.addAttribute("existingThumbnailUrl", null);
-            return "contents/form";
+            return "records/form";
         }
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalStateException("로그인된 사용자를 찾을 수 없습니다."));
         watchRecordService.create(form.toCommand(user.getId()));
         redirectAttributes.addFlashAttribute("success", "감상평이 등록되었습니다.");
-        return "redirect:/contents";
+        return "redirect:/records";
     }
 
     @GetMapping("/{id}/edit")
@@ -125,7 +125,7 @@ public class RecordController {
         User user = currentUser(userDetails);
         if (!isAuthorized(record, user)) {
             redirectAttributes.addFlashAttribute("error", "본인의 감상평만 수정할 수 있습니다.");
-            return "redirect:/contents";
+            return "redirect:/records";
         }
         if (!model.containsAttribute("movieForm")) {
             model.addAttribute("movieForm", RecordForm.fromEntity(record));
@@ -134,7 +134,7 @@ public class RecordController {
         model.addAttribute("mode", "edit");
         model.addAttribute("movieId", id);
         model.addAttribute("existingThumbnailUrl", thumbnailUrl(record));
-        return "contents/form";
+        return "records/form";
     }
 
     @PostMapping("/{id}")
@@ -148,18 +148,18 @@ public class RecordController {
         User user = currentUser(userDetails);
         if (!isAuthorized(record, user)) {
             redirectAttributes.addFlashAttribute("error", "본인의 감상평만 수정할 수 있습니다.");
-            return "redirect:/contents";
+            return "redirect:/records";
         }
         if (bindingResult.hasErrors()) {
             populateFormReferences(model);
             model.addAttribute("mode", "edit");
             model.addAttribute("movieId", id);
             model.addAttribute("existingThumbnailUrl", thumbnailUrl(record));
-            return "contents/form";
+            return "records/form";
         }
         watchRecordService.update(id, form.toCommand(null));
         redirectAttributes.addFlashAttribute("success", "감상평이 수정되었습니다.");
-        return "redirect:/contents";
+        return "redirect:/records";
     }
 
     @PostMapping("/{id}/delete")
@@ -170,11 +170,11 @@ public class RecordController {
         User user = currentUser(userDetails);
         if (!isAuthorized(record, user)) {
             redirectAttributes.addFlashAttribute("error", "본인의 감상평만 삭제할 수 있습니다.");
-            return "redirect:/contents";
+            return "redirect:/records";
         }
         watchRecordService.delete(id);
         redirectAttributes.addFlashAttribute("success", "감상평이 삭제되었습니다.");
-        return "redirect:/contents";
+        return "redirect:/records";
     }
 
     private User currentUser(UserDetails userDetails) {

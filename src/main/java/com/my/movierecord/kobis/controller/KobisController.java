@@ -4,9 +4,11 @@ import com.my.movierecord.kobis.config.KobisProperties;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Profile("local")
 @RequiredArgsConstructor
 @Slf4j
 @RestController

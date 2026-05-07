@@ -2,8 +2,8 @@ package com.my.movierecord.record.service;
 
 import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.repository.UserRepository;
-import com.my.movierecord.content.domain.Content;
-import com.my.movierecord.content.service.ContentService;
+import com.my.movierecord.movie.domain.Content;
+import com.my.movierecord.movie.service.ContentService;
 import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.dto.RecordListItem;
 import com.my.movierecord.record.dto.RecordPageDto;

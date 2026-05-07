@@ -58,7 +58,7 @@ public class MyPageController {
         model.addAttribute("activeTab", "stats");
         model.addAttribute("currentUserId", user.getId());
         model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
-        return "contents/my-page";
+        return "my-page/my-page";
     }
 
     @GetMapping("/records")
@@ -84,7 +84,7 @@ public class MyPageController {
         model.addAttribute("activeTab", "records");
         model.addAttribute("currentUserId", user.getId());
         model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
-        return "contents/my-page";
+        return "my-page/my-page";
     }
 
     @GetMapping("/profile")
@@ -95,7 +95,7 @@ public class MyPageController {
         model.addAttribute("nicknameForm", new NicknameUpdateForm());
         model.addAttribute("currentNickname", user.getDisplayNickname());
         model.addAttribute("activeTab", "profile");
-        return "contents/my-page";
+        return "my-page/my-page";
     }
 
     @PostMapping("/profile")
@@ -113,7 +113,7 @@ public class MyPageController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("currentNickname", user.getDisplayNickname());
             model.addAttribute("activeTab", "profile");
-            return "contents/my-page";
+            return "my-page/my-page";
         }
 
         try {
@@ -122,7 +122,7 @@ public class MyPageController {
             bindingResult.rejectValue("nickname", "duplicate", "이미 사용 중인 닉네임입니다.");
             model.addAttribute("currentNickname", user.getDisplayNickname());
             model.addAttribute("activeTab", "profile");
-            return "contents/my-page";
+            return "my-page/my-page";
         }
 
         return "redirect:/my-page/profile?success";

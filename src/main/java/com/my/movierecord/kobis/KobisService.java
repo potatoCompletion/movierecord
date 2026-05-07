@@ -1,8 +1,8 @@
 package com.my.movierecord.kobis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.my.movierecord.content.domain.Content;
-import com.my.movierecord.content.service.ContentService;
+import com.my.movierecord.movie.domain.Content;
+import com.my.movierecord.movie.service.ContentService;
 import com.my.movierecord.kobis.config.KobisProperties;
 import com.my.movierecord.kobis.domain.DailyBoxOffice;
 import com.my.movierecord.kobis.dto.BoxOfficeItemDto;
