@@ -1,8 +1,8 @@
-package com.my.movierecord.content.service;
+package com.my.movierecord.movie.service;
 
 import com.my.movierecord.common.service.FileStorageService;
-import com.my.movierecord.content.domain.Content;
-import com.my.movierecord.content.repository.ContentRepository;
+import com.my.movierecord.movie.domain.Content;
+import com.my.movierecord.movie.repository.ContentRepository;
 import com.my.movierecord.tmdb.config.TmdbProperties;
 import java.io.IOException;
 import java.io.InputStream;

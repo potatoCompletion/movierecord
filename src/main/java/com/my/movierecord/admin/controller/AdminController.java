@@ -1,4 +1,4 @@
-package com.my.movierecord.auth.controller;
+package com.my.movierecord.admin.controller;
 
 import com.my.movierecord.auth.service.UserService;
 import lombok.RequiredArgsConstructor;

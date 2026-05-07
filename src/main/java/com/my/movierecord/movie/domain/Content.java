@@ -1,4 +1,4 @@
-package com.my.movierecord.content.domain;
+package com.my.movierecord.movie.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

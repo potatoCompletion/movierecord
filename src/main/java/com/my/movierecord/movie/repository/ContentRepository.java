@@ -1,6 +1,6 @@
-package com.my.movierecord.content.repository;
+package com.my.movierecord.movie.repository;
 
-import com.my.movierecord.content.domain.Content;
+import com.my.movierecord.movie.domain.Content;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ContentRepository extends JpaRepository<Content, Long> {}
