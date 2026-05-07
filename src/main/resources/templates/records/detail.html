@@ -8,7 +8,7 @@
 
 <main class="container">
     <div class="detail-header">
-        <a th:href="@{/contents}" class="back-link">← 목록으로</a>
+        <a th:href="@{/records}" class="back-link">← 목록으로</a>
     </div>
 
     <article class="review-detail">
@@ -40,12 +40,12 @@
 
             <div class="review-actions"
                  th:if="${isAdmin or (currentUserId != null and currentUserId == item.userId)}">
-                <form th:action="@{/contents/{id}/delete(id=${item.id})}" method="post"
+                <form th:action="@{/records/{id}/delete(id=${item.id})}" method="post"
                       onsubmit="return confirm('정말 삭제하시겠어요?')" style="display:inline">
                     <button type="submit" class="btn btn-danger">삭제</button>
                 </form>
-                <a th:href="@{/contents/{id}/edit(id=${item.id})}" class="btn btn-primary">수정</a>
-                <a th:href="@{/contents}" class="btn btn-secondary">목록으로</a>
+                <a th:href="@{/records/{id}/edit(id=${item.id})}" class="btn btn-primary">수정</a>
+                <a th:href="@{/records}" class="btn btn-secondary">목록으로</a>
             </div>
         </div>
     </article>

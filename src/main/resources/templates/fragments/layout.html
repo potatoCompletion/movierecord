@@ -13,7 +13,7 @@
 <th:block th:fragment="header">
 <header class="site-header">
     <div class="container header-inner">
-        <a th:href="@{/contents}" class="brand">
+        <a th:href="@{/records}" class="brand">
             <img th:src="@{/images/murabel_logo.png}" alt="Murabel" class="brand-logo">
         </a>
         <div class="header-user" sec:authorize="isAuthenticated()">
@@ -34,14 +34,14 @@
 
 <nav class="tab-bar" sec:authorize="isAuthenticated()">
     <div class="tab-bar-inner">
-        <a th:href="@{/contents}" class="tab-link"
-           th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/contents') and not #strings.startsWith(#httpServletRequest.requestURI, '/contents/new')} ? ' active'">
+        <a th:href="@{/records}" class="tab-link"
+           th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/records') and not #strings.startsWith(#httpServletRequest.requestURI, '/records/new')} ? ' active'">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
             </svg>
             <span class="label">감상평</span>
         </a>
-        <a th:href="@{/contents/new}" class="tab-link tab-add">
+        <a th:href="@{/records/new}" class="tab-link tab-add">
             <span class="tab-add-circle">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M12 5v14M5 12h14"/>

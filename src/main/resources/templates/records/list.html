@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('감상평 — Murabel')}"></head>
+<body class="page-list">
+
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+
+    <section class="boxoffice-section" th:if="${!#lists.isEmpty(boxOffice)}" aria-label="박스오피스 TOP 10">
+        <h2 class="boxoffice-heading">박스오피스 TOP 10</h2>
+        <div class="boxoffice-wrapper">
+            <div class="boxoffice-track">
+                <div class="boxoffice-card" th:each="item : ${boxOffice}">
+                    <div class="boxoffice-poster"
+                         th:style="${item.posterUrl != null} ? 'background-image:url(' + ${item.posterUrl} + ')' : ''">
+                    </div>
+                    <span class="boxoffice-rank" th:text="${item.rank}">1</span>
+                    <span class="boxoffice-title" th:text="${item.movieNm}">영화제목</span>
+                </div>
+                <div class="boxoffice-card" th:each="item : ${boxOffice}" aria-hidden="true">
+                    <div class="boxoffice-poster"
+                         th:style="${item.posterUrl != null} ? 'background-image:url(' + ${item.posterUrl} + ')' : ''">
+                    </div>
+                    <span class="boxoffice-rank" th:text="${item.rank}">1</span>
+                    <span class="boxoffice-title" th:text="${item.movieNm}">영화제목</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <h1>감상평</h1>
+            <p class="toolbar-count">
+                <strong th:text="${recordCount}">0</strong> 편의 감상평이 기록되어 있어요.
+            </p>
+        </div>
+        <div class="toolbar-right">
+            <div class="filter-tabs" role="tablist">
+                <a th:href="@{/records(sort=${currentSort.code}, filter='all')}"
+                   class="filter-tab"
+                   th:classappend="${currentFilter == 'all'} ? ' active'">전체</a>
+                <a th:href="@{/records(sort=${currentSort.code}, filter='mine')}"
+                   class="filter-tab"
+                   th:classappend="${currentFilter == 'mine'} ? ' active'">내 감상평</a>
+            </div>
+            <form th:action="@{/records}" method="get" class="sort-form">
+                <input type="hidden" name="filter" th:value="${currentFilter}">
+                <select name="sort" class="sort-select" aria-label="정렬" onchange="this.form.submit()">
+                    <option th:each="opt : ${sortOptions}"
+                            th:value="${opt.code}"
+                            th:text="${opt.label}"
+                            th:selected="${opt.code == currentSort.code}"></option>
+                </select>
+            </form>
+            <a th:href="@{/records/new}" class="btn btn-primary">＋ 감상평 등록</a>
+        </div>
+    </div>
+
+    <div th:if="${items.isEmpty()}" class="empty-state">
+        <div class="empty-illustration">
+            <svg viewBox="0 0 100 100" width="140" height="140" aria-hidden="true">
+                <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="0.5"
+                        stroke-opacity="0.15" stroke-dasharray="2 6"/>
+                <g class="empty-reel-spin">
+                    <circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" stroke-width="1.2"
+                            stroke-opacity="0.35"/>
+                    <circle cx="50" cy="14" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                            stroke-opacity="0.55"/>
+                    <circle cx="81.2" cy="32" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                            stroke-opacity="0.55"/>
+                    <circle cx="81.2" cy="68" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                            stroke-opacity="0.55"/>
+                    <circle cx="50" cy="86" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                            stroke-opacity="0.55"/>
+                    <circle cx="18.8" cy="68" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                            stroke-opacity="0.55"/>
+                    <circle cx="18.8" cy="32" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                            stroke-opacity="0.55"/>
+                    <line x1="50" y1="41" x2="50" y2="22" stroke="currentColor" stroke-width="1.2"
+                          stroke-opacity="0.22"/>
+                    <line x1="57.8" y1="54.5" x2="74.2" y2="64" stroke="currentColor" stroke-width="1.2"
+                          stroke-opacity="0.22"/>
+                    <line x1="42.2" y1="54.5" x2="25.8" y2="64" stroke="currentColor" stroke-width="1.2"
+                          stroke-opacity="0.22"/>
+                    <circle cx="50" cy="50" r="9" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-opacity="0.55"/>
+                    <circle cx="50" cy="50" r="3.5" fill="currentColor" fill-opacity="0.35"/>
+                </g>
+                <text x="50" y="52.5" text-anchor="middle"
+                      font-family="'Playfair Display', Georgia, serif"
+                      font-size="7" fill="currentColor" fill-opacity="0.45"
+                      letter-spacing="1.8" font-style="italic">EMPTY REEL
+                </text>
+            </svg>
+        </div>
+        <h2>아직 기록된 감상평이 없어요</h2>
+        <p>방금 본 영화의 첫 한 줄을 남겨보세요.</p>
+        <a th:href="@{/records/new}" class="btn btn-primary">＋ 첫 감상평 등록하기</a>
+    </div>
+
+    <div th:unless="${items.isEmpty()}" class="movie-grid">
+        <article th:each="item : ${items}"
+                 class="movie-card style-side"
+                 role="button"
+                 tabindex="0"
+                 th:attr="
+                    data-id=${item.id},
+                    data-title=${item.detail.title},
+                    data-watched-date=${#temporals.format(item.detail.watchedDate, 'yyyy-MM-dd')},
+                    data-thumbnail-url=${item.detail.thumbnailUrl},
+                    data-one-liner=${item.detail.oneLiner},
+                    data-immersion=${item.detail.immersion},
+                    data-story=${item.detail.story},
+                    data-emotion=${item.detail.emotion},
+                    data-emotions=${#strings.listJoin(item.emotions.![code + ':' + displayName], '|')},
+                    data-good-points=${item.detail.goodPoints},
+                    data-bad-points=${item.detail.badPoints},
+                    data-taste=${item.detail.taste},
+                    data-rating=${item.detail.rating},
+                    data-nickname=${item.detail.nickname},
+                    data-owner-id=${item.detail.userId}">
+            <div class="movie-thumb"
+                 th:style="${item.thumbnailUrl != null} ? 'background-image:url(' + ${item.thumbnailUrl} + ')' : ''">
+                <span class="movie-thumb-rating">★ <span
+                        th:text="${#numbers.formatDecimal(item.rating, 1, 1)}">0.0</span></span>
+            </div>
+            <div class="movie-info">
+                <div>
+                    <h3 class="movie-title" th:text="${item.title}" th:title="${item.title}">제목</h3>
+                    <div class="movie-meta">
+                        <span th:text="${#temporals.format(item.watchedDate, 'yyyy-MM-dd')}"></span>
+                    </div>
+                    <div class="card-emotions" th:if="${!item.emotions.isEmpty()}">
+                        <span th:each="emotion : ${item.emotions}"
+                              class="card-emotion-badge"
+                              th:style="${'background:var(--emo-' + emotion.code + ')'}"
+                              th:text="${emotion.displayName}">
+                        </span>
+                    </div>
+                </div>
+                <div class="card-nickname" th:if="${item.detail.nickname != null}">
+                    by <span th:text="${item.detail.nickname}">작성자</span>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <nav th:if="${page.totalPages > 1}" class="pagination" aria-label="페이지">
+        <a th:if="${!page.isFirst()}"
+           th:href="@{/records(page=${page.number - 1}, sort=${currentSort.code}, filter=${currentFilter})}">‹</a>
+        <span th:unless="${!page.isFirst()}" class="disabled">‹</span>
+
+        <th:block th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}">
+            <span th:if="${i == page.number}" class="active" th:text="${i + 1}">1</span>
+            <a th:unless="${i == page.number}"
+               th:href="@{/records(page=${i}, sort=${currentSort.code}, filter=${currentFilter})}"
+               th:text="${i + 1}">1</a>
+        </th:block>
+
+        <a th:if="${!page.isLast()}"
+           th:href="@{/records(page=${page.number + 1}, sort=${currentSort.code}, filter=${currentFilter})}">›</a>
+        <span th:unless="${!page.isLast()}" class="disabled">›</span>
+    </nav>
+</main>
+
+<div th:replace="~{fragments/record-modal :: detailModal}"></div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+<script>
+    document.querySelectorAll('.movie-thumb').forEach(thumb => {
+        const m = thumb.style.backgroundImage.match(/url\(["']?(.+?)["']?\)/);
+        if (!m) return;
+        const probe = new Image();
+        probe.onerror = () => {
+            thumb.style.backgroundImage = '';
+        };
+        probe.src = m[1];
+    });
+</script>
+
+</body>
+</html>
