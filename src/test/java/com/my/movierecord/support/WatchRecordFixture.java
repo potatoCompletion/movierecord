@@ -1,7 +1,7 @@
 package com.my.movierecord.support;
 
 import com.my.movierecord.auth.domain.User;
-import com.my.movierecord.content.domain.Content;
+import com.my.movierecord.movie.domain.Content;
 import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.dto.RecordForm;
 import com.my.movierecord.record.enums.Emotion;

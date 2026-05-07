@@ -1,5 +1,6 @@
 package com.my.movierecord.home.controller;
 
+import com.my.movierecord.common.controller.HomeController;
 import com.my.movierecord.config.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +30,9 @@ class HomeControllerTest {
     }
 
     @Test
-    void GET_루트_인증_contents_리다이렉트() throws Exception {
+    void GET_루트_인증_records_리다이렉트() throws Exception {
         mockMvc.perform(get("/").with(user("user")))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/contents"));
+                .andExpect(redirectedUrl("/records"));
     }
 }

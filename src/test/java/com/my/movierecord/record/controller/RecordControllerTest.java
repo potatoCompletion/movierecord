@@ -63,7 +63,7 @@ class RecordControllerTest {
 
     @Test
     void GET_contents_미인증_로그인_리다이렉트() throws Exception {
-        mockMvc.perform(get("/contents"))
+        mockMvc.perform(get("/records"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/auth/login"));
     }
@@ -74,9 +74,9 @@ class RecordControllerTest {
         given(watchRecordService.list(any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of(record), PageRequest.of(0, 20), 1));
 
-        mockMvc.perform(get("/contents").with(user(mockPrincipal())))
+        mockMvc.perform(get("/records").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
-                .andExpect(view().name("contents/list"))
+                .andExpect(view().name("records/list"))
                 .andExpect(model().attributeExists("items", "page", "currentSort", "sortOptions"))
                 .andExpect(result -> {
                     String html = result.getResponse().getContentAsString();
@@ -86,9 +86,9 @@ class RecordControllerTest {
                             "data-id=\"1\"",
                             "data-owner-id=\"1\"",
                             "data-rating=\"4.5\"");
-                    assertThat(html).doesNotContain("location.href='/contents/1'");
+                    assertThat(html).doesNotContain("location.href='/records/1'");
                 })
-                .andDo(document("contents/list"));
+                .andDo(document("records/list"));
     }
 
     @Test
@@ -96,7 +96,7 @@ class RecordControllerTest {
         given(watchRecordService.list(any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/contents").param("sort", "rating").with(user(mockPrincipal())))
+        mockMvc.perform(get("/records").param("sort", "rating").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("currentSort", SortOption.RATING));
     }
@@ -106,7 +106,7 @@ class RecordControllerTest {
         given(watchRecordService.list(any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(get("/contents").param("sort", "unknown").with(user(mockPrincipal())))
+        mockMvc.perform(get("/records").param("sort", "unknown").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("currentSort", SortOption.LATEST));
     }
@@ -117,10 +117,10 @@ class RecordControllerTest {
     void GET_contents_new_폼_초기화() throws Exception {
         mockMvc.perform(get("/contents/new").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
-                .andExpect(view().name("contents/form"))
+                .andExpect(view().name("records/form"))
                 .andExpect(model().attribute("mode", "create"))
                 .andExpect(model().attributeExists("movieForm", "immersionOptions", "storyOptions", "emotionOptions", "tasteOptions"))
-                .andDo(document("contents/new-form"));
+                .andDo(document("records/new-form"));
     }
 
     // ===== GET /contents/{id}/edit =====
@@ -132,11 +132,11 @@ class RecordControllerTest {
 
         mockMvc.perform(get("/contents/1/edit").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
-                .andExpect(view().name("contents/form"))
+                .andExpect(view().name("records/form"))
                 .andExpect(model().attribute("mode", "edit"))
                 .andExpect(model().attribute("movieId", 1L))
                 .andExpect(model().attribute("existingThumbnailUrl", "/uploads/thumb.jpg"))
-                .andDo(document("contents/edit-form"));
+                .andDo(document("records/edit-form"));
     }
 
     @Test
@@ -154,7 +154,7 @@ class RecordControllerTest {
 
     @Test
     void POST_contents_csrf_없으면_403() throws Exception {
-        mockMvc.perform(post("/contents")
+        mockMvc.perform(post("/records")
                 .with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("title", "영화"))
@@ -163,14 +163,14 @@ class RecordControllerTest {
 
     @Test
     void POST_contents_유효한_폼_등록_리다이렉트() throws Exception {
-        mockMvc.perform(post("/contents")
+        mockMvc.perform(post("/records")
                 .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(validFormParams()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/contents"))
+                .andExpect(redirectedUrl("/records"))
                 .andExpect(flash().attribute("success", "감상평이 등록되었습니다."))
-                .andDo(document("contents/create"));
+                .andDo(document("records/create"));
     }
 
     @Test
@@ -178,12 +178,12 @@ class RecordControllerTest {
         org.springframework.util.LinkedMultiValueMap<String, String> params = validFormParams();
         params.set("title", "");
 
-        mockMvc.perform(post("/contents")
+        mockMvc.perform(post("/records")
                 .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(params))
                 .andExpect(status().isOk())
-                .andExpect(view().name("contents/form"))
+                .andExpect(view().name("records/form"))
                 .andExpect(model().attributeHasFieldErrors("movieForm", "title"));
     }
 
@@ -192,18 +192,18 @@ class RecordControllerTest {
         org.springframework.util.LinkedMultiValueMap<String, String> params = validFormParams();
         params.set("rating", "6.0");
 
-        mockMvc.perform(post("/contents")
+        mockMvc.perform(post("/records")
                 .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(params))
                 .andExpect(status().isOk())
-                .andExpect(view().name("contents/form"))
+                .andExpect(view().name("records/form"))
                 .andExpect(model().attributeHasFieldErrors("movieForm", "rating"));
     }
 
     @Test
     void POST_contents_create_service_호출() throws Exception {
-        mockMvc.perform(post("/contents")
+        mockMvc.perform(post("/records")
                 .with(csrf()).with(user(mockPrincipal()))
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(validFormParams()))
@@ -223,9 +223,9 @@ class RecordControllerTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(validFormParams()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/contents"))
+                .andExpect(redirectedUrl("/records"))
                 .andExpect(flash().attribute("success", "감상평이 수정되었습니다."))
-                .andDo(document("contents/update"));
+                .andDo(document("records/update"));
     }
 
     @Test
@@ -254,7 +254,7 @@ class RecordControllerTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .params(params))
                 .andExpect(status().isOk())
-                .andExpect(view().name("contents/form"))
+                .andExpect(view().name("records/form"))
                 .andExpect(model().attribute("existingThumbnailUrl", "/uploads/thumb.jpg"));
 
         then(watchRecordService).should().get(1L);
@@ -269,9 +269,9 @@ class RecordControllerTest {
         mockMvc.perform(post("/contents/1/delete")
                 .with(csrf()).with(user(mockPrincipal())))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/contents"))
+                .andExpect(redirectedUrl("/records"))
                 .andExpect(flash().attribute("success", "감상평이 삭제되었습니다."))
-                .andDo(document("contents/delete"));
+                .andDo(document("records/delete"));
     }
 
     @Test
