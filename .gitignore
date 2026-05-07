@@ -46,6 +46,10 @@ out/
 ### Claude Code / OMC local state ###
 .omc/
 .claude/
+AGENTS.md
+CLAUDE.md
+plan.md
+.codex
 
 ### env
 .env
