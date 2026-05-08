@@ -7,5 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record KobisMovieItem(
     @JsonProperty("rank") String rank,
     @JsonProperty("movieNm") String movieNm,
-    @JsonProperty("audiAcc") String audiAcc
+    @JsonProperty("audiAcc") String audiAcc,
+    @JsonProperty("openDt") String openDt
 ) {}

@@ -21,6 +21,6 @@ public class TmdbController {
         if (query == null || query.isBlank()) {
             return List.of();
         }
-        return tmdbClient.search(query);
+        return tmdbClient.searchMulti(query);
     }
 }

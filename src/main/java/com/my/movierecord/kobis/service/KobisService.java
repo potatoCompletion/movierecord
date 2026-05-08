@@ -56,10 +56,15 @@ public class KobisService {
 
             List<DailyBoxOffice> entities = new ArrayList<>();
             for (KobisMovieItem item : response.boxOfficeResult().dailyBoxOfficeList()) {
+                if (item.openDt() == null || item.openDt().isBlank()) {
+                    continue;
+                }
                 int rank = Integer.parseInt(item.rank());
                 Long audiAcc = parseAudiAcc(item.audiAcc());
-                Content content = findContent(item.movieNm());
-                entities.add(DailyBoxOffice.of(targetDt, rank, item.movieNm(), audiAcc, content));
+                String primaryReleaseYear = item.openDt().split("-")[0];
+                Content content = findContent(item.movieNm(), primaryReleaseYear);
+                LocalDate releaseDate = LocalDate.parse(item.openDt());
+                entities.add(DailyBoxOffice.of(targetDt, rank, item.movieNm(), audiAcc, content, releaseDate));
             }
 
             return dailyBoxOfficeRepository.saveAll(entities).stream()
@@ -71,18 +76,61 @@ public class KobisService {
         }
     }
 
-    private Content findContent(String movieNm) {
+    private Content findContent(String movieNm, String primaryReleaseYear) {
         try {
-            List<TmdbSearchItem> results = tmdbClient.search(movieNm);
+            List<TmdbSearchItem> results = tmdbClient.searchMovie(movieNm, primaryReleaseYear);
             if (results.isEmpty() || results.getFirst().id() == null) {
                 return null;
             }
-            TmdbSearchItem first = results.getFirst();
-            return contentService.findOrCreate(first.id(), first.mediaType(), first.posterPath());
+
+            List<TmdbSearchItem> validResults = results.stream()
+                    .filter(r -> r.title() != null)
+                    .toList();
+            if (validResults.isEmpty()) {
+                return null;
+            }
+
+            String replacedMovieNm = movieNm.replace(" ", "");
+            int bestScoreIndex = -1;
+            int bestScore = Integer.MIN_VALUE;
+
+            for (int i = 0; i < validResults.size(); i++) {
+                TmdbSearchItem item = validResults.get(i);
+
+                String replacedTitle = item.title().replace(" ", "");
+                int score = getTitleEqualScore(replacedTitle, replacedMovieNm);
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestScoreIndex = i;
+                }
+            }
+
+            TmdbSearchItem foundItem = validResults.get(bestScoreIndex);
+            return contentService.findOrCreate(foundItem.id(), "movie", foundItem.posterPath());
         } catch (Exception e) {
             log.warn("TMDB search failed for '{}': {}", movieNm, e.getMessage());
             return null;
         }
+    }
+
+    private int getTitleEqualScore(String title, String movieNm) {
+        int minLength = Math.min(title.length(), movieNm.length());
+
+        int matched = 0;
+        int mismatched = 0;
+
+        for (int i = 0; i < minLength; i++) {
+            if (title.charAt(i) == movieNm.charAt(i)) {
+                matched++;
+            } else {
+                mismatched++;
+            }
+        }
+
+        mismatched += Math.abs(title.length() - movieNm.length());
+
+        return matched -  mismatched;
     }
 
     private Long parseAudiAcc(String audiAcc) {
