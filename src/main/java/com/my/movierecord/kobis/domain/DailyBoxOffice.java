@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -42,16 +43,23 @@ public class DailyBoxOffice {
     private Long audiAcc;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "content_id")
+    @JoinColumns({
+        @JoinColumn(name = "content_tmdb_id", referencedColumnName = "tmdb_id"),
+        @JoinColumn(name = "content_media_type", referencedColumnName = "media_type")
+    })
     private Content content;
 
-    public static DailyBoxOffice of(LocalDate targetDt, int rank, String movieNm, Long audiAcc, Content content) {
+    @Column(name = "release_date")
+    private LocalDate releaseDate;
+
+    public static DailyBoxOffice of(LocalDate targetDt, int rank, String movieNm, Long audiAcc, Content content, LocalDate releaseDate) {
         DailyBoxOffice entity = new DailyBoxOffice();
         entity.targetDt = targetDt;
         entity.rank = rank;
         entity.movieNm = movieNm;
         entity.audiAcc = audiAcc;
         entity.content = content;
+        entity.releaseDate = releaseDate;
         return entity;
     }
 }

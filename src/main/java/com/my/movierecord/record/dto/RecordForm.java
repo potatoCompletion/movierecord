@@ -75,8 +75,8 @@ public class RecordForm {
         form.taste = wr.getTaste();
         form.rating = wr.getRating();
         if (wr.getContent() != null) {
-            form.tmdbId = wr.getContent().getId();
-            form.mediaType = wr.getContent().getMediaType();
+            form.tmdbId = wr.getContent().getId().getTmdbId();
+            form.mediaType = wr.getContent().getId().getMediaType();
         }
         return form;
     }

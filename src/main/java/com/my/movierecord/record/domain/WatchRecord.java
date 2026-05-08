@@ -18,6 +18,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
@@ -85,7 +86,10 @@ public class WatchRecord {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "content_id")
+    @JoinColumns({
+        @JoinColumn(name = "content_tmdb_id", referencedColumnName = "tmdb_id"),
+        @JoinColumn(name = "content_media_type", referencedColumnName = "media_type")
+    })
     private Content content;
 
     @CreatedDate

@@ -2,6 +2,7 @@ package com.my.movierecord.movie.service;
 
 import com.my.movierecord.common.service.FileStorageService;
 import com.my.movierecord.movie.domain.Content;
+import com.my.movierecord.movie.domain.ContentId;
 import com.my.movierecord.movie.repository.ContentRepository;
 import com.my.movierecord.tmdb.config.TmdbProperties;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class ContentService {
 
     @Transactional
     public Content findOrCreate(Long tmdbId, String mediaType, String posterPath) {
-        return contentRepository.findById(tmdbId)
+        return contentRepository.findById(ContentId.of(tmdbId, mediaType))
                 .orElseGet(() -> {
                     Content content = Content.of(tmdbId, mediaType);
                     if (posterPath != null && !posterPath.isBlank()) {
