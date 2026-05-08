@@ -10,19 +10,9 @@
 
     <section class="boxoffice-section" th:if="${!#lists.isEmpty(boxOffice)}" aria-label="박스오피스 TOP 10">
         <h2 class="boxoffice-heading">박스오피스 TOP 10</h2>
-        <div class="boxoffice-wrapper">
-            <div class="boxoffice-track">
-                <div class="boxoffice-card" th:each="item : ${boxOffice}">
-                    <div class="boxoffice-poster"
-                         th:style="${item.posterUrl != null} ? 'background-image:url(' + ${item.posterUrl} + ')' : ''">
-                    </div>
-                    <div class="boxoffice-rank-row">
-                        <span class="boxoffice-rank" th:text="${item.rank}">1</span>
-                        <span class="boxoffice-audi" th:if="${item.audiAcc != null}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="10" height="10" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span th:text="${#numbers.formatInteger(item.audiAcc, 1, 'COMMA')}">0</span></span>
-                    </div>
-                    <span class="boxoffice-title" th:text="${item.movieNm}">영화제목</span>
-                </div>
-                <div class="boxoffice-card" th:each="item : ${boxOffice}" aria-hidden="true">
+        <div class="swiper boxoffice-swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide boxoffice-card" th:each="item : ${boxOffice}">
                     <div class="boxoffice-poster"
                          th:style="${item.posterUrl != null} ? 'background-image:url(' + ${item.posterUrl} + ')' : ''">
                     </div>
@@ -186,74 +176,26 @@
         probe.src = m[1];
     });
 
-    // Boxoffice carousel drag (desktop mouse + mobile touch)
+</script>
+<script th:src="@{/webjars/swiper/swiper-bundle.min.js}"></script>
+<script>
     (function () {
-        const wrapper = document.querySelector('.boxoffice-wrapper');
-        const track   = document.querySelector('.boxoffice-track');
-        if (!wrapper || !track) return;
-
-        const LOOP_PX  = 1320;   // 10 cards × (120px + 12px gap)
-        const ANIM_MS  = 28000;  // matches animation-duration in CSS
-
-        let active   = false;
-        let startX   = 0;
-        let startOff = 0;
-        let curOff   = 0;
-        let dragged  = false;
-
-        function readOffset() {
-            return new DOMMatrix(getComputedStyle(track).transform).m41;
-        }
-
-        function wrap(x) {
-            return ((x % LOOP_PX) + LOOP_PX) % LOOP_PX - LOOP_PX;
-        }
-
-        wrapper.addEventListener('pointerdown', e => {
-            if (e.pointerType === 'mouse' && e.button !== 0) return;
-            active   = true;
-            dragged  = false;
-            startX   = e.clientX;
-            startOff = readOffset();
-            curOff   = startOff;
-            // CSS 애니메이션은 인라인 style보다 우선순위가 높으므로
-            // pause가 아닌 animationName을 제거해야 inline transform이 적용됨
-            track.style.animationName = 'none';
-            track.style.transform = `translateX(${startOff}px)`;
-            wrapper.setPointerCapture(e.pointerId);
-            wrapper.classList.add('is-dragging');
-            e.preventDefault();
-        }, { passive: false });
-
-        wrapper.addEventListener('pointermove', e => {
-            if (!active) return;
-            const delta = e.clientX - startX;
-            if (Math.abs(delta) > 4) dragged = true;
-            curOff = wrap(startOff + delta);
-            track.style.transform = `translateX(${curOff}px)`;
+        const el = document.querySelector('.boxoffice-swiper');
+        if (!el) return;
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        new Swiper(el, {
+            slidesPerView: 'auto',
+            spaceBetween: 12,
+            loop: true,
+            grabCursor: true,
+            speed: 3000,
+            freeMode: { enabled: true, momentum: false },
+            autoplay: prefersReduced ? false : {
+                delay: 0,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
         });
-
-        function onEnd() {
-            if (!active) return;
-            active = false;
-            wrapper.classList.remove('is-dragging');
-            const progress = Math.abs(curOff) / LOOP_PX;
-            track.style.animationName = '';
-            track.style.transform = '';
-            // 애니메이션이 재등록된 후 드래그 위치로 seek
-            requestAnimationFrame(() => {
-                const anims = track.getAnimations();
-                if (anims.length) anims[0].currentTime = progress * ANIM_MS;
-            });
-        }
-
-        wrapper.addEventListener('pointerup',     onEnd);
-        wrapper.addEventListener('pointercancel', onEnd);
-
-        // Suppress click propagation if the pointer actually moved (drag vs click)
-        wrapper.addEventListener('click', e => {
-            if (dragged) e.stopPropagation();
-        }, true);
     })();
 </script>
 

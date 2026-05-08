@@ -1883,15 +1883,14 @@ button.side-nav-link {
     color: var(--accent);
     margin: 0 0 0.75rem;
 }
-.boxoffice-wrapper {
+.boxoffice-swiper {
     position: relative;
     overflow: hidden;
-    cursor: grab;
     touch-action: pan-y;
     user-select: none;
 }
-.boxoffice-wrapper::before,
-.boxoffice-wrapper::after {
+.boxoffice-swiper::before,
+.boxoffice-swiper::after {
     content: '';
     position: absolute;
     top: 0;
@@ -1900,28 +1899,18 @@ button.side-nav-link {
     z-index: 2;
     pointer-events: none;
 }
-.boxoffice-wrapper::before {
+.boxoffice-swiper::before {
     left: 0;
     background: linear-gradient(to right, var(--bg), transparent);
 }
-.boxoffice-wrapper::after {
+.boxoffice-swiper::after {
     right: 0;
     background: linear-gradient(to left, var(--bg), transparent);
 }
-.boxoffice-track {
-    display: flex;
-    gap: 12px;
-    animation: boxoffice-slide 28s linear infinite;
-    width: max-content;
-}
-.boxoffice-wrapper:hover .boxoffice-track {
-    animation-play-state: paused;
-}
-.boxoffice-wrapper.is-dragging {
-    cursor: grabbing;
+.boxoffice-swiper .swiper-slide {
+    width: 120px;
 }
 .boxoffice-card {
-    flex: 0 0 120px;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -1967,12 +1956,4 @@ button.side-nav-link {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-}
-/* 10 cards × (120px + 12px gap) = 1320px — seamless loop */
-@keyframes boxoffice-slide {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-1320px); }
-}
-@media (prefers-reduced-motion: reduce) {
-    .boxoffice-track { animation: none; overflow-x: auto; }
 }
