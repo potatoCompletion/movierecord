@@ -3,7 +3,6 @@ package com.my.movierecord.kobis.service;
 import tools.jackson.databind.ObjectMapper;
 import com.my.movierecord.movie.domain.Content;
 import com.my.movierecord.movie.service.ContentService;
-import com.my.movierecord.kobis.config.KobisProperties;
 import com.my.movierecord.kobis.domain.DailyBoxOffice;
 import com.my.movierecord.kobis.dto.BoxOfficeItemDto;
 import com.my.movierecord.kobis.dto.KobisBoxOfficeResponse;
@@ -27,7 +26,7 @@ public class KobisService {
 
     private static final DateTimeFormatter KOBIS_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    private final KobisProperties kobisProperties;
+    private final KobisOpenAPIRestService kobisOpenAPIRestService;
     private final DailyBoxOfficeRepository dailyBoxOfficeRepository;
     private final TmdbClient tmdbClient;
     private final ContentService contentService;
@@ -45,7 +44,7 @@ public class KobisService {
     private List<BoxOfficeItemDto> fetchAndSave(LocalDate targetDt) {
         try {
             String dateStr = targetDt.format(KOBIS_DATE);
-            String json = new KobisOpenAPIRestService(kobisProperties.key())
+            String json = kobisOpenAPIRestService
                     .getDailyBoxOffice(true, dateStr, "10", "", "", "");
 
             KobisBoxOfficeResponse response = objectMapper.readValue(json, KobisBoxOfficeResponse.class);
