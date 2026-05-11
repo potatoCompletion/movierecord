@@ -92,8 +92,18 @@ public class UserService implements UserDetailsService {
         return userRepository.findAllByStatus(UserStatus.PENDING);
     }
 
+    @Transactional(readOnly = true)
+    public List<User> findWithdrawnUsers() {
+        return userRepository.findAllByStatus(UserStatus.WITHDRAWN);
+    }
+
     @Transactional
     public void approveUser(Long id) {
+        userRepository.findById(id).ifPresent(User::approve);
+    }
+
+    @Transactional
+    public void restoreUser(Long id) {
         userRepository.findById(id).ifPresent(User::approve);
     }
 

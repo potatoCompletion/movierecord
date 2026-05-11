@@ -27,6 +27,7 @@ public class AdminController {
     @GetMapping("/members")
     public String memberList(Model model, Principal principal) {
         model.addAttribute("users", userService.findAllUsers());
+        model.addAttribute("withdrawnUsers", userService.findWithdrawnUsers());
         model.addAttribute("currentUsername", principal.getName());
         return "admin/members";
     }
@@ -52,6 +53,12 @@ public class AdminController {
     @PostMapping("/members/{id}/approve")
     public String approveUser(@PathVariable Long id) {
         userService.approveUser(id);
+        return "redirect:/admin/members";
+    }
+
+    @PostMapping("/members/{id}/restore")
+    public String restoreUser(@PathVariable Long id) {
+        userService.restoreUser(id);
         return "redirect:/admin/members";
     }
 
