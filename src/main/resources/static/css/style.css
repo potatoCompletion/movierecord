@@ -1874,20 +1874,21 @@ button.side-nav-link {
 }
 @media (max-width: 720px) {
     /* Restore table layout for members-table (overrides user-table card layout) */
-    .members-table          { display: table; min-width: 520px; width: 100%; }
+    .members-table          { display: table; min-width: 680px; width: 100%; }
     .members-table thead    { display: table-header-group; }
     .members-table tbody    { display: table-row-group; }
     .members-table tr       { display: table-row; padding: 0; border-bottom: none; }
     .members-table th,
     .members-table td       { display: table-cell; width: auto; padding: 0.65rem 0.6rem; font-size: 0.78rem; border-bottom: 1px solid var(--border); overflow: hidden; }
     .members-table td::before { content: none; }
+    .members-table td:nth-child(4) { white-space: nowrap; }
     .members-table .col-id     { width: 18%; }
     .members-table .col-nick   { width: 15%; }
     .members-table .col-name   { width: 12%; }
     .members-table .col-date   { width: 13%; }
-    .members-table .col-social { width: 11%; }
+    .members-table .col-social { width: 13%; }
     .members-table .col-login  { width: 17%; }
-    .members-table .col-action { width: 14%; }
+    .members-table .col-action { width: 12%; }
 }
 
 /* ── Box Office Carousel ──────────────────────────────────────────────── */
