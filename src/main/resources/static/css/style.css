@@ -1838,8 +1838,12 @@ button.side-nav-link {
     font-weight: 600;
     color: var(--fg-muted);
     text-decoration: none;
+    background: none;
+    border: none;
     border-bottom: 2px solid transparent;
     margin-bottom: -2px;
+    cursor: pointer;
+    font-family: inherit;
     transition: color 0.15s, border-color 0.15s;
 }
 .admin-tab:hover { color: var(--fg); }
