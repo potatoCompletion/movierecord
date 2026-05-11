@@ -7,6 +7,8 @@ import com.my.movierecord.auth.exception.UserAlreadyExistsException;
 import com.my.movierecord.auth.oauth.CustomUserPrincipal;
 import com.my.movierecord.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,7 +35,10 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("Use social login for this account");
         }
         if (user.getStatus() == UserStatus.PENDING) {
-            throw new org.springframework.security.authentication.DisabledException("Account is awaiting approval");
+            throw new DisabledException("Account is awaiting approval");
+        }
+        if (user.getStatus() == UserStatus.WITHDRAWN) {
+            throw new LockedException("Account has been withdrawn");
         }
         return new CustomUserPrincipal(user.getUsername(), user.getPassword(), user.getDisplayNickname(), user.getRole());
     }
@@ -68,7 +73,18 @@ public class UserService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     public List<User> findAllUsers() {
-        return userRepository.findAllByOrderByCreatedAtDesc();
+        return userRepository.findAllForAdmin(UserStatus.WITHDRAWN);
+    }
+
+    @Transactional(readOnly = true)
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다. id=" + id));
+    }
+
+    @Transactional
+    public void withdrawUser(Long id) {
+        userRepository.findById(id).ifPresent(User::withdraw);
     }
 
     @Transactional(readOnly = true)
@@ -79,5 +95,10 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void approveUser(Long id) {
         userRepository.findById(id).ifPresent(User::approve);
+    }
+
+    @Transactional
+    public void recordLogin(String username) {
+        userRepository.findByUsername(username).ifPresent(User::updateLastLoginAt);
     }
 }

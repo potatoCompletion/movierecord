@@ -25,6 +25,9 @@
             <div th:if="${param.disabled}" class="flash-message error">
                 승인 대기 상태입니다. 관리자가 가입을 승인할 때까지 기다려주세요.
             </div>
+            <div th:if="${param.withdrawn}" class="flash-message error">
+                탈퇴 처리된 계정입니다. 이용이 불가합니다.
+            </div>
             <div th:if="${param.logout}" class="flash-message">
                 로그아웃되었습니다.
             </div>

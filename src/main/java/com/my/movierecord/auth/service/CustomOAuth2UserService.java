@@ -48,6 +48,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             throw new OAuth2AuthenticationException(
                     new OAuth2Error("account_pending", "Account is awaiting admin approval", null));
         }
+        if (user.getStatus() == UserStatus.WITHDRAWN) {
+            throw new OAuth2AuthenticationException(
+                    new OAuth2Error("account_withdrawn", "Account has been withdrawn", null));
+        }
 
         return new CustomUserPrincipal(
                 user.getUsername(),

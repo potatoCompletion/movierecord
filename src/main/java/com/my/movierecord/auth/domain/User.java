@@ -51,6 +51,9 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+
     @Builder
     private User(String username, String password, String name, String nickname, UserStatus status, String role, String provider, String providerId) {
         this.username = username;
@@ -67,11 +70,19 @@ public class User {
         this.status = UserStatus.ACTIVE;
     }
 
+    public void withdraw() {
+        this.status = UserStatus.WITHDRAWN;
+    }
+
     public String getDisplayNickname() {
         return nickname != null ? nickname : username;
     }
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void updateLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
     }
 }
