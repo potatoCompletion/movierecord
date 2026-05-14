@@ -46,7 +46,7 @@
 
 KOBIS 오픈API로 전날 일별 TOP 10을 조회하고, TMDB 영화 검색 API로 포스터 이미지를 매칭해 Swiper 캐러셀 카드로 표시합니다.
  
-> `![박스오피스](docs/images/boxoffice.png)`
+> ![박스오피스](docs/images/boxoffice.png)
 
 ---
 
@@ -54,8 +54,8 @@ KOBIS 오픈API로 전날 일별 TOP 10을 조회하고, TMDB 영화 검색 API�
 
 TMDB 멀티 검색(영화·TV)으로 작품을 선택한 뒤 별점, 한줄평, 몰입감, 스토리, 감정, 취향 일치도를 기록합니다. 기록 목록과 상세 화면에서 작성한 내용을 확인할 수 있습니다.
  
-> `![감상 기록 작성](docs/images/record-form.png)`  
-> `![감상 기록 목록](docs/images/record-list.png)`
+> ![감상 기록 작성](docs/images/record-form.png)
+> ![감상 기록 목록](docs/images/record-list.png)
 
 ---
 
@@ -63,7 +63,7 @@ TMDB 멀티 검색(영화·TV)으로 작품을 선택한 뒤 별점, 한줄평, 
 
 총 기록 수, 연간·월간 기록 수, 평균 별점, 취향 일치율을 집계합니다. 최근 12개월 월별 기록 수 그래프와 감정 분포 차트를 함께 제공합니다.
 
-> `![마이페이지](docs/images/mypage.png)`
+> ![마이페이지](docs/images/mypage.png)
 
 ---
 
@@ -71,7 +71,7 @@ TMDB 멀티 검색(영화·TV)으로 작품을 선택한 뒤 별점, 한줄평, 
 
 폼 로그인과 OAuth2 소셜 로그인을 지원합니다. 신규 가입 계정은 관리자 승인(PENDING → ACTIVE) 후 서비스를 이용할 수 있습니다.
  
-> `![로그인](docs/images/login.png)`
+> ![로그인](docs/images/login.png)
 
 ---
 
@@ -79,7 +79,7 @@ TMDB 멀티 검색(영화·TV)으로 작품을 선택한 뒤 별점, 한줄평, 
 
 가입 대기(PENDING) 회원 승인, 활성 회원 강제 탈퇴, 탈퇴 회원 복구 기능을 제공합니다.
 
-> `![관리자](docs/images/admin.png)`
+> ![관리자](docs/images/admin.png)
 
 ---
 
