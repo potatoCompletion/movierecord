@@ -12,7 +12,8 @@
 2. [주요 기능](#주요-기능)
 3. [회원기능 및 외부 API 연동](#회원기능-및-외부-API-연동)
 4. [패키지 구조](#패키지-구조)
-5. [로컬 실행](#로컬-실행)
+5. [서버 아키텍처](#서버-아키텍처)
+6. [로컬 실행](#로컬-실행)
 
 ---
 
@@ -183,6 +184,96 @@ com.my.movierecord
 ├── mypage/      마이페이지 통계
 ├── record/      감상 기록 CRUD + 통계 계산 (stats/)
 └── tmdb/        TMDB 작품 검색 API 연동
+```
+
+---
+
+## 서버 아키텍처
+
+AWS EC2 위에서 Docker Compose로 Nginx · Spring Boot · MySQL 세 컨테이너를 운영합니다.
+
+```
+          Internet
+             │
+    HTTP :80 / HTTPS :443
+             │
+             ▼
+ ┌─────────────────────────────────────────┐
+ │  AWS EC2                                │
+ │  ┌───────────────────────────────────┐  │
+ │  │  Docker Compose Network           │  │
+ │  │                                   │  │
+ │  │  ┌─────────────┐                  │  │
+ │  │  │    Nginx     │  /uploads/ →    │  │
+ │  │  │  :80 / :443  │  볼륨 직접 서빙  │  │
+ │  │  └──────┬───────┘                  │  │
+ │  │         │ proxy_pass               │  │
+ │  │         │ http://app:8080          │  │
+ │  │         ▼                          │  │
+ │  │  ┌─────────────┐   ┌────────────┐  │  │
+ │  │  │ Spring Boot  │──▶│  uploads/  │  │  │
+ │  │  │   (expose)   │   │  (volume)  │  │  │
+ │  │  │    :8080     │   └────────────┘  │  │
+ │  │  └──────┬───────┘                  │  │
+ │  │         │ JDBC                     │  │
+ │  │         ▼                          │  │
+ │  │  ┌─────────────┐                  │  │
+ │  │  │  MySQL 8.4   │                  │  │
+ │  │  │  127.0.0.1   │  (호스트 비노출)  │  │
+ │  │  │    :3306     │                  │  │
+ │  │  └─────────────┘                  │  │
+ │  └───────────────────────────────────┘  │
+ └─────────────────────────────────────────┘
+```
+
+### 구성 요소
+
+| 컴포넌트 | 역할 |
+|---------|------|
+| AWS EC2 | 단일 인스턴스에서 전체 스택 운영 |
+| Nginx | HTTP → HTTPS 리다이렉트, SSL 종단, 리버스 프록시, 정적 파일 서빙 |
+| Spring Boot | 애플리케이션 서버 (외부 포트 미노출, Docker 내부 통신만) |
+| MySQL 8.4 | 운영 DB (127.0.0.1 바인딩으로 호스트 외부 접근 차단) |
+| Let's Encrypt | Certbot으로 SSL 인증서 발급·갱신 |
+
+### 핵심 설계 포인트
+
+**HTTPS 강제 + SSL 종단**
+
+Nginx가 80포트의 모든 요청을 443으로 301 리다이렉트하고, Let's Encrypt 인증서로 SSL을 종단합니다. Spring Boot는 `server.forward-headers-strategy=framework`로 `X-Forwarded-Proto` 헤더를 신뢰해 앱 레벨에서도 HTTPS 요청으로 인식합니다.
+
+```nginx
+# HTTP → HTTPS 리다이렉트
+location / {
+    return 301 https://$host$request_uri;
+}
+```
+
+**정적 파일 직접 서빙**
+
+업로드 이미지(`/uploads/`)는 Spring Boot를 거치지 않고 Nginx가 볼륨을 공유해 직접 응답합니다. 불필요한 WAS 부하를 줄이고 `expires 30d`로 브라우저 캐싱을 적용합니다.
+
+```nginx
+location /uploads/ {
+    alias /app/uploads/;
+    expires 30d;
+}
+```
+
+**컨테이너 시작 순서 보장**
+
+`depends_on` + `healthcheck`로 MySQL이 완전히 기동한 뒤에만 Spring Boot 컨테이너가 시작됩니다. `mysqladmin ping`을 10초 간격·최대 10회 재시도해 초기화 중 연결 실패를 방지합니다.
+
+**멀티스테이지 Dockerfile**
+
+`eclipse-temurin:21-jdk`로 빌드하고, 최종 이미지는 `eclipse-temurin:21-jre`만 포함합니다. JDK·소스코드·Gradle 캐시가 배포 이미지에 포함되지 않아 이미지 크기를 줄입니다.
+
+```dockerfile
+FROM eclipse-temurin:21-jdk AS builder
+RUN ./gradlew clean bootJar -x test
+
+FROM eclipse-temurin:21-jre   # 런타임 이미지만 배포
+COPY --from=builder /app/build/libs/*.jar app.jar
 ```
 
 ---
