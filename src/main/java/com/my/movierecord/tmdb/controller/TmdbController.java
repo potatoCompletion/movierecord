@@ -23,4 +23,12 @@ public class TmdbController {
         }
         return tmdbClient.searchMulti(query);
     }
+
+    @GetMapping("/search/unified")
+    public List<TmdbSearchItem> searchUnified(@RequestParam String query) {
+        if (query == null || query.isBlank()) {
+            return List.of();
+        }
+        return tmdbClient.searchMultiUnified(query);
+    }
 }
