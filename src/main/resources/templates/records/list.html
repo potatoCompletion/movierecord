@@ -40,6 +40,7 @@
                    th:classappend="${currentFilter == 'all'} ? ' active'">전체</a>
                 <a th:href="@{/records(sort=${currentSort.code}, filter='mine')}"
                    class="filter-tab"
+                   sec:authorize="isAuthenticated()"
                    th:classappend="${currentFilter == 'mine'} ? ' active'">내 감상평</a>
             </div>
             <form th:action="@{/records}" method="get" class="sort-form">
@@ -51,7 +52,7 @@
                             th:selected="${opt.code == currentSort.code}"></option>
                 </select>
             </form>
-            <a th:href="@{/records/new}" class="btn btn-primary">＋ 감상평 등록</a>
+            <a th:href="@{/records/new}" class="btn btn-primary" sec:authorize="isAuthenticated()">＋ 감상평 등록</a>
         </div>
     </div>
 
@@ -94,7 +95,7 @@
         </div>
         <h2>아직 기록된 감상평이 없어요</h2>
         <p>방금 본 영화의 첫 한 줄을 남겨보세요.</p>
-        <a th:href="@{/records/new}" class="btn btn-primary">＋ 첫 감상평 등록하기</a>
+        <a th:href="@{/records/new}" class="btn btn-primary" sec:authorize="isAuthenticated()">＋ 첫 감상평 등록하기</a>
     </div>
 
     <div th:unless="${items.isEmpty()}" class="movie-grid">

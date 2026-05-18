@@ -51,13 +51,27 @@ public class RecordController {
                        @RequestParam(defaultValue = "all") String filter,
                        @AuthenticationPrincipal UserDetails userDetails,
                        Model model) {
+        if ("mine".equals(filter) && userDetails == null) {
+            return "redirect:/auth/login";
+        }
+
         SortOption sortOption = SortOption.from(sort);
         Pageable pageable = PageRequest.of(Math.max(page, 0), PAGE_SIZE, sortOption.getSort());
-        User user = currentUser(userDetails);
 
-        RecordPageDto recordPageDto = "mine".equals(filter)
-                ? watchRecordService.listByUser(user.getId(), pageable)
-                : watchRecordService.list(pageable);
+        Long currentUserId = null;
+        boolean isAdmin = false;
+        RecordPageDto recordPageDto;
+
+        if (userDetails != null) {
+            User user = currentUser(userDetails);
+            currentUserId = user.getId();
+            isAdmin = "ROLE_ADMIN".equals(user.getRole());
+            recordPageDto = "mine".equals(filter)
+                    ? watchRecordService.listByUser(user.getId(), pageable)
+                    : watchRecordService.list(pageable);
+        } else {
+            recordPageDto = watchRecordService.list(pageable);
+        }
 
         Page<WatchRecord> recordPage = recordPageDto.getPage();
         List<RecordListItem> items = recordPageDto.getItems();
@@ -69,8 +83,8 @@ public class RecordController {
         model.addAttribute("sortOptions", SortOption.values());
         model.addAttribute("currentFilter", filter);
         model.addAttribute("recordCount", recordPage.getTotalElements());
-        model.addAttribute("currentUserId", user.getId());
-        model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
+        model.addAttribute("currentUserId", currentUserId);
+        model.addAttribute("isAdmin", isAdmin);
         return "records/list";
     }
 
@@ -79,10 +93,16 @@ public class RecordController {
                          @AuthenticationPrincipal UserDetails userDetails,
                          Model model) {
         WatchRecord record = watchRecordService.get(id);
-        User user = currentUser(userDetails);
+        Long currentUserId = null;
+        boolean isAdmin = false;
+        if (userDetails != null) {
+            User user = currentUser(userDetails);
+            currentUserId = user.getId();
+            isAdmin = "ROLE_ADMIN".equals(user.getRole());
+        }
         model.addAttribute("item", RecordDetail.from(record));
-        model.addAttribute("currentUserId", user.getId());
-        model.addAttribute("isAdmin", "ROLE_ADMIN".equals(user.getRole()));
+        model.addAttribute("currentUserId", currentUserId);
+        model.addAttribute("isAdmin", isAdmin);
         return "records/detail";
     }
 
