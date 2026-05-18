@@ -33,6 +33,7 @@
                     <span class="detail-genre" th:each="g : ${detail.genres}" th:text="${g.name}"></span>
                 </div>
                 <div class="detail-rating" th:if="${detail.voteAverage != null}">
+                    <span class="rating-source">TMDB</span>
                     <span class="rating-star">★</span>
                     <span th:text="${#numbers.formatDecimal(detail.voteAverage, 1, 1)}"></span>
                     <span class="rating-count" th:if="${detail.voteCount != null}"

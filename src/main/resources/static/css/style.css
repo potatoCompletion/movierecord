@@ -2315,6 +2315,18 @@ button.side-nav-link {
     opacity: 0.5;
 }
 
+.rating-source {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.15em 0.45em;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.15);
+    color: inherit;
+    opacity: 0.75;
+}
+
 .detail-tagline {
     font-style: italic;
     opacity: 0.6;
