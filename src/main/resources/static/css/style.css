@@ -1940,7 +1940,13 @@ button.side-nav-link {
     flex-direction: column;
     gap: 6px;
     cursor: inherit;
+    text-decoration: none;
+    color: inherit;
 }
+.boxoffice-card--linked {
+    cursor: pointer;
+}
+
 .boxoffice-poster {
     width: 120px;
     height: 170px;

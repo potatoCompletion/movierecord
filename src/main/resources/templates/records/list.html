@@ -12,7 +12,10 @@
         <h2 class="boxoffice-heading">박스오피스 TOP 10</h2>
         <div class="swiper boxoffice-swiper">
             <div class="swiper-wrapper">
-                <div class="swiper-slide boxoffice-card" th:each="item : ${boxOffice}">
+                <a class="swiper-slide boxoffice-card"
+                   th:each="item : ${boxOffice}"
+                   th:href="${item.tmdbId != null} ? ${'/' + item.mediaType + '/' + item.tmdbId} : null"
+                   th:classappend="${item.tmdbId != null} ? ' boxoffice-card--linked'">
                     <div class="boxoffice-poster"
                          th:style="${item.posterUrl != null} ? 'background-image:url(' + ${item.posterUrl} + ')' : ''">
                     </div>
@@ -21,7 +24,7 @@
                         <span class="boxoffice-audi" th:if="${item.audiAcc != null}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="10" height="10" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span th:text="${#numbers.formatInteger(item.audiAcc, 1, 'COMMA')}">0</span></span>
                     </div>
                     <span class="boxoffice-title" th:text="${item.movieNm}">영화제목</span>
-                </div>
+                </a>
             </div>
         </div>
     </section>
