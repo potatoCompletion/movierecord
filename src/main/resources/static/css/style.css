@@ -88,6 +88,7 @@ main.container {
     .header-username { display: none; }
     .header-user .btn { display: none; }
     .header-user .header-avatar { display: inline-flex; }
+    .header-user .header-login-btn { display: inline-flex; }
 }
 
 .header-avatar {

@@ -28,7 +28,7 @@
                th:text="${#strings.substring(#authentication.principal.displayNickname, 0, 1).toUpperCase()}">U</a>
         </div>
         <div class="header-user" sec:authorize="!isAuthenticated()">
-            <a th:href="@{/auth/login}" class="btn btn-secondary btn-sm">로그인</a>
+            <a th:href="@{/auth/login}" class="btn btn-secondary btn-sm header-login-btn">로그인</a>
         </div>
     </div>
 </header>
