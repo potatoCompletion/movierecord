@@ -1,15 +1,25 @@
 (function () {
     const input = document.getElementById('header-search-input');
     const dropdown = document.getElementById('header-search-dropdown');
+    const btn = document.getElementById('header-search-btn');
     if (!input || !dropdown) return;
 
     const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';
     const MEDIA_LABEL = { movie: '영화', tv: 'TV', person: '인물' };
 
     let timer = null;
+    let activeIndex = -1;
+
+    if (btn) {
+        btn.addEventListener('click', function () {
+            const q = input.value.trim();
+            if (q) window.location.href = '/search?q=' + encodeURIComponent(q);
+        });
+    }
 
     input.addEventListener('input', function () {
         clearTimeout(timer);
+        activeIndex = -1;
         const q = this.value.trim();
         if (!q) {
             hideDropdown();
@@ -19,11 +29,30 @@
     });
 
     input.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-            const q = this.value.trim();
-            if (q) {
-                window.location.href = '/search?q=' + encodeURIComponent(q);
+        const items = dropdown.querySelectorAll('.header-search-item, .header-search-more');
+        const total = items.length;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (total === 0) return;
+            activeIndex = Math.min(activeIndex + 1, total - 1);
+            updateActive(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (total === 0) return;
+            activeIndex = Math.max(activeIndex - 1, -1);
+            updateActive(items);
+        } else if (e.key === 'Enter') {
+            if (activeIndex >= 0 && items[activeIndex]) {
+                e.preventDefault();
+                window.location.href = items[activeIndex].href;
+            } else {
+                const q = this.value.trim();
+                if (q) window.location.href = '/search?q=' + encodeURIComponent(q);
             }
+        } else if (e.key === 'Escape') {
+            hideDropdown();
+            input.blur();
         }
     });
 
@@ -33,6 +62,12 @@
         }
     });
 
+    function updateActive(items) {
+        items.forEach(function (el, i) {
+            el.classList.toggle('header-search-item--active', i === activeIndex);
+        });
+    }
+
     function fetchResults(q) {
         fetch('/api/tmdb/search/unified?query=' + encodeURIComponent(q))
             .then(function (res) { return res.json(); })
@@ -41,6 +76,7 @@
     }
 
     function renderDropdown(items, q) {
+        activeIndex = -1;
         if (!items.length) {
             hideDropdown();
             return;
@@ -95,5 +131,6 @@
     function hideDropdown() {
         dropdown.setAttribute('hidden', '');
         dropdown.innerHTML = '';
+        activeIndex = -1;
     }
 }());

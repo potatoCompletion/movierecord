@@ -1997,7 +1997,7 @@ button.side-nav-link {
     border-radius: 9999px;
     color: var(--fg);
     font-size: 0.875rem;
-    padding: 0.4rem 1rem;
+    padding: 0.4rem 2.4rem 0.4rem 1rem;
     outline: none;
     transition: border-color 0.2s, background 0.2s;
 }
@@ -2081,6 +2081,34 @@ button.side-nav-link {
 
 .header-search-more:hover {
     background: rgba(255, 255, 255, 0.04);
+}
+
+.header-search-btn {
+    position: absolute;
+    right: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    cursor: pointer;
+    color: var(--fg);
+    opacity: 0.45;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.15s;
+    line-height: 1;
+}
+
+.header-search-btn:hover {
+    opacity: 1;
+}
+
+.header-search-item--active {
+    background: rgba(255, 255, 255, 0.08);
+    outline: 1px solid rgba(255, 255, 255, 0.12);
+    outline-offset: -1px;
 }
 
 /* ── Search Results Page ────────────────────────────── */
