@@ -29,7 +29,8 @@ public class TmdbClient {
                         .queryParam("language", "ko-KR")
                         .build())
                 .retrieve()
-                .body(new ParameterizedTypeReference<Map<String, Object>>() {});
+                .body(new ParameterizedTypeReference<>() {
+                });
 
         if (body == null) {
             return List.of();
@@ -42,6 +43,7 @@ public class TmdbClient {
         }
 
         return results.stream()
+                .filter(r -> !"person".equals(r.get("media_type")))
                 .map(this::toMultiSearchItem)
                 .toList();
     }
@@ -65,7 +67,8 @@ public class TmdbClient {
                         .queryParam("primary_release_year", primaryReleaseYear)
                         .build())
                 .retrieve()
-                .body(new ParameterizedTypeReference<Map<String, Object>>() {});
+                .body(new ParameterizedTypeReference<>() {
+                });
 
         if (body == null) {
             return List.of();
