@@ -107,13 +107,24 @@ public class RecordController {
     }
 
     @GetMapping("/new")
-    public String newForm(Model model) {
+    public String newForm(@RequestParam(required = false) Long tmdbId,
+                          @RequestParam(required = false) String mediaType,
+                          @RequestParam(required = false) String title,
+                          @RequestParam(required = false) String posterPath,
+                          Model model) {
         if (!model.containsAttribute("movieForm")) {
-            model.addAttribute("movieForm", new RecordForm());
+            RecordForm form = new RecordForm();
+            form.setTmdbId(tmdbId);
+            form.setMediaType(mediaType);
+            form.setTitle(title);
+            form.setPosterPath(posterPath);
+            model.addAttribute("movieForm", form);
         }
         populateFormReferences(model);
         model.addAttribute("mode", "create");
-        model.addAttribute("existingThumbnailUrl", null);
+        String thumbnailUrl = (posterPath != null && !posterPath.isBlank())
+                ? "https://image.tmdb.org/t/p/w342" + posterPath : null;
+        model.addAttribute("existingThumbnailUrl", thumbnailUrl);
         return "records/form";
     }
 
