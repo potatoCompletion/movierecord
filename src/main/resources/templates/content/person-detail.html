@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${detail.name + ' — Murabel'})}"></head>
+<body class="page-detail">
+
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+    <div class="person-detail-hero">
+        <img class="person-profile-img"
+             th:if="${detail.profilePath != null}"
+             th:src="'https://image.tmdb.org/t/p/w342' + ${detail.profilePath}"
+             th:alt="${detail.name}">
+        <div class="person-profile-placeholder" th:if="${detail.profilePath == null}"></div>
+        <div class="person-info">
+            <span class="media-type-badge">인물</span>
+            <h1 class="detail-title" th:text="${detail.name}">이름</h1>
+            <div class="detail-meta">
+                <span th:if="${detail.knownForDepartment != null}" th:text="${detail.knownForDepartment}"></span>
+                <span th:if="${detail.birthday != null}" th:text="${detail.birthday}"></span>
+            </div>
+            <p class="biography-text" th:if="${detail.biography != null and !detail.biography.isEmpty()}"
+               th:text="${detail.biography}"></p>
+        </div>
+    </div>
+
+    <section class="filmography-section" th:if="${!#lists.isEmpty(detail.filmography)}">
+        <h2>필모그래피</h2>
+        <div class="filmography-grid">
+            <a th:each="item : ${detail.filmography}"
+               th:href="${item.mediaType() == 'movie'} ? '/movie/' + ${item.tmdbId()} : '/tv/' + ${item.tmdbId()}"
+               class="filmography-card">
+                <div class="filmography-card-poster">
+                    <img th:if="${item.posterPath() != null}"
+                         th:src="'https://image.tmdb.org/t/p/w185' + ${item.posterPath()}"
+                         th:alt="${item.title()}" loading="lazy">
+                    <div th:if="${item.posterPath() == null}" class="filmography-card-no-poster">
+                        <span th:text="${item.title()}"></span>
+                    </div>
+                    <span class="media-type-badge"
+                          th:text="${item.mediaType() == 'movie'} ? '영화' : 'TV'"></span>
+                </div>
+                <div class="filmography-card-info">
+                    <p class="filmography-card-title" th:text="${item.title()}"></p>
+                    <p class="filmography-card-year" th:if="${item.year() != null}" th:text="${item.year()}"></p>
+                </div>
+            </a>
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.my.movierecord.record.repository;
 
 import com.my.movierecord.record.domain.WatchRecord;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,4 +21,7 @@ public interface WatchRecordRepository extends JpaRepository<WatchRecord, Long> 
 
     @EntityGraph(attributePaths = {"user", "content"})
     Page<WatchRecord> findByUserId(Long userId, Pageable pageable);
+
+    @Query("SELECT wr FROM WatchRecord wr LEFT JOIN FETCH wr.user WHERE wr.content.id.tmdbId = :tmdbId AND wr.content.id.mediaType = :mediaType ORDER BY wr.createdAt DESC")
+    List<WatchRecord> findByContent(@Param("tmdbId") Long tmdbId, @Param("mediaType") String mediaType);
 }
