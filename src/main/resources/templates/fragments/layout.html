@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/webjars/swiper/swiper-bundle.min.css}">
     <link rel="icon" type="image/png" th:href="@{/images/murabel_logo.png}">
+    <script th:src="@{/js/header-search.js}" defer></script>
 </head>
 <body>
 
@@ -17,6 +18,11 @@
         <a th:href="@{/records}" class="brand">
             <img th:src="@{/images/murabel_logo.png}" alt="Murabel" class="brand-logo">
         </a>
+        <div class="header-search" id="header-search">
+            <input type="text" id="header-search-input" class="header-search-input"
+                   placeholder="영화, TV, 인물 검색..." autocomplete="off" aria-label="검색">
+            <div class="header-search-dropdown" id="header-search-dropdown" hidden></div>
+        </div>
         <div class="header-user" sec:authorize="isAuthenticated()">
             <span class="header-username" sec:authentication="principal.displayNickname"></span>
             <a th:href="@{/my-page}" class="btn btn-ghost btn-sm">마이페이지</a>

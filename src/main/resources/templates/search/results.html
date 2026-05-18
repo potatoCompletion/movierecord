@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('검색 — Murabel')}"></head>
+<body class="page-search">
+
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+    <div class="search-header">
+        <form action="/search" method="get" class="search-form-full">
+            <input type="text" name="q" class="search-input-full"
+                   th:value="${query}" placeholder="영화, TV, 인물 검색..." autocomplete="off" aria-label="검색">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </form>
+    </div>
+
+    <div th:if="${!query.isEmpty() and #lists.isEmpty(results)}" class="empty-state">
+        <p th:text="'&quot;' + ${query} + '&quot; 에 대한 검색 결과가 없습니다.'"></p>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(results)}" class="search-results-section">
+        <p class="search-result-count">
+            <strong th:text="${#lists.size(results)}">0</strong>개의 결과
+        </p>
+        <div class="search-grid">
+            <a th:each="item : ${results}"
+               th:href="${item.mediaType == 'movie'} ? '/movie/' + ${item.id} :
+                         (${item.mediaType == 'tv'} ? '/tv/' + ${item.id} : '/person/' + ${item.id})"
+               class="search-card">
+                <div class="search-card-poster">
+                    <img th:if="${item.posterPath != null}"
+                         th:src="'https://image.tmdb.org/t/p/w185' + ${item.posterPath}"
+                         th:alt="${item.title}" loading="lazy">
+                    <div th:if="${item.posterPath == null}" class="search-card-no-poster">
+                        <span th:text="${item.title}"></span>
+                    </div>
+                    <span class="media-type-badge"
+                          th:text="${item.mediaType == 'movie'} ? '영화' :
+                                   (${item.mediaType == 'tv'} ? 'TV' : '인물')"></span>
+                </div>
+                <div class="search-card-info">
+                    <p class="search-card-title" th:text="${item.title}">제목</p>
+                    <p class="search-card-year"
+                       th:if="${item.releaseDate != null and !item.releaseDate.isEmpty()}"
+                       th:text="${#strings.substring(item.releaseDate, 0, 4)}"></p>
+                </div>
+            </a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

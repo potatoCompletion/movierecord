@@ -48,7 +48,12 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/uploads/**",
                                 "/webjars/**",
-                                "/error"
+                                "/error",
+                                "/search",
+                                "/movie/**",
+                                "/tv/**",
+                                "/person/**",
+                                "/api/tmdb/search/unified"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/records", "/records/*").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
