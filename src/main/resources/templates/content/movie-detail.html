@@ -40,6 +40,7 @@
                     <div th:each="r : ${omdbRatings}" class="rating-badge-external" th:classappend="${r.cssClass}">
                         <span class="rating-source" th:text="${r.source == 'Rotten Tomatoes' ? '🍅' : r.source}"></span>
                         <span class="rating-value" th:text="${r.value}"></span>
+                        <span class="rating-emoji" th:if="${r.emoji != null}" th:text="${r.emoji}"></span>
                     </div>
                 </div>
                 <p class="detail-tagline" th:if="${detail.tagline != null and !detail.tagline.isEmpty()}"
