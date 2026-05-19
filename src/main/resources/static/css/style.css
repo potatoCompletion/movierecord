@@ -2437,12 +2437,26 @@ button.side-nav-link {
     display: flex;
     align-items: center;
     gap: 0.4rem;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem;
     margin-top: 0.75rem;
+}
+
+.murabel-score-line {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
 }
 
 .detail-murabel-rating .murabel-star {
     color: var(--accent);
     font-size: 1.1rem;
+}
+
+.detail-murabel-rating .murabel-star-empty {
+    color: var(--accent);
+    opacity: 0.35;
 }
 
 .detail-murabel-rating .murabel-score {
@@ -2451,10 +2465,21 @@ button.side-nav-link {
     color: var(--accent);
 }
 
+.detail-murabel-rating .rating-max {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+    opacity: 1;
+}
+
+.murabel-score-line .murabel-score + .rating-max {
+    margin-left: -0.3rem;
+}
+
 .detail-murabel-rating .murabel-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    opacity: 0.8;
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.75;
 }
 
 .detail-murabel-rating .murabel-count {
@@ -2463,8 +2488,15 @@ button.side-nav-link {
 }
 
 .detail-murabel-rating .murabel-no-score {
-    font-size: 0.85rem;
-    opacity: 0.5;
+    font-size: 1.1rem;
+    font-weight: 700;
+    opacity: 0.35;
+    font-style: normal;
+}
+
+.rating-max {
+    font-size: 0.75rem;
+    opacity: 0.45;
 }
 
 .ratings-section-label {
