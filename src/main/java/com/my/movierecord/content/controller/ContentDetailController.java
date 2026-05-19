@@ -1,5 +1,6 @@
 package com.my.movierecord.content.controller;
 
+import com.my.movierecord.omdb.client.OmdbClient;
 import com.my.movierecord.record.repository.WatchRecordRepository;
 import com.my.movierecord.tmdb.client.TmdbClient;
 import com.my.movierecord.tmdb.dto.TmdbMovieDetail;
@@ -16,6 +17,7 @@ public class ContentDetailController {
 
     private final TmdbClient tmdbClient;
     private final WatchRecordRepository watchRecordRepository;
+    private final OmdbClient omdbClient;
 
     @GetMapping("/movie/{id}")
     public String movieDetail(@PathVariable Long id, Model model) {
@@ -25,6 +27,7 @@ public class ContentDetailController {
         }
         model.addAttribute("detail", detail);
         model.addAttribute("records", watchRecordRepository.findByContent(id, "movie"));
+        model.addAttribute("omdbRatings", omdbClient.getRatings(detail.imdbId()));
         return "content/movie-detail";
     }
 
@@ -34,8 +37,10 @@ public class ContentDetailController {
         if (detail == null) {
             return "redirect:/search";
         }
+        String imdbId = tmdbClient.getTvExternalIds(id);
         model.addAttribute("detail", detail);
         model.addAttribute("records", watchRecordRepository.findByContent(id, "tv"));
+        model.addAttribute("omdbRatings", omdbClient.getRatings(imdbId));
         return "content/tv-detail";
     }
 }

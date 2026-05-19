@@ -17,7 +17,8 @@ public record TmdbMovieDetail(
         Double voteAverage,
         Integer voteCount,
         String originalLanguage,
-        List<String> productionCountries
+        List<String> productionCountries,
+        String imdbId
 ) {
     @SuppressWarnings("unchecked")
     public static TmdbMovieDetail from(Map<String, Object> raw) {
@@ -49,8 +50,10 @@ public record TmdbMovieDetail(
                 .map(c -> (String) c.get("name"))
                 .toList();
 
+        String imdbId = (String) raw.get("imdb_id");
+
         return new TmdbMovieDetail(id, title, originalTitle, tagline, overview, posterPath,
                 backdropPath, releaseDate, runtime, genres, voteAverage, voteCount,
-                originalLanguage, productionCountries);
+                originalLanguage, productionCountries, imdbId);
     }
 }

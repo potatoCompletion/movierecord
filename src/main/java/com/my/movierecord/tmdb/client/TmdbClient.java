@@ -20,6 +20,7 @@ public class TmdbClient {
     private static final String TV_PATH = "/tv/{id}";
     private static final String PERSON_PATH = "/person/{id}";
     private static final String PERSON_CREDITS_PATH = "/person/{id}/combined_credits";
+    private static final String TV_EXTERNAL_IDS_PATH = "/tv/{id}/external_ids";
 
     private final RestClient restClient;
 
@@ -163,6 +164,17 @@ public class TmdbClient {
                 .body(new ParameterizedTypeReference<>() {
                 });
         return raw != null ? TmdbTvDetail.from(raw) : null;
+    }
+
+    public String getTvExternalIds(Long tmdbId) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> raw = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(TV_EXTERNAL_IDS_PATH)
+                        .build(tmdbId))
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+        return raw != null ? (String) raw.get("imdb_id") : null;
     }
 
     public TmdbPersonDetail getPersonDetail(Long tmdbId) {
