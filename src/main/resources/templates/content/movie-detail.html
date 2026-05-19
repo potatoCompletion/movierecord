@@ -21,6 +21,8 @@
                 <h1 class="detail-title" th:text="${detail.title}">제목</h1>
                 <p class="detail-original-title" th:if="${detail.originalTitle != null and detail.originalTitle != detail.title}"
                    th:text="${detail.originalTitle}"></p>
+                <p class="detail-tagline" th:if="${detail.tagline != null and !detail.tagline.isEmpty()}"
+                   th:text="${detail.tagline}"></p>
                 <div class="detail-meta">
                     <span th:if="${detail.releaseDate != null and !detail.releaseDate.isEmpty()}"
                           th:text="${#strings.substring(detail.releaseDate, 0, 4)}"></span>
@@ -30,12 +32,11 @@
                     <span class="detail-genre" th:each="g : ${detail.genres}" th:text="${g.name}"></span>
                 </div>
                 <div class="detail-murabel-rating">
-                    <div class="rating-badge-external rating-murabel">
-                        <span class="rating-source">무라벨</span>
-                        <span class="rating-star">★</span>
-                        <span class="rating-value" th:text="${#numbers.formatDecimal(murabelAvg, 1, 1)}"></span>
-                        <span class="rating-count" th:text="'(' + ${#lists.size(records)} + ')'"></span>
-                    </div>
+                    <span class="murabel-star" th:if="${!#lists.isEmpty(records)}">★</span>
+                    <span class="murabel-score" th:if="${!#lists.isEmpty(records)}" th:text="${#numbers.formatDecimal(murabelAvg, 1, 1)}"></span>
+                    <span class="murabel-label">무라벨 평점</span>
+                    <span class="murabel-count" th:if="${!#lists.isEmpty(records)}" th:text="'(' + ${#lists.size(records)} + '명)'"></span>
+                    <span class="murabel-no-score" th:if="${#lists.isEmpty(records)}">평점 없음</span>
                 </div>
                 <div class="detail-all-ratings">
                     <div class="rating-badge-external rating-tmdb" th:if="${detail.voteAverage != null}">
@@ -51,8 +52,6 @@
                         <span class="rating-emoji" th:if="${r.emoji != null}" th:text="${r.emoji}"></span>
                     </div>
                 </div>
-                <p class="detail-tagline" th:if="${detail.tagline != null and !detail.tagline.isEmpty()}"
-                   th:text="${detail.tagline}"></p>
             </div>
         </div>
     </div>

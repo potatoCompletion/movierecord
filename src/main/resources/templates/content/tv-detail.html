@@ -33,13 +33,13 @@
                     <span class="detail-genre" th:each="g : ${detail.genres}" th:text="${g.name}"></span>
                 </div>
                 <div class="detail-murabel-rating">
-                    <div class="rating-badge-external rating-murabel">
-                        <span class="rating-source">무라벨</span>
-                        <span class="rating-star">★</span>
-                        <span class="rating-value" th:text="${#numbers.formatDecimal(murabelAvg, 1, 1)}"></span>
-                        <span class="rating-count" th:text="'(' + ${#lists.size(records)} + ')'"></span>
-                    </div>
+                    <span class="murabel-star" th:if="${!#lists.isEmpty(records)}">★</span>
+                    <span class="murabel-score" th:if="${!#lists.isEmpty(records)}" th:text="${#numbers.formatDecimal(murabelAvg, 1, 1)}"></span>
+                    <span class="murabel-label">무라벨 평점</span>
+                    <span class="murabel-count" th:if="${!#lists.isEmpty(records)}" th:text="'(' + ${#lists.size(records)} + '명)'"></span>
+                    <span class="murabel-no-score" th:if="${#lists.isEmpty(records)}">평점 없음</span>
                 </div>
+                <p class="ratings-section-label">외부 평점</p>
                 <div class="detail-all-ratings">
                     <div class="rating-badge-external rating-tmdb" th:if="${detail.voteAverage != null}">
                         <span class="rating-source">TMDB</span>
