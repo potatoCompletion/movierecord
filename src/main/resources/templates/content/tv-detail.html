@@ -43,7 +43,6 @@
                     <span class="murabel-count" th:if="${!#lists.isEmpty(records)}" th:text="'(' + ${#lists.size(records)} + '명' + ')'"></span>
                     <span class="murabel-count" th:if="${#lists.isEmpty(records)}">(0명)</span>
                 </div>
-                <p class="ratings-section-label">외부 평점</p>
                 <div class="detail-all-ratings">
                     <div th:each="r : ${ratings}" class="rating-badge-external" th:classappend="${r.cssClass}">
                         <span class="rating-source" th:text="${r.source == 'Rotten Tomatoes' ? '🍅' : r.source}"></span>
