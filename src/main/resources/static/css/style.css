@@ -2432,6 +2432,31 @@ button.side-nav-link {
     border-color: rgba(210, 50, 50, 0.45);
 }
 
+/* Murabel — brand gold */
+.detail-murabel-rating {
+    margin-top: 0.6rem;
+}
+
+.rating-badge-external.rating-murabel {
+    background: var(--accent-bg-strong);
+    border-color: rgba(232, 184, 75, 0.5);
+}
+.rating-badge-external.rating-murabel .rating-source {
+    background: var(--accent);
+    color: #0e0b1a;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    opacity: 1;
+    text-transform: none;
+}
+.rating-badge-external.rating-murabel .rating-star {
+    color: var(--accent);
+    opacity: 1;
+}
+
 .detail-tagline {
     font-style: italic;
     opacity: 0.6;

@@ -1,10 +1,12 @@
 package com.my.movierecord.content.controller;
 
 import com.my.movierecord.omdb.client.OmdbClient;
+import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.repository.WatchRecordRepository;
 import com.my.movierecord.tmdb.client.TmdbClient;
 import com.my.movierecord.tmdb.dto.TmdbMovieDetail;
 import com.my.movierecord.tmdb.dto.TmdbTvDetail;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,9 +27,12 @@ public class ContentDetailController {
         if (detail == null) {
             return "redirect:/search";
         }
+        List<WatchRecord> records = watchRecordRepository.findByContent(id, "movie");
+        double murabelAvg = records.stream().mapToDouble(r -> r.getRating().doubleValue()).average().orElse(0.0);
         model.addAttribute("detail", detail);
-        model.addAttribute("records", watchRecordRepository.findByContent(id, "movie"));
+        model.addAttribute("records", records);
         model.addAttribute("omdbRatings", omdbClient.getRatings(detail.imdbId()));
+        model.addAttribute("murabelAvg", murabelAvg);
         return "content/movie-detail";
     }
 
@@ -38,9 +43,12 @@ public class ContentDetailController {
             return "redirect:/search";
         }
         String imdbId = tmdbClient.getTvExternalIds(id);
+        List<WatchRecord> records = watchRecordRepository.findByContent(id, "tv");
+        double murabelAvg = records.stream().mapToDouble(r -> r.getRating().doubleValue()).average().orElse(0.0);
         model.addAttribute("detail", detail);
-        model.addAttribute("records", watchRecordRepository.findByContent(id, "tv"));
+        model.addAttribute("records", records);
         model.addAttribute("omdbRatings", omdbClient.getRatings(imdbId));
+        model.addAttribute("murabelAvg", murabelAvg);
         return "content/tv-detail";
     }
 }
