@@ -2333,13 +2333,6 @@ button.side-nav-link {
     opacity: 0.8;
 }
 
-.detail-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.95rem;
-}
-
 .rating-star {
     color: #f5c518;
 }
@@ -2349,16 +2342,90 @@ button.side-nav-link {
     opacity: 0.5;
 }
 
-.rating-source {
+.detail-all-ratings {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 0.45rem;
+    margin-top: 0.6rem;
+}
+
+.rating-badge-external {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.85rem;
+    color: inherit;
+}
+
+.rating-badge-external .rating-source {
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    padding: 0.15em 0.45em;
-    border-radius: 3px;
-    background: rgba(255, 255, 255, 0.15);
-    color: inherit;
-    opacity: 0.75;
+    opacity: 0.7;
+}
+
+.rating-badge-external .rating-value {
+    font-weight: 600;
+}
+
+/* TMDB — teal */
+.rating-badge-external.rating-tmdb {
+    background: rgba(1, 180, 228, 0.15);
+    border-color: rgba(1, 180, 228, 0.4);
+}
+.rating-badge-external.rating-tmdb .rating-star {
+    color: #f5c518;
+    opacity: 1;
+}
+
+/* IMDb — yellow pill */
+.rating-badge-external.rating-imdb {
+    background: #F5C518;
+    border-color: #e6b800;
+    border-radius: 999px;
+    color: #000;
+}
+.rating-badge-external.rating-imdb .rating-source {
+    color: rgba(0, 0, 0, 0.6);
+    opacity: 1;
+}
+.rating-badge-external.rating-imdb .rating-value {
+    color: #000;
+}
+
+/* Rotten Tomatoes Fresh (≥60%) */
+.rating-badge-external.rating-rt-fresh {
+    background: rgba(90, 120, 50, 0.2);
+    border-color: rgba(90, 120, 50, 0.45);
+}
+
+/* Rotten Tomatoes Rotten (<60%) */
+.rating-badge-external.rating-rt-rotten {
+    background: rgba(240, 50, 30, 0.18);
+    border-color: rgba(240, 50, 30, 0.45);
+}
+
+/* Metacritic green (≥75) */
+.rating-badge-external.rating-mc-green {
+    background: rgba(54, 174, 124, 0.2);
+    border-color: rgba(54, 174, 124, 0.5);
+}
+
+/* Metacritic yellow (50–74) */
+.rating-badge-external.rating-mc-yellow {
+    background: rgba(240, 185, 30, 0.18);
+    border-color: rgba(240, 185, 30, 0.45);
+}
+
+/* Metacritic red (≤49) */
+.rating-badge-external.rating-mc-red {
+    background: rgba(210, 50, 50, 0.18);
+    border-color: rgba(210, 50, 50, 0.45);
 }
 
 .detail-tagline {
