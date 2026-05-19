@@ -2371,6 +2371,18 @@ button.side-nav-link {
 
 .rating-badge-external .rating-value {
     font-weight: 600;
+    min-width: unset;
+}
+
+.rating-badge-external .rating-max {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--accent);
+    opacity: 1;
+}
+
+.rating-badge-external .rating-value + .rating-max {
+    margin-left: -0.4rem;
 }
 
 /* TMDB — teal */
