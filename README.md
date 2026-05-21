@@ -14,6 +14,7 @@
 4. [패키지 구조](#패키지-구조)
 5. [서버 아키텍처](#서버-아키텍처)
 6. [로컬 실행](#로컬-실행)
+7. [캐시 전략](#캐시-전략)
 
 ---
 
@@ -25,6 +26,7 @@
 ![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-6DB33F?style=flat-square&logo=spring&logoColor=white)
 ![Thymeleaf](https://img.shields.io/badge/Thymeleaf-005F0F?style=flat-square&logo=thymeleaf&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL_8.4-4479A1?style=flat-square&logo=mysql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=nginx&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=gradle&logoColor=white)
@@ -37,6 +39,7 @@
 | Security | Spring Security | 폼 로그인과 OAuth2를 동일한 필터 체인에서 통합 관리 |
 | View | Thymeleaf | 서버 사이드 렌더링, 별도 API 서버 없이 빠른 기능 구현 |
 | DB | H2 (로컬) / MySQL 8.4 (운영) | 로컬에서 DB 설치 없이 개발, 운영은 MySQL로 전환 |
+| Cache | Redis (운영) / Spring Cache | TTL 기반 캐싱으로 응답 속도 개선 및 반복 연산 비용 절감 |
 | Infra | Docker + Nginx | 컨테이너 단위 배포, 리버스 프록시로 정적 파일·앱 서버 분리 |
 
 ---
@@ -215,13 +218,15 @@ AWS EC2 위에서 Docker Compose로 Nginx · Spring Boot · MySQL 세 컨테이�
  │  │  │   (expose)   │   │  (volume) │ │  │
  │  │  │    :8080     │   └───────────┘ │  │
  │  │  └──────┬───────┘                 │  │
- │  │         │ JDBC                    │  │
- │  │         ▼                         │  │
- │  │  ┌─────────────┐                  │  │
- │  │  │  MySQL 8.4  │                  │  │
- │  │  │  127.0.0.1  │  (호스트 비노출)   │  │
- │  │  │    :3306    │                  │  │
- │  │  └─────────────┘                  │  │
+ │  │         │ JDBC / Redis            │  │
+ │  │    ┌────┴────┐                    │  │
+ │  │    │         │                    │  │
+ │  │    ▼         ▼                    │  │
+ │  │  ┌──────────┐ ┌─────────────┐    │  │
+ │  │  │ MySQL8.4 │ │    Redis    │    │  │
+ │  │  │127.0.0.1 │ │  127.0.0.1 │    │  │
+ │  │  │  :3306   │ │   :6379    │    │  │
+ │  │  └──────────┘ └─────────────┘    │  │
  │  └───────────────────────────────────┘  │
  └─────────────────────────────────────────┘
 ```
@@ -234,6 +239,7 @@ AWS EC2 위에서 Docker Compose로 Nginx · Spring Boot · MySQL 세 컨테이�
 | Nginx | HTTP → HTTPS 리다이렉트, SSL 종단, 리버스 프록시, 정적 파일 서빙 |
 | Spring Boot | 애플리케이션 서버 (외부 포트 미노출, Docker 내부 통신만) |
 | MySQL 8.4 | 운영 DB (127.0.0.1 바인딩으로 호스트 외부 접근 차단) |
+| Redis | Spring Cache 백엔드, 박스오피스 캐시 저장 (127.0.0.1 바인딩) |
 | Let's Encrypt | Certbot으로 SSL 인증서 발급·갱신 |
 
 ### 핵심 설계 포인트
@@ -309,3 +315,28 @@ KOBIS_API_KEY=your_key
 ```bash
 docker compose up -d
 ```
+
+---
+
+## 캐시 전략
+
+### Spring Cache + Redis (운영 전용)
+
+Spring Cache 추상화 위에 Redis를 백엔드로 사용합니다. `@Cacheable` 어노테이션만으로 캐시를 적용할 수 있어 도메인별로 점진적으로 확장합니다.
+
+**TTL 설정**
+
+캐시 이름별로 TTL을 개별 지정하고, 별도 설정이 없는 캐시는 기본 TTL을 따릅니다.
+
+| 캐시 이름 | 대상 | TTL |
+|----------|------|-----|
+| `dailyBoxOffice` | KOBIS 일별 박스오피스 TOP 10 | 1일 |
+| 기본 | 그 외 `@Cacheable` 대상 | 1시간 |
+
+**직렬화**
+
+`GenericJacksonJsonRedisSerializer`로 값을 순수 JSON으로 저장합니다. `enableDefaultTyping`을 사용하지 않아 JSON에 `@class` 타입 정보를 포함하지 않습니다. 클래스 경로가 바뀌어도 기존 캐시 데이터를 역직렬화할 수 있습니다.
+
+**로컬 환경**
+
+`local` 프로파일에서는 `RedisCacheManager` 빈이 등록되지 않고 Spring의 기본 `ConcurrentMapCacheManager`가 사용됩니다. Redis 없이 로컬 개발이 가능합니다.
