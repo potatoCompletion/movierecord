@@ -1,18 +1,16 @@
 package com.my.movierecord.kobis.service;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import tools.jackson.databind.ObjectMapper;
 import com.my.movierecord.movie.domain.Content;
 import com.my.movierecord.movie.service.ContentService;
-import com.my.movierecord.kobis.domain.DailyBoxOffice;
 import com.my.movierecord.kobis.dto.BoxOfficeItemDto;
 import com.my.movierecord.kobis.dto.KobisBoxOfficeResponse;
-import com.my.movierecord.kobis.dto.KobisMovieItem;
-import com.my.movierecord.kobis.repository.DailyBoxOfficeRepository;
 import com.my.movierecord.tmdb.client.TmdbClient;
 import com.my.movierecord.tmdb.dto.TmdbSearchItem;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.RequiredArgsConstructor;
@@ -27,21 +25,18 @@ public class KobisService {
     private static final DateTimeFormatter KOBIS_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     private final KobisOpenAPIRestService kobisOpenAPIRestService;
-    private final DailyBoxOfficeRepository dailyBoxOfficeRepository;
     private final TmdbClient tmdbClient;
     private final ContentService contentService;
     private final ObjectMapper objectMapper;
 
+    @Cacheable(value = "dailyBoxOffice", key = "T(java.time.LocalDate).now().minusDays(1).toString()")
     public List<BoxOfficeItemDto> getDailyBoxOffice() {
         LocalDate targetDt = LocalDate.now().minusDays(1);
-        List<DailyBoxOffice> cached = dailyBoxOfficeRepository.findByTargetDtOrderByRankAsc(targetDt);
-        if (!cached.isEmpty()) {
-            return cached.stream().map(BoxOfficeItemDto::fromEntity).toList();
-        }
-        return fetchAndSave(targetDt);
+
+        return fetchDailyBoxOffice(targetDt);
     }
 
-    private List<BoxOfficeItemDto> fetchAndSave(LocalDate targetDt) {
+    private List<BoxOfficeItemDto> fetchDailyBoxOffice(LocalDate targetDt) {
         try {
             String dateStr = targetDt.format(KOBIS_DATE);
             String json = kobisOpenAPIRestService
@@ -53,21 +48,15 @@ public class KobisService {
                 return List.of();
             }
 
-            List<DailyBoxOffice> entities = new ArrayList<>();
-            for (KobisMovieItem item : response.boxOfficeResult().dailyBoxOfficeList()) {
-                if (item.openDt() == null || item.openDt().isBlank()) {
-                    continue;
-                }
-                int rank = Integer.parseInt(item.rank());
-                Long audiAcc = parseAudiAcc(item.audiAcc());
-                String primaryReleaseYear = item.openDt().split("-")[0];
-                Content content = findContent(item.movieNm(), primaryReleaseYear);
-                LocalDate releaseDate = LocalDate.parse(item.openDt());
-                entities.add(DailyBoxOffice.of(targetDt, rank, item.movieNm(), audiAcc, content, releaseDate));
-            }
-
-            return dailyBoxOfficeRepository.saveAll(entities).stream()
-                    .map(BoxOfficeItemDto::fromEntity)
+            return response.boxOfficeResult()
+                    .dailyBoxOfficeList()
+                    .stream()
+                    .filter(item -> StringUtils.isNotBlank(item.openDt()))
+                    .map(item -> {
+                        String year = item.openDt().split("-")[0];
+                        Content content = findContent(item.movieNm(), year);
+                        return BoxOfficeItemDto.of(item, content);
+                    })
                     .toList();
         } catch (Exception e) {
             log.warn("KOBIS box office fetch failed for {}: {}", targetDt, e.getMessage());
@@ -130,17 +119,6 @@ public class KobisService {
         mismatched += Math.abs(title.length() - movieNm.length());
 
         return matched -  mismatched;
-    }
-
-    private Long parseAudiAcc(String audiAcc) {
-        if (audiAcc == null || audiAcc.isBlank()) {
-            return null;
-        }
-        try {
-            return Long.parseLong(audiAcc.replace(",", ""));
-        } catch (NumberFormatException e) {
-            return null;
-        }
     }
 
 }
