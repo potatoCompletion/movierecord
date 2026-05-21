@@ -11,7 +11,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 
 @EnableCaching
 @Configuration
@@ -20,12 +19,7 @@ public class CacheConfig {
     @Bean
     @Profile("prod")
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        GenericJacksonJsonRedisSerializer serializer = GenericJacksonJsonRedisSerializer.builder()
-                .enableDefaultTyping(
-                        BasicPolymorphicTypeValidator.builder()
-                                .allowIfSubType(Object.class)
-                                .build())
-                .build();
+        GenericJacksonJsonRedisSerializer serializer = GenericJacksonJsonRedisSerializer.builder().build();
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofHours(1))
