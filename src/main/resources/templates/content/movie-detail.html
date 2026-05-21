@@ -25,7 +25,7 @@
                    th:text="${detail.tagline}"></p>
                 <div class="detail-meta">
                     <span th:if="${detail.releaseDate != null and !detail.releaseDate.isEmpty()}"
-                          th:text="${#strings.substring(detail.releaseDate, 0, 4)}"></span>
+                          th:text="${detail.releaseDate}"></span>
                     <span th:if="${detail.runtime != null}" th:text="${detail.runtime + '분'}"></span>
                 </div>
                 <div class="detail-genres" th:if="${!#lists.isEmpty(detail.genres)}">
