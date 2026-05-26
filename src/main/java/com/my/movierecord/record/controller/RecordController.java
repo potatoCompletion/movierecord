@@ -2,7 +2,6 @@ package com.my.movierecord.record.controller;
 
 import com.my.movierecord.auth.domain.User;
 import com.my.movierecord.auth.repository.UserRepository;
-import com.my.movierecord.kobis.service.KobisService;
 import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.dto.*;
 import com.my.movierecord.record.enums.Emotion;
@@ -36,13 +35,10 @@ public class RecordController {
 
     private final WatchRecordService watchRecordService;
     private final UserRepository userRepository;
-    private final KobisService kobisService;
 
-    public RecordController(WatchRecordService watchRecordService, UserRepository userRepository,
-                            KobisService kobisService) {
+    public RecordController(WatchRecordService watchRecordService, UserRepository userRepository) {
         this.watchRecordService = watchRecordService;
         this.userRepository = userRepository;
-        this.kobisService = kobisService;
     }
 
     @GetMapping
@@ -76,7 +72,6 @@ public class RecordController {
         Page<WatchRecord> recordPage = recordPageDto.getPage();
         List<RecordListItem> items = recordPageDto.getItems();
 
-        model.addAttribute("boxOffice", kobisService.getDailyBoxOffice());
         model.addAttribute("items", items);
         model.addAttribute("page", recordPage);
         model.addAttribute("currentSort", sortOption);

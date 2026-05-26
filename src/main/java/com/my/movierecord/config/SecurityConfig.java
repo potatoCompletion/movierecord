@@ -55,6 +55,7 @@ public class SecurityConfig {
                                 "/person/**",
                                 "/api/tmdb/search/unified"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/records/new").authenticated()
                         .requestMatchers(HttpMethod.GET, "/records", "/records/*").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
