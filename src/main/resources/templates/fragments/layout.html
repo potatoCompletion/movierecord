@@ -9,15 +9,27 @@
     <link rel="stylesheet" th:href="@{/webjars/swiper/swiper-bundle.min.css}">
     <link rel="icon" type="image/png" th:href="@{/images/murabel_logo.png}">
     <script th:src="@{/js/header-search.js}" defer></script>
+    <script th:src="@{/js/drawer.js}" defer></script>
 </head>
 <body>
 
 <th:block th:fragment="header">
 <header class="site-header">
     <div class="container header-inner">
-        <a th:href="@{/records}" class="brand">
-            <img th:src="@{/images/murabel_logo.png}" alt="Murabel" class="brand-logo">
-        </a>
+        <div class="header-left">
+            <button class="menu-toggle" aria-label="메뉴 열기" aria-expanded="false" aria-controls="side-drawer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     aria-hidden="true">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <a th:href="@{/}" class="brand">
+                <img th:src="@{/images/murabel_logo.png}" alt="Murabel" class="brand-logo">
+            </a>
+        </div>
         <div class="header-search" id="header-search">
             <input type="text" id="header-search-input" class="header-search-input"
                    placeholder="영화, TV, 인물 검색..." autocomplete="off" aria-label="검색">
@@ -46,27 +58,92 @@
     </div>
 </header>
 
-<nav class="tab-bar" sec:authorize="isAuthenticated()">
+<div class="drawer-overlay" aria-hidden="true"></div>
+<aside id="side-drawer" class="side-drawer" role="dialog" aria-modal="true" aria-label="사이트 메뉴">
+    <div class="drawer-header">
+        <span class="drawer-title">메뉴</span>
+        <button class="drawer-close" aria-label="메뉴 닫기">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    </div>
+    <nav class="drawer-nav" aria-label="사이트 탐색">
+        <a th:href="@{/my-page}" class="drawer-link" sec:authorize="isAuthenticated()"
+           th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/my-page')} ? ' active'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            마이페이지
+        </a>
+        <a th:href="@{/}" class="drawer-link"
+           th:classappend="${#httpServletRequest != null and #httpServletRequest.requestURI == '/'} ? ' active'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house" aria-hidden="true">
+                <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+                <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            </svg>
+            홈
+        </a>
+        <a th:href="@{/records}" class="drawer-link"
+           th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/records')} ? ' active'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-text-icon lucide-message-square-text">
+                <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/>
+                <path d="M7 11h10"/>
+                <path d="M7 15h6"/>
+                <path d="M7 7h8"/>
+            </svg>
+            감상평
+        </a>
+    </nav>
+</aside>
+
+<nav class="tab-bar">
     <div class="tab-bar-inner">
+        <button type="button" class="tab-link menu-toggle" aria-controls="side-drawer" aria-expanded="false" aria-label="메뉴 열기">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu">
+                <path d="M4 5h16"/>
+                <path d="M4 12h16"/>
+                <path d="M4 19h16"/>
+            </svg>
+            <span class="label">메뉴</span>
+        </button>
+
+        <a th:href="@{/}" class="tab-link"
+           th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/records') and not #strings.startsWith(#httpServletRequest.requestURI, '/records/new')} ? ' active'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house" aria-hidden="true">
+                <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+                <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            </svg>
+            <span class="label">홈</span>
+        </a>
+
         <a th:href="@{/records}" class="tab-link"
            th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/records') and not #strings.startsWith(#httpServletRequest.requestURI, '/records/new')} ? ' active'">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-text-icon lucide-message-square-text">
+                <path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/>
+                <path d="M7 11h10"/>
+                <path d="M7 15h6"/>
+                <path d="M7 7h8"/>
             </svg>
             <span class="label">감상평</span>
         </a>
-        <a th:href="@{/records/new}" class="tab-link tab-add">
-            <span class="tab-add-circle">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M12 5v14M5 12h14"/>
-                </svg>
-            </span>
-            <span class="label">기록</span>
-        </a>
+<!--        <a th:href="@{/records/new}" class="tab-link tab-add">-->
+<!--            <span class="tab-add-circle">-->
+<!--                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">-->
+<!--                    <path d="M12 5v14M5 12h14"/>-->
+<!--                </svg>-->
+<!--            </span>-->
+<!--            <span class="label">기록</span>-->
+<!--        </a>-->
         <a th:href="@{/my-page}" class="tab-link"
            th:classappend="${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/my-page')} ? ' active'">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
             </svg>
             <span class="label">마이페이지</span>
         </a>
