@@ -1,0 +1,113 @@
+/* ============================================================
+   MURABEL — SEARCH
+   검색 결과 페이지
+   ============================================================ */
+
+/* ── Search Results Page ────────────────────────────── */
+.page-search main.container {
+    padding-top: 2rem;
+}
+
+.search-header {
+    margin-bottom: 2rem;
+}
+
+.search-form-full {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.search-input-full {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--border-gold);
+    border-radius: 8px;
+    color: var(--fg);
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input-full:focus {
+    border-color: var(--accent);
+}
+
+.search-result-count {
+    font-size: 0.875rem;
+    opacity: 0.6;
+    margin-bottom: 1.25rem;
+}
+
+.search-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 1.25rem;
+}
+
+.search-card {
+    text-decoration: none;
+    color: var(--fg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: transform 0.2s;
+}
+
+.search-card:hover {
+    transform: translateY(-3px);
+}
+
+.search-card-poster {
+    position: relative;
+    aspect-ratio: 2/3;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.search-card-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.search-card-no-poster {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    text-align: center;
+    opacity: 0.5;
+}
+
+.search-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.search-card-title {
+    font-size: 0.8rem;
+    font-weight: 500;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin: 0;
+}
+
+.search-card-year {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    margin: 0;
+}
+
+@media (max-width: 720px) {
+    .search-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+}

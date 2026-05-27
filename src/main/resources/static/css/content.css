@@ -1,0 +1,551 @@
+/* ============================================================
+   MURABEL — CONTENT
+   영화 / TV / 인물 상세 페이지
+   ============================================================ */
+
+/* ── Detail Pages ───────────────────────────────────── */
+.page-detail main {
+    padding-bottom: 5rem;
+}
+
+.detail-hero {
+    position: relative;
+    background: var(--bg-alt);
+    background-size: cover;
+    background-position: center top;
+    min-height: 340px;
+}
+
+.detail-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(10, 9, 20, 0.92) 40%, rgba(10, 9, 20, 0.6));
+}
+
+.detail-hero-inner {
+    position: relative;
+    display: flex;
+    gap: 2rem;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+    align-items: flex-start;
+}
+
+.detail-poster {
+    width: 160px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.detail-poster-placeholder {
+    width: 160px;
+    height: 240px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding-top: 0.5rem;
+}
+
+.detail-info .media-type-badge {
+    position: static;
+    align-self: flex-start;
+}
+
+.detail-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.detail-original-title {
+    font-size: 0.875rem;
+    opacity: 0.55;
+    margin: 0;
+}
+
+.detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    opacity: 0.7;
+}
+
+.detail-meta span::after {
+    content: '·';
+    margin-left: 0.5rem;
+    opacity: 0.5;
+}
+
+.detail-meta span:last-child::after {
+    content: '';
+    margin: 0;
+}
+
+.detail-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.detail-genre {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border-gold);
+    border-radius: 9999px;
+    opacity: 0.8;
+}
+
+.rating-star {
+    color: #f5c518;
+}
+
+.rating-count {
+    font-size: 0.8rem;
+    opacity: 0.5;
+}
+
+.detail-all-ratings {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 0.45rem;
+    margin-top: 0.6rem;
+}
+
+.rating-badge-external {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.85rem;
+    color: inherit;
+}
+
+.rating-badge-external .rating-source {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.rating-badge-external .rating-value {
+    font-weight: 600;
+    min-width: unset;
+}
+
+.rating-badge-external .rating-max {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--accent);
+    opacity: 1;
+}
+
+.rating-badge-external .rating-value + .rating-max {
+    margin-left: -0.4rem;
+}
+
+/* TMDB — teal */
+.rating-badge-external.rating-tmdb {
+    background: rgba(1, 180, 228, 0.15);
+    border-color: rgba(1, 180, 228, 0.4);
+}
+.rating-badge-external.rating-tmdb .rating-star {
+    color: #f5c518;
+    opacity: 1;
+}
+
+/* IMDb — yellow pill */
+.rating-badge-external.rating-imdb {
+    background: #F5C518;
+    border-color: #e6b800;
+    border-radius: 999px;
+    color: #000;
+}
+.rating-badge-external.rating-imdb .rating-source {
+    color: rgba(0, 0, 0, 0.6);
+    opacity: 1;
+}
+.rating-badge-external.rating-imdb .rating-value {
+    color: #000;
+}
+.rating-badge-external.rating-imdb .rating-emoji {
+    font-size: 1rem;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+/* Rotten Tomatoes Fresh (≥60%) */
+.rating-badge-external.rating-rt-fresh {
+    background: rgba(90, 120, 50, 0.2);
+    border-color: rgba(90, 120, 50, 0.45);
+}
+
+/* Rotten Tomatoes Rotten (<60%) */
+.rating-badge-external.rating-rt-rotten {
+    background: rgba(240, 50, 30, 0.18);
+    border-color: rgba(240, 50, 30, 0.45);
+}
+
+/* Metacritic green (≥75) */
+.rating-badge-external.rating-mc-green {
+    background: rgba(54, 174, 124, 0.2);
+    border-color: rgba(54, 174, 124, 0.5);
+}
+
+/* Metacritic yellow (50–74) */
+.rating-badge-external.rating-mc-yellow {
+    background: rgba(240, 185, 30, 0.18);
+    border-color: rgba(240, 185, 30, 0.45);
+}
+
+/* Metacritic red (≤49) */
+.rating-badge-external.rating-mc-red {
+    background: rgba(210, 50, 50, 0.18);
+    border-color: rgba(210, 50, 50, 0.45);
+}
+
+/* Murabel — brand gold */
+.detail-murabel-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem;
+    margin-top: 0.75rem;
+}
+
+.murabel-score-line {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.detail-murabel-rating .murabel-star {
+    color: var(--accent);
+    font-size: 1.1rem;
+}
+
+.detail-murabel-rating .murabel-star-empty {
+    color: var(--accent);
+    opacity: 0.35;
+}
+
+.detail-murabel-rating .murabel-score {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.detail-murabel-rating .rating-max {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+    opacity: 1;
+}
+
+.murabel-score-line .murabel-score + .rating-max {
+    margin-left: -0.3rem;
+}
+
+.detail-murabel-rating .murabel-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.75;
+}
+
+.detail-murabel-rating .murabel-count {
+    font-size: 0.8rem;
+    opacity: 0.55;
+}
+
+.detail-murabel-rating .murabel-no-score {
+    font-size: 1.1rem;
+    font-weight: 700;
+    opacity: 0.35;
+    font-style: normal;
+}
+
+.rating-max {
+    font-size: 0.75rem;
+    opacity: 0.45;
+}
+
+.ratings-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.45;
+    margin: 0.75rem 0 0.3rem;
+}
+
+.detail-tagline {
+    font-style: italic;
+    opacity: 0.6;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.detail-body {
+    padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.detail-overview h2,
+.detail-records h2,
+.filmography-section h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-gold);
+}
+
+.detail-overview p {
+    line-height: 1.7;
+    opacity: 0.85;
+    margin: 0;
+}
+
+.detail-records-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-gold);
+}
+
+.detail-records-header h2 {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.records-count {
+    font-size: 0.85rem;
+    opacity: 0.5;
+    font-weight: 400;
+}
+
+.records-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.record-card {
+    display: block;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-gold);
+    border-radius: 10px;
+    padding: 1rem;
+    text-decoration: none;
+    color: var(--fg);
+    transition: background 0.2s;
+}
+
+.record-card:hover {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.record-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.record-card-user {
+    font-weight: 600;
+}
+
+.record-card-date {
+    opacity: 0.5;
+}
+
+.record-card-rating {
+    margin-left: auto;
+    color: #f5c518;
+    font-weight: 600;
+}
+
+.record-card-oneliner {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.empty-state-small {
+    padding: 1.5rem;
+    text-align: center;
+    opacity: 0.5;
+    font-size: 0.875rem;
+}
+
+/* ── Person Detail ──────────────────────────────────── */
+.person-detail-hero {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border-gold);
+    margin-bottom: 2rem;
+}
+
+.person-profile-img {
+    width: 160px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.person-profile-placeholder {
+    width: 160px;
+    height: 240px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.person-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.person-info .media-type-badge {
+    position: static;
+    align-self: flex-start;
+}
+
+.biography-text {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    opacity: 0.8;
+    margin: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+}
+
+/* ── Filmography ────────────────────────────────────── */
+.filmography-section {
+    margin-bottom: 4rem;
+}
+
+.filmography-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 1rem;
+}
+
+.filmography-card {
+    text-decoration: none;
+    color: var(--fg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: transform 0.2s;
+}
+
+.filmography-card:hover {
+    transform: translateY(-3px);
+}
+
+.filmography-card-poster {
+    position: relative;
+    aspect-ratio: 2/3;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.filmography-card-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.filmography-card-no-poster {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    font-size: 0.7rem;
+    text-align: center;
+    opacity: 0.5;
+}
+
+.filmography-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.filmography-card-title {
+    font-size: 0.75rem;
+    font-weight: 500;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin: 0;
+}
+
+.filmography-card-year {
+    font-size: 0.7rem;
+    opacity: 0.5;
+    margin: 0;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 720px) {
+    .detail-hero-inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .detail-info {
+        align-items: center;
+    }
+
+    .detail-genres {
+        justify-content: center;
+    }
+
+    .person-detail-hero {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .person-info {
+        align-items: center;
+    }
+
+    .filmography-grid {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    }
+}
