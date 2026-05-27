@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Murabel', ~{::#extra-head})}">
+    <th:block id="extra-head">
+        <link rel="stylesheet" th:href="@{/css/home.css}">
+        <script th:src="@{/js/home.js}" defer></script>
+    </th:block>
+</head>
+<body class="page-home">
+
+<!-- ===================================================================
+     home.html · Variant A ("Marquee") 적용판
+     - 헤더/푸터/드로어/탭바는 기존 fragments/layout 를 그대로 사용
+     - 박스오피스만 백엔드 데이터(boxOffice) 사용
+     - 그 외 섹션은 정적 샘플 데이터. 백엔드 연동 시 TODO 위치에 채우기
+     =================================================================== -->
+
+<div th:replace="~{fragments/layout :: header}"></div>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container">
+<div class="home-wrap">
+
+    <!-- ============================================================
+         HERO · 오늘의 무라벨 스포트라이트
+         TODO: 백엔드에서 `spotlight` 모델 어트리뷰트를 추가하면
+               th:each 로 hero-slide 생성하도록 변경 가능
+         ============================================================ -->
+    <section class="home-hero" aria-label="오늘의 스포트라이트">
+        <div class="hero-bg"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-fade"></div>
+
+        <div class="hero-inner">
+            <!-- 좌측 포스터 영역 (활성 슬라이드에 맞춰 자바스크립트가 톤 색상 적용) -->
+            <div class="hero-poster">
+                <div class="poster-art poster-art--no-meta" id="heroPoster"
+                     style="--c1:#1f2a1a; --c2:#3a3520; --c3:#0c0b18; --pa-accent:#d8c577;">
+                    <div class="pa-rule"></div>
+                    <div class="pa-eng">The Zone of Interest</div>
+                </div>
+            </div>
+
+            <!-- 우측 콘텐츠 (3개 슬라이드를 contents 로 토글) -->
+            <div class="hero-content">
+                <div class="hero-eyebrow">오늘의 무라벨 스포트라이트</div>
+
+                <!-- 슬라이드 1 -->
+                <div class="hero-slide active"
+                     data-c1="#1f2a1a" data-c2="#3a3520" data-accent="#d8c577">
+                    <h1 class="hero-title">존 오브 인터레스트</h1>
+                    <div class="hero-eng">The Zone of Interest · 2024</div>
+                    <p class="hero-tagline">"담장 너머의 소리만으로 모든 것을 보여준 영화"</p>
+                    <p class="hero-blurb">아우슈비츠 수용소 옆에서, 평범한 가정이 정원을 가꾸고 아이들을 재웁니다. 보이지 않는 폭력의 압력이 화면 가장자리에서 끊임없이 울립니다.</p>
+                    <div class="hero-meta">
+                        <div>
+                            <div class="meta-label">무라벨 평점</div>
+                            <div class="meta-value">
+                                <span class="meta-rating">★ 4.6</span>
+                                <span class="meta-sub">· 248개 감상평</span>
+                            </div>
+                        </div>
+                        <div class="meta-divider"></div>
+                        <div>
+                            <div class="meta-label">당신과의 취향 일치도</div>
+                            <div class="meta-taste">92<small>%</small></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 슬라이드 2 -->
+                <div class="hero-slide"
+                     data-c1="#2a1a1f" data-c2="#4a2535" data-accent="#e8b84b">
+                    <h1 class="hero-title">패스트 라이브즈</h1>
+                    <div class="hero-eng">Past Lives · 2023</div>
+                    <p class="hero-tagline">"인연(因緣)이라는 단어를 영어로 끝내 옮기지 못한 영화"</p>
+                    <p class="hero-blurb">24년의 시간을 사이에 둔 두 사람이 뉴욕에서 다시 만납니다. 끝내 닿지 못한 채로 이어진 자리를, 셀린 송은 침묵으로 채웁니다.</p>
+                    <div class="hero-meta">
+                        <div>
+                            <div class="meta-label">무라벨 평점</div>
+                            <div class="meta-value">
+                                <span class="meta-rating">★ 4.4</span>
+                                <span class="meta-sub">· 412개 감상평</span>
+                            </div>
+                        </div>
+                        <div class="meta-divider"></div>
+                        <div>
+                            <div class="meta-label">당신과의 취향 일치도</div>
+                            <div class="meta-taste">88<small>%</small></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 슬라이드 3 -->
+                <div class="hero-slide"
+                     data-c1="#1a1f2a" data-c2="#252f4a" data-accent="#a8c3e8">
+                    <h1 class="hero-title">추락의 해부</h1>
+                    <div class="hero-eng">Anatomy of a Fall · 2023</div>
+                    <p class="hero-tagline">"진실이 아니라 서사(narrative)를 다투는 법정극"</p>
+                    <p class="hero-blurb">한 남자가 산장에서 추락사합니다. 그의 아내는 용의자가 되고, 법정에서는 사실이 아니라 이야기가 검증됩니다.</p>
+                    <div class="hero-meta">
+                        <div>
+                            <div class="meta-label">무라벨 평점</div>
+                            <div class="meta-value">
+                                <span class="meta-rating">★ 4.5</span>
+                                <span class="meta-sub">· 186개 감상평</span>
+                            </div>
+                        </div>
+                        <div class="meta-divider"></div>
+                        <div>
+                            <div class="meta-label">당신과의 취향 일치도</div>
+                            <div class="meta-taste">84<small>%</small></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA + 도트 -->
+                <div class="hero-cta-row">
+                    <a th:href="@{/records/new}" class="btn-hero-primary">+ 감상평 등록</a>
+                    <a th:href="@{/records}" class="btn-hero-secondary">감상평 모두 보기</a>
+                    <div class="hero-dots" role="tablist" aria-label="스포트라이트 슬라이드">
+                        <button type="button" class="active" aria-label="슬라이드 1"></button>
+                        <button type="button" aria-label="슬라이드 2"></button>
+                        <button type="button" aria-label="슬라이드 3"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ============================================================
+         박스오피스 TOP 10 — 백엔드 데이터 (boxOffice)
+         ============================================================ -->
+    <section class="boxoffice-section" th:if="${!#lists.isEmpty(boxOffice)}" aria-label="박스오피스 TOP 10">
+        <div class="section-heading">
+            <div>
+                <div class="eyebrow" th:text="|Daily Rank · ${boxOfficeBaseDayText}|"></div>
+                <h2>박스오피스 TOP 10 <span class="count">실시간</span></h2>
+                <p class="subtitle">요즘은 이런 영화를 많이 봐요!</p>
+            </div>
+            <a class="more" th:href="@{/}">더 보기</a>
+        </div>
+
+        <div class="swiper boxoffice-swiper">
+            <div class="swiper-wrapper">
+                <a class="swiper-slide boxoffice-card"
+                   th:each="item : ${boxOffice}"
+                   th:href="${item.tmdbId != null} ? ${'/' + item.mediaType + '/' + item.tmdbId} : null"
+                   th:classappend="${item.tmdbId != null} ? ' boxoffice-card--linked'">
+                    <div class="boxoffice-poster"
+                         th:style="${item.posterUrl != null} ? 'background-image:url(' + ${item.posterUrl} + ')' : ''">
+                    </div>
+                    <div class="boxoffice-rank-row">
+                        <span class="boxoffice-rank" th:text="${item.rank}">1</span>
+                        <span class="boxoffice-audi" th:if="${item.audiAcc != null}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="10" height="10" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span th:text="${#numbers.formatInteger(item.audiAcc, 1, 'COMMA')}">0</span></span>
+                    </div>
+                    <span class="boxoffice-title" th:text="${item.movieNm}">영화제목</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+<!--    <section class="home-section boxoffice-section" th:if="${!#lists.isEmpty(boxOffice)}"-->
+<!--             aria-label="박스오피스 TOP 10">-->
+
+
+<!--        <div class="h-rail boxoffice-rail">-->
+<!--            <div class="h-rail-track">-->
+<!--                <a class="boxoffice-item"-->
+<!--                   th:each="item : ${boxOffice}"-->
+<!--                   th:href="${item.tmdbId != null} ? ${'/' + item.mediaType + '/' + item.tmdbId} : '#'">-->
+<!--                    <span class="bo-rank"-->
+<!--                          th:classappend="${item.rank <= 3} ? ' bo-rank&#45;&#45;top'"-->
+<!--                          th:text="${item.rank}">1</span>-->
+
+<!--                    &lt;!&ndash; 실제 포스터가 있으면 이미지로, 없으면 톤 그라데이션 placeholder &ndash;&gt;-->
+<!--                    <div class="poster-art poster-art&#45;&#45;real"-->
+<!--                         th:if="${item.posterUrl != null}"-->
+<!--                         th:style="'background-image:url(' + ${item.posterUrl} + ')'">-->
+<!--                    </div>-->
+<!--                    <div class="poster-art poster-art&#45;&#45;no-meta"-->
+<!--                         th:unless="${item.posterUrl != null}"-->
+<!--                         style="&#45;&#45;c1:#1f1a2a; &#45;&#45;c2:#2a2540; &#45;&#45;pa-accent:#e8b84b;">-->
+<!--                        <div class="pa-rule"></div>-->
+<!--                        <div class="pa-eng">MURABEL</div>-->
+<!--                    </div>-->
+
+<!--                    <div class="bo-meta">-->
+<!--                        <div class="bo-title" th:text="${item.movieNm}">영화제목</div>-->
+<!--                        <div class="bo-sub" th:if="${item.audiAcc != null}">-->
+<!--                            <span>누적-->
+<!--                                <span th:text="${#numbers.formatInteger(item.audiAcc, 1, 'COMMA')}">0</span>명-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </a>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </section>-->
+
+
+    <section class="home-section" aria-label="현재 상영작"
+             th:if="${!#lists.isEmpty(nowPlaying)}">
+        <div class="section-heading">
+            <div>
+                <div class="eyebrow">In Theaters Now</div>
+                <h2>현재 상영작</h2>
+                <p class="subtitle">지금 극장에서 만날 수 있어요</p>
+            </div>
+            <a class="more" href="#">더 보기</a>
+        </div>
+
+        <div class="h-rail nowplaying-rail">
+            <div class="h-rail-track">
+                <div class="np-item" th:each="movie : ${nowPlaying}">
+                    <div class="np-poster">
+                        <img th:if="${movie.posterPath != null}"
+                             th:src="'https://image.tmdb.org/t/p/w500' + ${movie.posterPath}"
+                             th:alt="${movie.title}"
+                             class="np-poster-img"
+                             loading="lazy"/>
+                        <div th:unless="${movie.posterPath != null}"
+                             class="poster-art poster-art--no-meta">
+                            <div class="pa-rule"></div>
+                            <div class="pa-eng" th:text="${movie.originalTitle}"></div>
+                        </div>
+                        <div class="np-badge">NOW · 상영중</div>
+                    </div>
+                    <div class="np-meta">
+                        <div class="np-title" th:text="${movie.title}"></div>
+                        <div class="np-sub"   th:text="${movie.originalTitle}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="home-section" aria-label="곧 개봉해요"
+             th:if="${!#lists.isEmpty(upcoming)}">
+        <div class="section-heading">
+            <div>
+                <div class="eyebrow">Coming Soon</div>
+                <h2>곧 개봉해요</h2>
+                <p class="subtitle">또 어떤 영화들이 우리를 기다릴까요?</p>
+            </div>
+            <a class="more" href="#">더 보기</a>
+        </div>
+
+        <div class="h-rail upcoming-rail">
+            <div class="h-rail-track">
+                <div class="up-item" th:each="movie : ${upcoming}">
+                    <div class="up-poster">
+                        <img th:if="${movie.posterPath != null}"
+                             th:src="'https://image.tmdb.org/t/p/w500' + ${movie.posterPath}"
+                             th:alt="${movie.title}"
+                             class="up-poster-img"
+                             loading="lazy"/>
+                        <div th:unless="${movie.posterPath != null}"
+                             class="poster-art poster-art--no-meta">
+                            <div class="pa-rule"></div>
+                            <div class="pa-eng" th:text="${movie.originalTitle}"></div>
+                        </div>
+                        <div class="up-dday"
+                             th:text="${movie.ddays == 0 ? 'D-DAY' : 'D-' + movie.ddays}"></div>
+                        <div class="up-datestrip">
+                            <span class="up-date"
+                                  th:text="${#temporals.format(movie.releaseDate, 'MM.dd')}"></span>
+                            <span class="up-date-label">개봉</span>
+                        </div>
+                    </div>
+                    <div class="up-meta">
+                        <div class="up-title" th:text="${movie.title}"></div>
+                        <div class="up-sub"   th:text="${movie.originalTitle}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="home-section" aria-label="이 주의 무라벨 명화"
+             th:if="${!#lists.isEmpty(topRatings)}">
+        <div class="section-heading">
+            <div>
+                <div class="eyebrow">Murabel Top Rated</div>
+                <h2>이 주의 무라벨 명화</h2>
+                <p class="subtitle">이 주의 무라벨 유저들의 PICK은?</p>
+            </div>
+        </div>
+
+        <div class="ratings-panel">
+            <div class="rating-row" th:each="item, stat : ${topRatings}">
+                <div class="rr-rank"
+                     th:classappend="${stat.count <= 3 ? 'rr-rank--top' : null}"
+                     th:text="${stat.count}"></div>
+                <div class="rr-poster">
+                    <img th:if="${item.posterUrl != null}"
+                         th:src="'/uploads/' + ${item.posterUrl}"
+                         th:alt="${item.title}"
+                         class="rr-poster-img"
+                         loading="lazy"/>
+                    <div th:unless="${item.posterUrl != null}"
+                         class="poster-art poster-art--no-meta">
+                        <div class="pa-rule"></div>
+                        <div class="pa-eng" th:text="${item.title}"></div>
+                    </div>
+                    <span class="rr-medal-badge"
+                          th:text="${stat.count == 1 ? '🥇' : (stat.count == 2 ? '🥈' : '🥉')}"></span>
+                </div>
+                <div class="rr-body">
+                    <div>
+                        <div class="rr-title" th:text="${item.title}"></div>
+                        <div class="rr-rating-row">
+                            <span class="rr-rating"
+                                  th:text="'★ ' + ${#numbers.formatDecimal(item.avgRating, 1, 2)}"></span>
+                            <span class="rr-reviews"
+                                  th:text="'· ' + ${item.reviewCount} + '개'"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="home-section" aria-label="최근 감상평"
+             th:if="${!#lists.isEmpty(recentReviews)}">
+        <div class="section-heading">
+            <div>
+                <div class="eyebrow">Recent Records</div>
+                <h2>최근 감상평</h2>
+                <p class="subtitle">방금 누군가의 마음을 통과한 영화들</p>
+            </div>
+            <a class="more" th:href="@{/records}">더 보기</a>
+        </div>
+
+        <div class="reviews-grid">
+            <a class="review-card"
+               th:each="review, stat : ${recentReviews}"
+               th:href="@{/records/{id}(id=${review.id})}"
+               th:style="${stat.index % 3 == 0 ?
+                   '--rc-accent:#d8c577; --rc-avatar-bg:rgba(216,197,119,0.19); --rc-avatar-bd:rgba(216,197,119,0.33);' :
+                   (stat.index % 3 == 1 ?
+                   '--rc-accent:#a8c3e8; --rc-avatar-bg:rgba(168,195,232,0.19); --rc-avatar-bd:rgba(168,195,232,0.33);' :
+                   '--rc-accent:#c8a8e8; --rc-avatar-bg:rgba(200,168,232,0.19); --rc-avatar-bd:rgba(200,168,232,0.33);')}">
+                <div class="rc-poster">
+                    <img th:if="${review.content.thumbnailPath != null}"
+                         th:src="'/uploads/' + ${review.content.thumbnailPath}"
+                         th:alt="${review.title}"
+                         class="rc-poster-img"
+                         loading="lazy"/>
+                    <div th:unless="${review.content.thumbnailPath != null}"
+                         class="poster-art poster-art--no-meta">
+                        <div class="pa-rule"></div>
+                        <div class="pa-eng" th:text="${review.title}"></div>
+                    </div>
+                </div>
+                <div class="rc-body">
+                    <div>
+                        <div class="rc-head">
+                            <span class="rc-avatar"
+                                  th:text="${#strings.substring(review.user.displayNickname, 0, 1)}"></span>
+                            <span class="rc-nick"
+                                  th:text="${review.user.displayNickname}"></span>
+                            <span class="rc-date"
+                                  th:text="${#temporals.format(review.createdAt, 'MM.dd')}"></span>
+                        </div>
+                        <div class="rc-title" th:text="${review.title}"></div>
+                        <div class="rc-stars"
+                             th:text="'★ ' + ${review.rating}"></div>
+                        <p class="rc-oneline"
+                           th:if="${review.oneLiner != null}"
+                           th:text="${review.oneLiner}"></p>
+                        <p class="rc-good"
+                           th:if="${review.goodPoints != null}"
+                           th:text="${review.goodPoints}"></p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+<script th:src="@{/webjars/swiper/swiper-bundle.min.js}"></script>
+<script>
+    (function () {
+        const el = document.querySelector('.boxoffice-swiper');
+        if (!el) return;
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        new Swiper(el, {
+            slidesPerView: 'auto',
+            spaceBetween: 12,
+            loop: true,
+            grabCursor: true,
+            speed: 3000,
+            freeMode: { enabled: true, momentum: false },
+            autoplay: prefersReduced ? false : {
+                delay: 0,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
+        });
+    })();
+</script>
+
+</body>
+</html>

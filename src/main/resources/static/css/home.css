@@ -1,0 +1,1041 @@
+/* ============================================================
+   MURABEL — HOME (Variant A · "Marquee")
+   preview-a.html의 디자인을 Thymeleaf home.html에 이식한 스타일.
+   colors_and_type.css 의 토큰을 그대로 사용한다.
+   파일 위치: src/main/resources/static/css/home.css
+   ============================================================ */
+
+/* ── 페이지 전반 ───────────────────────────── */
+.page-home main.container {
+    /* hero 가 full-bleed 이므로 상단 패딩을 0 으로 */
+    padding-top: 0;
+}
+
+.page-home .home-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.page-home .home-wrap > .home-section:first-child {
+    margin-top: 2rem;
+}
+
+/* ── 가로 스크롤 레일 ──────────────────────── */
+.h-rail {
+    position: relative;
+    padding: 4px 0 8px;
+}
+
+.h-rail-track {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 4px 0 16px;
+    scrollbar-width: thin;
+    scroll-snap-type: x proximity;
+}
+
+.h-rail-track::-webkit-scrollbar { height: 6px; }
+.h-rail-track::-webkit-scrollbar-track { background: transparent; }
+.h-rail-track::-webkit-scrollbar-thumb {
+    background: rgba(240, 235, 224, 0.1);
+    border-radius: 999px;
+}
+.h-rail-track::-webkit-scrollbar-thumb:hover {
+    background: rgba(232, 184, 75, 0.25);
+}
+
+.h-rail-track > * { scroll-snap-align: start; }
+
+/* ── 섹션 헤딩 ─────────────────────────────── */
+.section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.section-heading .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+    white-space: nowrap;
+}
+
+.section-heading h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--fg);
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+}
+
+.section-heading h2 .count {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+}
+
+.section-heading .subtitle {
+    margin: 0.35rem 0 0;
+    color: var(--fg-muted);
+    font-size: 0.88rem;
+}
+
+.section-heading .more {
+    font-size: 0.83rem;
+    color: var(--fg-muted);
+    cursor: pointer;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+.section-heading .more:hover { color: var(--accent); }
+.section-heading .more::after {
+    content: '›';
+    font-size: 0.95rem;
+}
+
+/* ──────────────────────────────────────────────
+   PosterArt — 색상 톤 그라데이션 플레이스홀더 포스터
+   --c1, --c2, --c3, --pa-accent  를 인라인으로 받는다.
+   ────────────────────────────────────────────── */
+.poster-art {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: linear-gradient(158deg,
+        var(--c1, #1f1a2a) 0%,
+        var(--c2, #2a2540) 55%,
+        var(--c3, #0c0b18) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: #f0ebe0;
+}
+
+.poster-art--real {
+    background-size: cover;
+    background-position: center;
+}
+
+.poster-art::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.18;
+    mix-blend-mode: overlay;
+    background:
+        radial-gradient(circle at 30% 20%, var(--pa-accent, #e8b84b) 0%, transparent 35%),
+        radial-gradient(circle at 70% 80%, #00000055 0%, transparent 40%);
+    pointer-events: none;
+}
+
+.poster-art--real::before { display: none; }
+
+.poster-art .pa-rule {
+    position: absolute;
+    top: 8%;
+    left: 10%;
+    width: 32%;
+    height: 2px;
+    background: var(--pa-accent, #e8b84b);
+    opacity: 0.85;
+}
+
+.poster-art .pa-eng {
+    position: absolute;
+    top: 12%;
+    left: 10%;
+    right: 10%;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--pa-accent, #e8b84b);
+    font-family: var(--font-body);
+    font-weight: 600;
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.poster-art .pa-foot {
+    position: relative;
+    padding: 1rem 0.85rem 0.85rem;
+    z-index: 1;
+}
+
+.poster-art .pa-title {
+    font-family: 'Noto Serif KR', var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: #f0ebe0;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+    word-break: keep-all;
+}
+
+.poster-art .pa-year {
+    margin-top: 4px;
+    font-size: 0.65rem;
+    color: rgba(240, 235, 224, 0.55);
+    font-family: var(--font-body);
+    letter-spacing: 0.08em;
+}
+
+.poster-art--no-meta .pa-foot { display: none; }
+
+/* ──────────────────────────────────────────────
+   HERO — 오늘의 스포트라이트
+   ────────────────────────────────────────────── */
+.home-hero {
+    position: relative;
+    margin: 0 calc(50% - 50vw);
+    padding: 3.5rem 0 4rem;
+    overflow: hidden;
+    background: #0c0b18;
+}
+
+.home-hero .hero-bg,
+.home-hero .hero-glow,
+.home-hero .hero-fade {
+    position: absolute;
+    inset: 0;
+    transition: background 0.8s ease;
+    pointer-events: none;
+}
+
+.home-hero .hero-bg {
+    opacity: 0.6;
+    background: linear-gradient(158deg,
+        var(--hero-c1, #1f2a1a) 0%,
+        var(--hero-c2, #3a3520) 60%,
+        #0c0b18 100%);
+}
+
+.home-hero .hero-glow {
+    background: radial-gradient(ellipse at 70% 50%,
+        rgba(232, 184, 75, 0.094) 0%, transparent 55%);
+}
+
+.home-hero .hero-fade {
+    background: linear-gradient(180deg, transparent 0%, transparent 70%, #0c0b18 100%);
+}
+
+.home-hero .hero-inner {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.home-hero .hero-poster {
+    position: relative;
+    width: 300px;
+}
+
+.home-hero .hero-poster .poster-art {
+    aspect-ratio: 2 / 3;
+}
+
+.home-hero .hero-poster::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 12px;
+    border: 1px solid var(--hero-accent-30, rgba(232, 184, 75, 0.19));
+    pointer-events: none;
+}
+
+.home-hero .hero-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--hero-accent, #e8b84b);
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.home-hero .hero-eyebrow::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--hero-accent, #e8b84b);
+}
+
+.home-hero h1.hero-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 3.4rem;
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: #f0ebe0;
+}
+
+.home-hero .hero-eng {
+    margin-top: 8px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1rem;
+    color: rgba(240, 235, 224, 0.55);
+}
+
+.home-hero .hero-tagline {
+    margin-top: 22px;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    max-width: 540px;
+    color: rgba(240, 235, 224, 0.82);
+    font-family: var(--font-display);
+    font-style: italic;
+}
+
+.home-hero .hero-blurb {
+    margin: 14px 0 26px;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    max-width: 540px;
+    color: rgba(240, 235, 224, 0.6);
+}
+
+.home-hero .hero-meta {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.home-hero .hero-meta .meta-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    margin-bottom: 4px;
+}
+
+.home-hero .hero-meta .meta-value {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.home-hero .hero-meta .meta-rating {
+    font-family: var(--font-display);
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--hero-accent, #e8b84b);
+    line-height: 1;
+}
+
+.home-hero .hero-meta .meta-sub {
+    font-size: 0.78rem;
+    color: var(--fg-muted);
+}
+
+.home-hero .hero-meta .meta-divider {
+    width: 1px;
+    height: 32px;
+    background: var(--border);
+}
+
+.home-hero .hero-meta .meta-taste {
+    font-family: var(--font-display);
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #f0ebe0;
+    line-height: 1;
+}
+.home-hero .hero-meta .meta-taste small {
+    font-size: 1rem;
+    color: var(--fg-muted);
+    margin-left: 2px;
+    font-weight: 400;
+}
+
+.home-hero .hero-cta-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 26px;
+    flex-wrap: wrap;
+}
+
+.home-hero .btn-hero-primary {
+    padding: 0.75rem 1.4rem;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #e8b84b 0%, #c4901f 100%);
+    color: #0e0b1a;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(232, 184, 75, 0.25);
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+.home-hero .btn-hero-primary:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(232, 184, 75, 0.42);
+}
+
+.home-hero .btn-hero-secondary {
+    padding: 0.75rem 1.2rem;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--fg);
+    font-size: 0.88rem;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: border-color 0.15s, background 0.15s;
+}
+.home-hero .btn-hero-secondary:hover {
+    border-color: var(--border-gold-mid);
+    background: var(--accent-bg);
+}
+
+.home-hero .hero-dots {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+.home-hero .hero-dots button {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(240, 235, 224, 0.18);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.home-hero .hero-dots button.active {
+    width: 28px;
+    background: var(--hero-accent, #e8b84b);
+}
+
+/* hero slides */
+.hero-slide { display: none; }
+.hero-slide.active { display: contents; }
+
+/* ──────────────────────────────────────────────
+   BOX OFFICE — 거대한 이탤릭 랭크 번호
+   ────────────────────────────────────────────── */
+.boxoffice-rail .boxoffice-item {
+    flex: 0 0 178px;
+    position: relative;
+    padding-left: 28px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.boxoffice-rail .bo-rank {
+    position: absolute;
+    left: -8px;
+    bottom: -8px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 5.5rem;
+    font-weight: 700;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(240, 235, 224, 0.35);
+    line-height: 0.85;
+    pointer-events: none;
+}
+.boxoffice-rail .bo-rank--top {
+    -webkit-text-stroke: 1.5px var(--accent);
+    text-shadow: 0 0 22px rgba(232, 184, 75, 0.2);
+}
+
+.boxoffice-rail .bo-meta {
+    margin-top: 10px;
+    padding-left: 2px;
+}
+.boxoffice-rail .bo-title {
+    font-family: 'Noto Serif KR', var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--fg);
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.boxoffice-rail .bo-sub {
+    margin-top: 4px;
+    font-size: 0.74rem;
+    color: var(--fg-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.boxoffice-rail .bo-sub .dot { color: var(--fg-dim); }
+
+/* ──────────────────────────────────────────────
+   NOW PLAYING — 상영중 배지
+   ────────────────────────────────────────────── */
+.nowplaying-rail .np-item {
+    flex: 0 0 200px;
+}
+
+.nowplaying-rail .np-poster {
+    position: relative;
+}
+.nowplaying-rail .np-poster-img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.nowplaying-rail .np-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 9px;
+    border-radius: 4px;
+    background: rgba(12, 11, 24, 0.78);
+    backdrop-filter: blur(6px);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--np-accent, var(--accent));
+    font-weight: 600;
+    border: 1px solid var(--np-accent-30, rgba(232, 184, 75, 0.19));
+    white-space: nowrap;
+}
+
+.nowplaying-rail .np-meta {
+    margin-top: 10px;
+}
+.nowplaying-rail .np-title {
+    font-family: 'Noto Serif KR', var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--fg);
+}
+.nowplaying-rail .np-sub {
+    margin-top: 3px;
+    font-size: 0.76rem;
+    color: var(--fg-muted);
+}
+
+/* ──────────────────────────────────────────────
+   UPCOMING — D-day + 개봉일 스트립
+   ────────────────────────────────────────────── */
+.upcoming-rail .up-item { flex: 0 0 200px; }
+
+.upcoming-rail .up-poster {
+    position: relative;
+}
+.upcoming-rail .up-poster-img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.upcoming-rail .up-dday {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    background: rgba(12, 11, 24, 0.85);
+    border: 1px solid var(--up-accent-55, rgba(232, 184, 75, 0.33));
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--up-accent, var(--accent));
+    letter-spacing: 0.04em;
+    box-shadow: 0 0 18px var(--up-accent-22, rgba(232, 184, 75, 0.13));
+    white-space: nowrap;
+}
+
+.upcoming-rail .up-datestrip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px 14px;
+    background: linear-gradient(180deg, transparent 0%, rgba(12, 11, 24, 0.85) 100%);
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+.upcoming-rail .up-date {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f0ebe0;
+}
+.upcoming-rail .up-date-label {
+    font-size: 0.7rem;
+    color: rgba(240, 235, 224, 0.55);
+}
+
+.upcoming-rail .up-meta { margin-top: 10px; }
+.upcoming-rail .up-title {
+    font-family: 'Noto Serif KR', var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fg);
+}
+.upcoming-rail .up-sub {
+    margin-top: 3px;
+    font-size: 0.76rem;
+    color: var(--fg-muted);
+}
+
+/* ──────────────────────────────────────────────
+   TOP RATED — 가로 포디엄 레이아웃 (Top 3)
+   ────────────────────────────────────────────── */
+.ratings-panel {
+    display: flex;
+    gap: 1.25rem;
+    align-items: stretch;
+}
+
+.ratings-panel .rating-row {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 0.85rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.ratings-panel .rating-row:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+}
+
+/* 메달별 테두리 & 배경 톤 */
+.ratings-panel .rating-row:nth-child(1) {
+    border-color: rgba(216, 197, 119, 0.5);
+    background: linear-gradient(160deg, rgba(216, 197, 119, 0.08) 0%, var(--surface) 55%);
+}
+.ratings-panel .rating-row:nth-child(2) {
+    border-color: rgba(192, 192, 192, 0.38);
+    background: linear-gradient(160deg, rgba(192, 192, 192, 0.07) 0%, var(--surface) 55%);
+}
+.ratings-panel .rating-row:nth-child(3) {
+    border-color: rgba(180, 110, 40, 0.38);
+    background: linear-gradient(160deg, rgba(180, 110, 40, 0.07) 0%, var(--surface) 55%);
+}
+
+/* 랭크 뱃지 — 원형 메달 */
+.ratings-panel .rr-rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-style: normal;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+}
+.ratings-panel .rating-row:nth-child(1) .rr-rank {
+    background: linear-gradient(135deg, #e8c84b 0%, #c4901f 100%);
+    color: #1a1000;
+    box-shadow: 0 3px 14px rgba(232, 184, 75, 0.42);
+}
+.ratings-panel .rating-row:nth-child(2) .rr-rank {
+    background: linear-gradient(135deg, #dcdcdc 0%, #9e9e9e 100%);
+    color: #1a1a1a;
+    box-shadow: 0 3px 12px rgba(180, 180, 180, 0.32);
+}
+.ratings-panel .rating-row:nth-child(3) .rr-rank {
+    background: linear-gradient(135deg, #d4854a 0%, #9c5520 100%);
+    color: #1a0900;
+    box-shadow: 0 3px 12px rgba(180, 110, 40, 0.32);
+}
+
+/* 포스터 */
+.ratings-panel .rr-poster {
+    width: 100%;
+    max-width: 150px;
+    position: relative;
+    margin-bottom: 14px;
+}
+.ratings-panel .rr-poster-img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    display: block;
+}
+.ratings-panel .rr-poster .poster-art {
+    aspect-ratio: 2 / 3;
+    width: 100%;
+}
+
+/* 메달 이모지 뱃지 (포스터 좌상단 오버레이) */
+.ratings-panel .rr-medal-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 1.4rem;
+    line-height: 1;
+    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
+}
+
+/* 본문 */
+.ratings-panel .rr-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    width: 100%;
+}
+.ratings-panel .rr-title {
+    font-family: 'Noto Serif KR', var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--fg);
+    text-align: center;
+    word-break: keep-all;
+    line-height: 1.35;
+    margin-bottom: 6px;
+}
+.ratings-panel .rr-rating-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    justify-content: center;
+    white-space: nowrap;
+}
+.ratings-panel .rr-rating {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: var(--font-display);
+}
+.ratings-panel .rr-reviews {
+    font-size: 0.74rem;
+    color: var(--fg-muted);
+}
+
+/* ──────────────────────────────────────────────
+   RECENT REVIEWS — 가로형 카드
+   ────────────────────────────────────────────── */
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.review-card {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 18px;
+    padding: 1.1rem 1.25rem;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+.review-card:hover {
+    border-color: var(--border-gold-mid);
+    transform: translateY(-2px);
+}
+
+.review-card .rc-poster { width: 100px; }
+
+.review-card .rc-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+}
+
+.review-card .rc-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+.review-card .rc-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--rc-avatar-bg, rgba(232, 184, 75, 0.19));
+    color: var(--rc-accent, var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: var(--font-body);
+    border: 1px solid var(--rc-avatar-bd, rgba(232, 184, 75, 0.33));
+}
+.review-card .rc-nick {
+    font-size: 0.82rem;
+    color: var(--fg);
+    font-weight: 500;
+}
+.review-card .rc-date {
+    font-size: 0.74rem;
+    color: var(--fg-dim);
+    margin-left: auto;
+}
+
+.review-card .rc-title {
+    font-family: 'Noto Serif KR', var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--fg);
+}
+.review-card .rc-title .rc-year {
+    font-size: 0.78rem;
+    color: var(--fg-muted);
+    font-weight: 400;
+}
+
+.review-card .rc-stars {
+    margin-top: 4px;
+    color: var(--accent);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+.review-card .rc-stars .empty { color: rgba(240, 235, 224, 0.2); }
+
+.review-card .rc-oneline {
+    margin: 8px 0 0;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: rgba(240, 235, 224, 0.78);
+    font-family: var(--font-display), 'Noto Serif KR';
+    font-style: italic;
+    word-break: keep-all;
+}
+
+.review-card .rc-good {
+    margin: 6px 0 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--fg-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: keep-all;
+}
+
+.review-card .rc-foot {
+    margin-top: 10px;
+    font-size: 0.72rem;
+}
+.review-card .rc-taste {
+    color: var(--rc-accent, var(--accent));
+    font-weight: 600;
+}
+
+/* ──────────────────────────────────────────────
+   반응형
+   ────────────────────────────────────────────── */
+@media (max-width: 960px) {
+    .home-hero { padding: 2.5rem 0 3rem; }
+    .home-hero .hero-inner {
+        grid-template-columns: 220px 1fr;
+        gap: 2rem;
+    }
+    .home-hero .hero-poster { width: 220px; }
+    .home-hero h1.hero-title { font-size: 2.4rem; }
+
+    .ratings-panel { gap: 0.85rem; }
+
+    .reviews-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+    .home-hero { padding: 2rem 0 2.5rem; }
+    .home-hero .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        text-align: left;
+    }
+    .home-hero .hero-poster {
+        width: 180px;
+        margin: 0 auto;
+    }
+    .home-hero h1.hero-title { font-size: 2rem; }
+    .home-hero .hero-tagline { font-size: 0.95rem; }
+
+    .section-heading h2 { font-size: 1.25rem; }
+
+    .boxoffice-rail .boxoffice-item { flex-basis: 150px; padding-left: 22px; }
+    .boxoffice-rail .bo-rank { font-size: 4.2rem; left: -4px; }
+    .nowplaying-rail .np-item { flex-basis: 160px; }
+    .upcoming-rail .up-item { flex-basis: 160px; }
+
+    .ratings-panel {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .ratings-panel .rating-row {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        padding: 1rem;
+        gap: 14px;
+    }
+    .ratings-panel .rr-rank { margin-bottom: 0; flex-shrink: 0; }
+    .ratings-panel .rr-poster {
+        max-width: 72px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+    .ratings-panel .rr-body { align-items: flex-start; }
+    .ratings-panel .rr-title { text-align: left; }
+    .ratings-panel .rr-rating-row { justify-content: flex-start; }
+
+    .review-card { padding: 0.9rem 1rem; grid-template-columns: 80px 1fr; gap: 14px; }
+    .review-card .rc-poster { width: 80px; }
+}
+
+/* ── Box Office Carousel (Swiper) ────────────────── */
+.boxoffice-section {
+    margin-bottom: 2rem;
+}
+.boxoffice-heading {
+    font-family: var(--font-display);
+    font-size: var(--fs-xs);
+    letter-spacing: var(--tracking-loose);
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.75rem;
+}
+.boxoffice-swiper {
+    position: relative;
+    overflow: hidden;
+    touch-action: pan-y;
+    user-select: none;
+}
+.boxoffice-swiper::before,
+.boxoffice-swiper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    z-index: 2;
+    pointer-events: none;
+}
+.boxoffice-swiper::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg), transparent);
+}
+.boxoffice-swiper::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg), transparent);
+}
+.boxoffice-swiper .swiper-slide {
+    width: 200px;
+}
+.boxoffice-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    cursor: inherit;
+    text-decoration: none;
+    color: inherit;
+}
+.boxoffice-card--linked {
+    cursor: pointer;
+}
+
+.boxoffice-poster {
+    width: 200px;
+    aspect-ratio: 2 / 3;
+    height: auto;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-2);
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+.boxoffice-rank-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+.boxoffice-rank {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--border-gold-mid, var(--accent));
+    line-height: 1;
+}
+.boxoffice-audi {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.65rem;
+    color: var(--fg-muted, var(--fg));
+    opacity: 0.7;
+    font-family: var(--font-sans, sans-serif);
+    line-height: 1;
+}
+.boxoffice-title {
+    font-size: var(--fs-xs);
+    color: var(--fg);
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
