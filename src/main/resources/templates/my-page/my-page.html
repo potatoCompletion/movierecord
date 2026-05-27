@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/layout :: head('마이페이지 — Murabel')}"></head>
+<head th:replace="~{fragments/layout :: head('마이페이지 — Murabel', ~{::#extra-head})}">
+    <th:block id="extra-head">
+        <link rel="stylesheet" th:href="@{/css/my-page.css}">
+    </th:block>
+</head>
 <body class="page-mypage">
 
 <div th:replace="~{fragments/layout :: header}"></div>

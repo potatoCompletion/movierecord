@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/layout :: head(${detail.name + ' — Murabel'})}"></head>
+<head th:replace="~{fragments/layout :: head(${detail.name + ' — Murabel'}, ~{::#extra-head})}">
+    <th:block id="extra-head">
+        <link rel="stylesheet" th:href="@{/css/content.css}">
+    </th:block>
+</head>
 <body class="page-detail">
 
 <div th:replace="~{fragments/layout :: header}"></div>

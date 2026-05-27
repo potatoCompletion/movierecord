@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head(${mode == 'edit'} ? '감상평 수정 — Murabel' : '감상평 등록 — Murabel')}"></head>
+<head th:replace="~{fragments/layout :: head(${mode == 'edit'} ? '감상평 수정 — Murabel' : '감상평 등록 — Murabel', ~{::#extra-head})}">
+    <th:block id="extra-head">
+        <link rel="stylesheet" th:href="@{/css/records.css}">
+    </th:block>
+</head>
 <body class="page-form">
 
 <div th:replace="~{fragments/layout :: header}"></div>

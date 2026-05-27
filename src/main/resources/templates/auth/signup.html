@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('회원가입 — Murabel')}"></head>
+<head th:replace="~{fragments/layout :: head('회원가입 — Murabel', ~{::#extra-head})}">
+    <th:block id="extra-head">
+        <link rel="stylesheet" th:href="@{/css/auth.css}">
+    </th:block>
+</head>
 <body class="page-auth">
 
 <div th:replace="~{fragments/layout :: header}"></div>

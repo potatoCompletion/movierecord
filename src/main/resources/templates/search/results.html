@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/layout :: head('검색 — Murabel')}"></head>
+<head th:replace="~{fragments/layout :: head('검색 — Murabel', ~{::#extra-head})}">
+    <th:block id="extra-head">
+        <link rel="stylesheet" th:href="@{/css/search.css}">
+    </th:block>
+</head>
 <body class="page-search">
 
 <div th:replace="~{fragments/layout :: header}"></div>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:fragment="head(title)">
+<head th:fragment="head(title, extraHead)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title} ?: 'Murabel'">Murabel</title>
@@ -10,6 +10,7 @@
     <link rel="icon" type="image/png" th:href="@{/images/murabel_logo.png}">
     <script th:src="@{/js/header-search.js}" defer></script>
     <script th:src="@{/js/drawer.js}" defer></script>
+    <th:block th:if="${extraHead != null}" th:replace="${extraHead}"></th:block>
 </head>
 <body>
 
