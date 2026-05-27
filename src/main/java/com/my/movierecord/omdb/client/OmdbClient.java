@@ -4,24 +4,29 @@ import com.my.movierecord.omdb.config.OmdbProperties;
 import com.my.movierecord.omdb.dto.OmdbRating;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Component
-@RequiredArgsConstructor
 public class OmdbClient {
 
-    private final RestClient omdbRestClient;
+    private final RestClient restClient;
     private final OmdbProperties omdbProperties;
+
+    public OmdbClient(@Qualifier("omdbRestClient") RestClient restClient,
+            OmdbProperties omdbProperties) {
+        this.restClient = restClient;
+        this.omdbProperties = omdbProperties;
+    }
 
     public List<OmdbRating> getRatings(String imdbId) {
         if (imdbId == null || imdbId.isBlank()) {
             return List.of();
         }
         try {
-            Map<String, Object> raw = omdbRestClient.get()
+            Map<String, Object> raw = restClient.get()
                     .uri(b -> b.queryParam("i", imdbId).queryParam("apikey", omdbProperties.key()).build())
                     .retrieve()
                     .body(new ParameterizedTypeReference<>() {});

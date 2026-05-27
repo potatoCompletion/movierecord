@@ -6,13 +6,12 @@ import com.my.movierecord.tmdb.dto.TmdbSearchItem;
 import com.my.movierecord.tmdb.dto.TmdbTvDetail;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Component
-@RequiredArgsConstructor
 public class TmdbClient {
 
     private static final String SEARCH_MULTI_PATH = "/search/multi";
@@ -23,10 +22,14 @@ public class TmdbClient {
     private static final String PERSON_CREDITS_PATH = "/person/{id}/combined_credits";
     private static final String TV_EXTERNAL_IDS_PATH = "/tv/{id}/external_ids";
 
-    private final RestClient tmdbRestClient;
+    private final RestClient restClient;
+
+    public TmdbClient(@Qualifier("tmdbRestClient") RestClient restClient) {
+        this.restClient = restClient;
+    }
 
     public List<TmdbSearchItem> searchMulti(String query) {
-        Map<String, Object> body = tmdbRestClient.get()
+        Map<String, Object> body = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(SEARCH_MULTI_PATH)
                         .queryParam("query", query)
@@ -64,7 +67,7 @@ public class TmdbClient {
     }
 
     public List<TmdbSearchItem> searchMovie(String query, String primaryReleaseYear) {
-        Map<String, Object> body = tmdbRestClient.get()
+        Map<String, Object> body = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(SEARCH_MOVIE_PATH)
                         .queryParam("query", query)
@@ -99,7 +102,7 @@ public class TmdbClient {
     }
 
     public List<TmdbSearchItem> searchMultiUnified(String query) {
-        Map<String, Object> body = tmdbRestClient.get()
+        Map<String, Object> body = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(SEARCH_MULTI_PATH)
                         .queryParam("query", query)
@@ -139,7 +142,7 @@ public class TmdbClient {
 
     public TmdbMovieDetail getMovieDetail(Long tmdbId) {
         @SuppressWarnings("unchecked")
-        Map<String, Object> raw = tmdbRestClient.get()
+        Map<String, Object> raw = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(MOVIE_PATH)
                         .queryParam("language", "ko-KR")
@@ -152,7 +155,7 @@ public class TmdbClient {
 
     public TmdbTvDetail getTvDetail(Long tmdbId) {
         @SuppressWarnings("unchecked")
-        Map<String, Object> raw = tmdbRestClient.get()
+        Map<String, Object> raw = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(TV_PATH)
                         .queryParam("language", "ko-KR")
@@ -165,7 +168,7 @@ public class TmdbClient {
 
     public String getTvExternalIds(Long tmdbId) {
         @SuppressWarnings("unchecked")
-        Map<String, Object> raw = tmdbRestClient.get()
+        Map<String, Object> raw = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(TV_EXTERNAL_IDS_PATH)
                         .build(tmdbId))
@@ -176,7 +179,7 @@ public class TmdbClient {
 
     public TmdbPersonDetail getPersonDetail(Long tmdbId) {
         @SuppressWarnings("unchecked")
-        Map<String, Object> personRaw = tmdbRestClient.get()
+        Map<String, Object> personRaw = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(PERSON_PATH)
                         .queryParam("language", "ko-KR")
@@ -186,7 +189,7 @@ public class TmdbClient {
                 });
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> creditsRaw = tmdbRestClient.get()
+        Map<String, Object> creditsRaw = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(PERSON_CREDITS_PATH)
                         .queryParam("language", "ko-KR")

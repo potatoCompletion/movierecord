@@ -4,19 +4,26 @@ import com.my.movierecord.common.service.FileStorageService;
 import com.my.movierecord.movie.domain.Content;
 import com.my.movierecord.movie.domain.ContentId;
 import com.my.movierecord.movie.repository.ContentRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 public class ContentService {
 
     private final ContentRepository contentRepository;
     private final FileStorageService fileStorageService;
-    private final RestClient tmdbImageRestClient;
+    private final RestClient restClient;
+
+    public ContentService(ContentRepository contentRepository,
+            FileStorageService fileStorageService,
+            @Qualifier("tmdbImageRestClient") RestClient restClient) {
+        this.contentRepository = contentRepository;
+        this.fileStorageService = fileStorageService;
+        this.restClient = restClient;
+    }
 
     @Transactional
     public Content findOrCreate(Long tmdbId, String mediaType, String posterPath) {
@@ -33,7 +40,7 @@ public class ContentService {
 
     private String downloadAndSave(String posterPath) {
         try {
-            byte[] bytes = tmdbImageRestClient.get()
+            byte[] bytes = restClient.get()
                     .uri(posterPath)
                     .retrieve()
                     .body(byte[].class);
