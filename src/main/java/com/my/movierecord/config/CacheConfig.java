@@ -27,11 +27,13 @@ public class CacheConfig {
                 .serializeValuesWith(SerializationPair.fromSerializer(serializer))
                 .disableCachingNullValues();
 
-        RedisCacheConfiguration boxOfficeConfig = config.entryTtl(Duration.ofDays(1));
+        RedisCacheConfiguration oneDayConfig = config.entryTtl(Duration.ofDays(1));
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)
-                .withCacheConfiguration("dailyBoxOffice", boxOfficeConfig)
+                .withCacheConfiguration("dailyBoxOffice", oneDayConfig)
+                .withCacheConfiguration("nowPlaying", oneDayConfig)
+                .withCacheConfiguration("upcomingMovies", oneDayConfig)
                 .build();
     }
 }

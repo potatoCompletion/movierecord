@@ -1,9 +1,13 @@
 package com.my.movierecord.tmdb.client;
 
+import com.my.movierecord.tmdb.dto.NowPlayingItem;
 import com.my.movierecord.tmdb.dto.TmdbMovieDetail;
 import com.my.movierecord.tmdb.dto.TmdbPersonDetail;
 import com.my.movierecord.tmdb.dto.TmdbSearchItem;
 import com.my.movierecord.tmdb.dto.TmdbTvDetail;
+import com.my.movierecord.tmdb.dto.UpcomingItem;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,6 +25,8 @@ public class TmdbClient {
     private static final String PERSON_PATH = "/person/{id}";
     private static final String PERSON_CREDITS_PATH = "/person/{id}/combined_credits";
     private static final String TV_EXTERNAL_IDS_PATH = "/tv/{id}/external_ids";
+    private static final String NOW_PLAYING_PATH    = "/movie/now_playing";
+    private static final String DISCOVER_MOVIE_PATH = "/discover/movie";
 
     private final RestClient restClient;
 
@@ -175,6 +181,53 @@ public class TmdbClient {
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
         return raw != null ? (String) raw.get("imdb_id") : null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<NowPlayingItem> getNowPlaying() {
+        Map<String, Object> body = restClient.get()
+                .uri(b -> b.path(NOW_PLAYING_PATH)
+                        .queryParam("language", "ko-KR")
+                        .queryParam("page", "1")
+                        .queryParam("region", "KR")
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
+        if (body == null) return List.of();
+        List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
+        return results == null ? List.of() :
+                results.stream().map(NowPlayingItem::from).limit(10).toList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<UpcomingItem> getUpcoming() {
+        LocalDate today = LocalDate.now();
+        Map<String, Object> body = restClient.get()
+                .uri(b -> b.path(DISCOVER_MOVIE_PATH)
+                        .queryParam("include_adult", "false")
+                        .queryParam("include_video", "false")
+                        .queryParam("language", "ko-KR")
+                        .queryParam("page", "1")
+                        .queryParam("region", "KR")
+                        .queryParam("release_date.gte", today.plusDays(1).toString())
+                        .queryParam("release_date.lte", today.plusDays(21).toString())
+                        .queryParam("sort_by", "popularity.desc")
+                        .queryParam("with_release_type", "3")
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
+        if (body == null) return List.of();
+        List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
+        if (results == null) return List.of();
+
+        return results.stream()
+                .filter(r -> r.get("release_date") instanceof String s && !s.isBlank())
+                .map(r -> UpcomingItem.from(r, today))
+                .sorted(Comparator.comparingLong(UpcomingItem::ddays))
+                .limit(8)
+                .toList();
     }
 
     public TmdbPersonDetail getPersonDetail(Long tmdbId) {
