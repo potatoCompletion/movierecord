@@ -27,7 +27,7 @@ public class HomeController {
     @GetMapping("/")
     public String index(Model model) {
         // ── 오늘의 스포트라이트 ───────────────────────────────────────
-        model.addAttribute("spotlights", spotlightService.getTodaySpotlights());
+        model.addAttribute("spotlights", spotlightService.getSpotlights(LocalDate.now()));
 
         // ── 박스오피스 ────────────────────────────────────────────────
         LocalDate boxOfficeBaseDay = LocalDate.now().minusDays(1);

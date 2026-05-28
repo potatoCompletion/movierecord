@@ -40,10 +40,10 @@ public class SpotlightService {
     /** 품질 검증을 통과한 영화 데이터 (imdbId, RT 점수 포함) */
     private record MovieWithRatings(TmdbDiscoverItem item, String imdbId, String rtScore) {}
 
-    @Cacheable(value = "todaySpotlight", key = "T(java.time.LocalDate).now().toString()")
+    @Cacheable(value = "todaySpotlight", key = "#date.toString()")
     @Transactional
-    public List<SpotlightDto> getTodaySpotlights() {
-        LocalDate today = LocalDate.now();
+    public List<SpotlightDto> getSpotlights(LocalDate date) {
+        LocalDate today = date;
         Optional<SpotlightHistory> latestOpt = spotlightHistoryRepository.findTopByOrderBySelectedAtDesc();
         SpotlightHistory latest = latestOpt.orElse(null);
 
