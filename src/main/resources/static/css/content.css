@@ -65,7 +65,7 @@
 }
 
 .detail-original-title {
-    font-size: 0.875rem;
+    font-size: var(--fs-sm);
     opacity: 0.55;
     margin: 0;
 }
@@ -74,7 +74,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: var(--fs-sm);
     opacity: 0.7;
 }
 
@@ -96,7 +96,7 @@
 }
 
 .detail-genre {
-    font-size: 0.75rem;
+    font-size: var(--fs-2xs);
     padding: 0.2rem 0.6rem;
     border: 1px solid var(--border-gold);
     border-radius: 9999px;
@@ -108,7 +108,7 @@
 }
 
 .rating-count {
-    font-size: 0.8rem;
+    font-size: var(--fs-fine);
     opacity: 0.5;
 }
 
@@ -127,7 +127,7 @@
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 6px;
     padding: 0.25rem 0.65rem;
-    font-size: 0.85rem;
+    font-size: var(--fs-caption);
     color: inherit;
 }
 
@@ -233,7 +233,7 @@
 
 .detail-murabel-rating .murabel-star {
     color: var(--accent);
-    font-size: 1.1rem;
+    font-size: var(--fs-sub);
 }
 
 .detail-murabel-rating .murabel-star-empty {
@@ -242,13 +242,13 @@
 }
 
 .detail-murabel-rating .murabel-score {
-    font-size: 1.2rem;
+    font-size: var(--fs-h3);
     font-weight: 700;
     color: var(--accent);
 }
 
 .detail-murabel-rating .rating-max {
-    font-size: 1.2rem;
+    font-size: var(--fs-h3);
     font-weight: 700;
     color: var(--accent);
     opacity: 1;
@@ -259,30 +259,30 @@
 }
 
 .detail-murabel-rating .murabel-label {
-    font-size: 0.8rem;
+    font-size: var(--fs-fine);
     font-weight: 500;
     opacity: 0.75;
 }
 
 .detail-murabel-rating .murabel-count {
-    font-size: 0.8rem;
+    font-size: var(--fs-fine);
     opacity: 0.55;
 }
 
 .detail-murabel-rating .murabel-no-score {
-    font-size: 1.1rem;
+    font-size: var(--fs-sub);
     font-weight: 700;
     opacity: 0.35;
     font-style: normal;
 }
 
 .rating-max {
-    font-size: 0.75rem;
+    font-size: var(--fs-2xs);
     opacity: 0.45;
 }
 
 .ratings-section-label {
-    font-size: 0.7rem;
+    font-size: var(--fs-3xs);
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -294,7 +294,7 @@
     font-style: italic;
     opacity: 0.6;
     margin: 0;
-    font-size: 0.875rem;
+    font-size: var(--fs-sm);
 }
 
 .detail-body {
@@ -307,7 +307,7 @@
 .detail-overview h2,
 .detail-records h2,
 .filmography-section h2 {
-    font-size: 1.1rem;
+    font-size: var(--fs-sub);
     font-weight: 600;
     margin: 0 0 0.75rem;
     padding-bottom: 0.5rem;
@@ -336,7 +336,7 @@
 }
 
 .records-count {
-    font-size: 0.85rem;
+    font-size: var(--fs-caption);
     opacity: 0.5;
     font-weight: 400;
 }
@@ -366,7 +366,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    font-size: 0.85rem;
+    font-size: var(--fs-caption);
 }
 
 .record-card-user {
@@ -385,7 +385,7 @@
 
 .record-card-oneliner {
     margin: 0.5rem 0 0;
-    font-size: 0.9rem;
+    font-size: var(--fs-md);
     opacity: 0.8;
     overflow: hidden;
     display: -webkit-box;
@@ -397,7 +397,7 @@
     padding: 1.5rem;
     text-align: center;
     opacity: 0.5;
-    font-size: 0.875rem;
+    font-size: var(--fs-sm);
 }
 
 /* ── Person Detail ──────────────────────────────────── */
@@ -437,7 +437,7 @@
 }
 
 .biography-text {
-    font-size: 0.875rem;
+    font-size: var(--fs-sm);
     line-height: 1.7;
     opacity: 0.8;
     margin: 0;
@@ -492,7 +492,7 @@
     align-items: center;
     justify-content: center;
     padding: 0.5rem;
-    font-size: 0.7rem;
+    font-size: var(--fs-3xs);
     text-align: center;
     opacity: 0.5;
 }
@@ -504,7 +504,7 @@
 }
 
 .filmography-card-title {
-    font-size: 0.75rem;
+    font-size: var(--fs-2xs);
     font-weight: 500;
     overflow: hidden;
     display: -webkit-box;
@@ -514,7 +514,7 @@
 }
 
 .filmography-card-year {
-    font-size: 0.7rem;
+    font-size: var(--fs-3xs);
     opacity: 0.5;
     margin: 0;
 }

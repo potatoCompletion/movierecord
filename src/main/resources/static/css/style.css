@@ -2,7 +2,10 @@
 
 * { box-sizing: border-box; }
 
-html { color-scheme: dark; }
+html {
+    color-scheme: dark;
+    overflow-x: hidden; /* full-bleed 요소(margin: 0 calc(50% - 50vw))가 세로 스크롤바 너비만큼 우측으로 삐져나오는 현상 방지 */
+}
 
 body {
     margin: 0;
@@ -108,7 +111,7 @@ main.container {
     justify-content: center;
     font-weight: 700;
     font-family: var(--font-display);
-    font-size: 0.95rem;
+    font-size: var(--fs-lg);
     border: 1px solid var(--border-gold);
     text-decoration: none;
 }
@@ -210,7 +213,7 @@ main.container {
     border-top: 1px solid var(--border);
     color: var(--fg-faint);
     text-align: center;
-    font-size: 0.78rem;
+    font-size: var(--fs-meta);
 }
 
 .tmdb-attribution {
@@ -240,7 +243,7 @@ main.container {
     min-height: 44px;
     border: 1px solid transparent;
     border-radius: var(--r-sm);
-    font-size: 0.88rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     font-family: inherit;
     text-decoration: none;
@@ -287,7 +290,7 @@ main.container {
 .btn-danger:hover { background: var(--danger-hover); }
 
 .btn-block { width: 100%; }
-.btn-sm { padding: 0.4rem 0.85rem; font-size: 0.8rem; min-height: 36px; }
+.btn-sm { padding: 0.4rem 0.85rem; font-size: var(--fs-fine); min-height: 36px; }
 
 /* ── Forms ─────────────────────────────────────────── */
 .form-control,
@@ -303,7 +306,7 @@ main.container {
     border: 1px solid var(--border-strong);
     border-radius: var(--r-sm);
     color: var(--fg);
-    font-size: 0.95rem;
+    font-size: var(--fs-lg);
     font-family: inherit;
     transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
@@ -343,7 +346,7 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
 .label,
 .form-field label,
 .form-group label {
-    font-size: 0.72rem;
+    font-size: var(--fs-label);
     font-weight: 600;
     letter-spacing: 0.09em;
     text-transform: uppercase;
@@ -354,12 +357,12 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
 
 .field-error {
     color: var(--error);
-    font-size: 0.8rem;
+    font-size: var(--fs-fine);
 }
 
 .field-hint {
     display: block;
-    font-size: 0.78rem;
+    font-size: var(--fs-meta);
     margin-top: 0.4rem;
     color: var(--fg-dim);
     min-height: 1.1em;
@@ -370,7 +373,7 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
 .char-counter {
     text-align: right;
     color: var(--fg-faint);
-    font-size: 0.75rem;
+    font-size: var(--fs-2xs);
     font-variant-numeric: tabular-nums;
 }
 
@@ -383,7 +386,7 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
     padding: 0.75rem 1rem;
     border-radius: var(--r-sm);
     margin-bottom: 1.25rem;
-    font-size: 0.88rem;
+    font-size: var(--fs-sm);
 }
 .flash-message.error {
     background: rgba(255, 100, 100, 0.08);
@@ -428,7 +431,7 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
 }
 .error-desc {
     color: var(--fg-muted);
-    font-size: 0.95rem;
+    font-size: var(--fs-lg);
     margin: 0 0 1.75rem;
     line-height: 1.6;
 }
@@ -493,7 +496,7 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
     border: 1px solid var(--border-gold);
     border-radius: 9999px;
     color: var(--fg);
-    font-size: 0.875rem;
+    font-size: var(--fs-sm);
     padding: 0.4rem 2.4rem 0.4rem 1rem;
     outline: none;
     transition: border-color 0.2s, background 0.2s;
@@ -553,7 +556,7 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
 }
 
 .header-search-title {
-    font-size: 0.875rem;
+    font-size: var(--fs-sm);
     font-weight: 500;
     overflow: hidden;
     white-space: nowrap;
@@ -561,7 +564,7 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
 }
 
 .header-search-meta {
-    font-size: 0.75rem;
+    font-size: var(--fs-2xs);
     opacity: 0.5;
 }
 
@@ -569,7 +572,7 @@ input[type="date"].form-control { min-width: 0; max-width: 100%; }
     display: block;
     text-align: center;
     padding: 0.55rem;
-    font-size: 0.8rem;
+    font-size: var(--fs-fine);
     color: var(--accent);
     text-decoration: none;
     border-top: 1px solid var(--border-gold);
@@ -696,7 +699,7 @@ body.drawer-open .side-drawer {
 }
 
 .drawer-title {
-    font-size: 0.9rem;
+    font-size: var(--fs-md);
     font-weight: 600;
     color: var(--fg-muted);
     letter-spacing: 0.06em;
@@ -736,7 +739,7 @@ body.drawer-open .side-drawer {
     padding: 12px 20px;
     color: var(--fg);
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: var(--fs-lg);
     font-weight: 500;
     border-left: 3px solid transparent;
     transition: background 0.15s, color 0.15s, border-color 0.15s;
