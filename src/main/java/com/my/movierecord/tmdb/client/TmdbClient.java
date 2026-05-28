@@ -74,13 +74,13 @@ public class TmdbClient {
         return new TmdbSearchItem(id, title, posterPath, mediaType, releaseDate);
     }
 
-    public List<TmdbSearchItem> searchMovie(String query, String primaryReleaseYear) {
+    public List<TmdbSearchItem> searchMovie(String query, String year) {
         Map<String, Object> body = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(SEARCH_MOVIE_PATH)
                         .queryParam("query", query)
                         .queryParam("language", "ko-KR")
-                        .queryParam("primary_release_year", primaryReleaseYear)
+                        .queryParam("year", year)
                         .build())
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {

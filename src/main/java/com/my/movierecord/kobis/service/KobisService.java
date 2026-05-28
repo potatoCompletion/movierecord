@@ -64,9 +64,9 @@ public class KobisService {
         }
     }
 
-    private Content findContent(String movieNm, String primaryReleaseYear) {
+    private Content findContent(String movieNm, String year) {
         try {
-            List<TmdbSearchItem> results = tmdbClient.searchMovie(movieNm, primaryReleaseYear);
+            List<TmdbSearchItem> results = tmdbClient.searchMovie(movieNm, year);
             if (results.isEmpty() || results.getFirst().id() == null) {
                 return null;
             }
