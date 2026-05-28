@@ -34,6 +34,7 @@ public class CacheConfig {
                 .withCacheConfiguration("dailyBoxOffice", oneDayConfig)
                 .withCacheConfiguration("nowPlaying", oneDayConfig)
                 .withCacheConfiguration("upcomingMovies", oneDayConfig)
+                .withCacheConfiguration("todaySpotlight", oneDayConfig)
                 .build();
     }
 }

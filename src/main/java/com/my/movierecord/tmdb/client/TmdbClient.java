@@ -1,6 +1,8 @@
 package com.my.movierecord.tmdb.client;
 
 import com.my.movierecord.tmdb.dto.NowPlayingItem;
+import com.my.movierecord.tmdb.dto.TmdbDiscoverItem;
+import com.my.movierecord.tmdb.dto.TmdbDiscoverResponse;
 import com.my.movierecord.tmdb.dto.TmdbMovieDetail;
 import com.my.movierecord.tmdb.dto.TmdbPersonDetail;
 import com.my.movierecord.tmdb.dto.TmdbSearchItem;
@@ -228,6 +230,29 @@ public class TmdbClient {
                 .sorted(Comparator.comparingLong(UpcomingItem::ddays))
                 .limit(8)
                 .toList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public TmdbDiscoverResponse discoverHighRated(int page) {
+        Map<String, Object> body = restClient.get()
+                .uri(b -> b.path(DISCOVER_MOVIE_PATH)
+                        .queryParam("include_adult", "false")
+                        .queryParam("include_video", "false")
+                        .queryParam("language", "ko-KR")
+                        .queryParam("page", String.valueOf(page))
+                        .queryParam("sort_by", "vote_average.desc")
+                        .queryParam("vote_average.gte", "7.5")
+                        .queryParam("vote_count.gte", "500")
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
+        if (body == null) return new TmdbDiscoverResponse(List.of(), 1);
+        int totalPages = body.get("total_pages") instanceof Number n ? n.intValue() : 1;
+        List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
+        List<TmdbDiscoverItem> items = results == null ? List.of()
+                : results.stream().map(TmdbDiscoverItem::from).toList();
+        return new TmdbDiscoverResponse(items, totalPages);
     }
 
     public TmdbPersonDetail getPersonDetail(Long tmdbId) {

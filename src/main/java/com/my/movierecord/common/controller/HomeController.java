@@ -2,6 +2,7 @@ package com.my.movierecord.common.controller;
 
 import com.my.movierecord.kobis.service.KobisService;
 import com.my.movierecord.record.repository.WatchRecordRepository;
+import com.my.movierecord.spotlight.service.SpotlightService;
 import com.my.movierecord.tmdb.service.TmdbHomeService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,10 +21,14 @@ public class HomeController {
 
     private final KobisService kobisService;
     private final TmdbHomeService tmdbHomeService;
+    private final SpotlightService spotlightService;
     private final WatchRecordRepository watchRecordRepository;
 
     @GetMapping("/")
     public String index(Model model) {
+        // ── 오늘의 스포트라이트 ───────────────────────────────────────
+        model.addAttribute("spotlights", spotlightService.getTodaySpotlights());
+
         // ── 박스오피스 ────────────────────────────────────────────────
         LocalDate boxOfficeBaseDay = LocalDate.now().minusDays(1);
         model.addAttribute("boxOfficeBaseDayText", boxOfficeBaseDay.format(FORMATTER));
