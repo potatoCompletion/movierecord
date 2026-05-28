@@ -1,6 +1,7 @@
 package com.my.movierecord.tmdb.dto;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
@@ -9,9 +10,11 @@ public record UpcomingItem(
         String title,
         String originalTitle,
         String posterPath,
-        LocalDate releaseDate,
-        long ddays           // ChronoUnit.DAYS.between(today, releaseDate)
+        String releaseDateText,  // pre-formatted "MM.dd" — avoids LocalDate cache deserialization issues
+        long ddays               // ChronoUnit.DAYS.between(today, releaseDate)
 ) {
+    private static final DateTimeFormatter DISPLAY_FMT = DateTimeFormatter.ofPattern("MM.dd");
+
     public static UpcomingItem from(Map<String, Object> raw, LocalDate today) {
         Long id = raw.get("id") instanceof Number n ? n.longValue() : null;
         LocalDate release = LocalDate.parse((String) raw.get("release_date"));
@@ -20,7 +23,7 @@ public record UpcomingItem(
                 (String) raw.get("title"),
                 (String) raw.get("original_title"),
                 (String) raw.get("poster_path"),
-                release,
+                release.format(DISPLAY_FMT),
                 ChronoUnit.DAYS.between(today, release)
         );
     }

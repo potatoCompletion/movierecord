@@ -193,7 +193,7 @@
                              th:text="${movie.ddays == 0 ? 'D-DAY' : 'D-' + movie.ddays}"></div>
                         <div class="up-datestrip">
                             <span class="up-date"
-                                  th:text="${#temporals.format(movie.releaseDate, 'MM.dd')}"></span>
+                                  th:text="${movie.releaseDateText}"></span>
                             <span class="up-date-label">개봉</span>
                         </div>
                     </div>
