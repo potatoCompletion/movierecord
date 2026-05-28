@@ -3,7 +3,7 @@
    colors, type, radii, shadows, motion, semantic styles
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable.min.css');
 
 :root {
     /* ── Color: surfaces ───────────────────────────── */
@@ -63,19 +63,26 @@
     --taste-no:         #ff8585;
 
     /* ── Type: families ────────────────────────────── */
-    --font-display:     'Playfair Display', Georgia, 'Noto Serif KR', serif;
-    --font-body:        'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Roboto, sans-serif;
-    --font-mono:        ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --font-display: 'Pretendard Variable', Pretendard, 'Noto Sans KR', sans-serif;
+    --font-body:    'Pretendard Variable', Pretendard, 'Noto Sans KR', sans-serif;
+    --font-mono:    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
     /* ── Type: scale ───────────────────────────────── */
     --fs-hero:          1.85rem;   /* page H1 */
     --fs-h2:            1.55rem;   /* auth title */
     --fs-h3:            1.20rem;   /* modal/section title */
-    --fs-body:          0.93rem;
+    --fs-sub:           1.10rem;   /* sub-section headings */
+    --fs-lg:            0.95rem;   /* prominent body text */
+    --fs-body:          0.93rem;   /* body text */
+    --fs-md:            0.90rem;   /* compact body */
     --fs-sm:            0.88rem;   /* buttons, sort-select */
+    --fs-caption:       0.85rem;   /* secondary captions */
     --fs-xs:            0.83rem;   /* subtitles, alerts */
+    --fs-fine:          0.80rem;   /* fine print */
     --fs-meta:          0.78rem;   /* meta, char counter */
+    --fs-2xs:           0.75rem;   /* micro labels */
     --fs-label:         0.72rem;   /* uppercase form label */
+    --fs-3xs:           0.70rem;   /* smallest readable text */
 
     --lh-tight:         1.2;
     --lh-base:          1.5;
