@@ -1,6 +1,6 @@
 # MovieRecord
 
-영화·TV 시리즈 감상 기록 웹 서비스. TMDB로 작품을 검색하고 별점·감정·몰입감·스토리·취향 일치도를 기록하며, 마이페이지에서 감상 통계를 확인합니다.
+영화·TV 시리즈 감상 기록 웹 서비스. TMDB·KOBIS·OMDb 세 API를 연동해 홈 화면을 구성하고, 통합 검색으로 작품을 찾아 별점·감정·몰입감·스토리·취향 일치도를 기록합니다. 마이페이지에서 감상 통계를 확인할 수 있습니다.
 
 > 개인 프로젝트 | Java 21 / Spring Boot
 
@@ -46,11 +46,31 @@
 
 ## 주요 기능
 
+### 스포트라이트
+
+매일 TMDB discover 결과에서 무작위로 영화를 고른 뒤 OMDb API로 IMDb·Rotten Tomatoes·Metacritic 점수를 검증해 품질 기준을 통과한 영화 3편을 홈 히어로 섹션에 표시합니다. 자정에 스케줄러가 캐시를 사전 워밍하고, 첫 번째 픽은 DB에 이력을 기록합니다.
+
+> 품질 기준: IMDb > 7.5 **또는** Rotten Tomatoes > 60% **또는** Metacritic > 75
+
+---
+
 ### 박스오피스 TOP 10
 
 KOBIS 오픈API로 전날 일별 TOP 10을 조회하고, TMDB 영화 검색 API로 포스터 이미지를 매칭해 Swiper 캐러셀 카드로 표시합니다.
  
 > ![박스오피스](docs/images/boxoffice.png)
+
+---
+
+### 통합 검색
+
+TMDB 멀티 검색 엔드포인트로 영화·TV·인물을 한 번에 검색합니다. 결과 카드에 미디어 타입 배지를 표시하고, 클릭하면 해당 상세 페이지로 이동합니다.
+
+---
+
+### 작품·인물 상세 페이지
+
+영화(`/movie/{id}`), TV(`/tv/{id}`), 인물(`/person/{id}`) 각각의 상세 페이지를 제공합니다. 작품 페이지에서는 TMDB 기본 정보 위에 OMDb에서 가져온 IMDb·RT·Metacritic 배지를 함께 표시하고, 사용자들이 남긴 murabel 평균 별점도 확인할 수 있습니다.
 
 ---
 
@@ -81,7 +101,7 @@ TMDB 멀티 검색(영화·TV)으로 작품을 선택한 뒤 별점, 한줄평, 
 
 ### 관리자 회원 관리
 
-가입 대기(PENDING) 회원 승인, 활성 회원 강제 탈퇴, 탈퇴 회원 복구 기능을 제공합니다.
+가입 대기(PENDING) 회원 승인, 활성 회원 강제 탈퇴, 탈퇴 회원 복구 기능을 제공합니다. 강제 탈퇴 시 해당 사용자의 활성 세션을 즉시 만료시킵니다.
 
 > ![관리자](docs/images/admin.png)
 
@@ -145,7 +165,51 @@ url = switch (oae.getError().getErrorCode()) {
 
 ---
 
-### 2. 외부 API 연동 — KOBIS 박스오피스 + TMDB 포스터 합성
+### 2. 외부 API 연동 — OMDb 다중 평점 배지
+
+**설계 목표**
+
+영화·TV 상세 페이지에서 IMDb, Rotten Tomatoes, Metacritic 세 기관의 평점을 배지 형태로 함께 표시합니다.
+
+**OMDb 연동**
+
+Spring 6의 `RestClient`를 `@Qualifier("omdbRestClient")`로 등록하고 `OmdbClient`에 주입했습니다. `imdbId`를 파라미터로 넘기면 `Ratings` 배열을 파싱해 출처별로 CSS 클래스를 계산해 반환합니다.
+
+```java
+// OmdbClient.java — 소스 정규화 및 배지 클래스 계산
+private static String normalizeSource(String source) {
+    return switch (source) {
+        case "Internet Movie Database" -> "IMDb";
+        default -> source;
+    };
+}
+
+private static String computeCssClass(String source, String value) {
+    return switch (source) {
+        case "Rotten Tomatoes" -> {
+            int score = Integer.parseInt(value.replace("%", "").trim());
+            yield score >= 60 ? "rating-rt-fresh" : "rating-rt-rotten";
+        }
+        case "Metacritic" -> {
+            int score = Integer.parseInt(value.split("/")[0].trim());
+            if (score >= 75) yield "rating-mc-green";
+            else if (score >= 50) yield "rating-mc-yellow";
+            else yield "rating-mc-red";
+        }
+        default -> "rating-imdb";
+    };
+}
+```
+
+작품 상세 페이지에서는 TMDB 평점을 첫 번째 항목으로 합성한 뒤 OMDb 결과를 이어 붙입니다. 어느 API가 실패해도 나머지 배지는 정상 표시됩니다.
+
+**스포트라이트 품질 필터**
+
+`SpotlightService`에서도 OMDb 평점을 사용합니다. 랜덤으로 선택한 영화가 IMDb > 7.5, RT > 60%, Metacritic > 75 중 하나를 충족하지 못하면 다시 픽합니다. 최대 10회 재시도하며, 모두 실패하면 전날 기록을 폴백으로 사용합니다.
+
+---
+
+### 3. 외부 API 연동 — KOBIS 박스오피스 + TMDB 포스터 합성
 
 **설계 목표**
 
@@ -179,14 +243,20 @@ KOBIS 응답의 영화 제목을 키로 TMDB 영화 전용 검색을 수행하�
 
 ```
 com.my.movierecord
-├── admin/       관리자 — 회원 승인·탈퇴·복구
+├── admin/       관리자 — 회원 승인·탈퇴·복구, 세션 강제 만료
 ├── auth/        인증·인가 (domain, handler, oauth, repository, service)
-├── common/      공통 컨트롤러·예외 처리·파일 저장
-├── config/      Security, JPA, Web, TMDB, KOBIS 설정
-├── kobis/       KOBIS 박스오피스 API 연동
-├── mypage/      마이페이지 통계
+├── common/      홈 컨트롤러·예외 처리·파일 저장 서비스
+├── config/      Security, JPA, Web, 스케줄링, Cache 설정
+├── content/     영화·TV 상세 페이지 컨트롤러
+├── kobis/       KOBIS 박스오피스 API 연동 (config, dto, service)
+├── movie/       로컬 콘텐츠 레지스트리 — Content 엔티티 (domain, repository, service)
+├── mypage/      마이페이지 통계 컨트롤러
+├── omdb/        OMDb 평점 API 클라이언트 (client, config, dto)
+├── person/      인물 상세 페이지 컨트롤러
 ├── record/      감상 기록 CRUD + 통계 계산 (stats/)
-└── tmdb/        TMDB 작품 검색 API 연동
+├── search/      TMDB 통합 검색 컨트롤러
+├── spotlight/   일별 스포트라이트 (domain, dto, repository, scheduler, service)
+└── tmdb/        TMDB API 클라이언트 (client, config, dto, service)
 ```
 
 ---
@@ -293,6 +363,7 @@ COPY --from=builder /app/build/libs/*.jar app.jar
 ```properties
 TMDB_API_TOKEN=Bearer eyJ...
 KOBIS_API_KEY=your_key
+OMDB_API_KEY=your_key
 ```
 
 ### 2. 실행
@@ -328,10 +399,15 @@ Spring Cache 추상화 위에 Redis를 백엔드로 사용합니다. `@Cacheable
 
 캐시 이름별로 TTL을 개별 지정하고, 별도 설정이 없는 캐시는 기본 TTL을 따릅니다.
 
-| 캐시 이름 | 대상 | TTL |
-|----------|------|-----|
-| `dailyBoxOffice` | KOBIS 일별 박스오피스 TOP 10 | 1일 |
-| 기본 | 그 외 `@Cacheable` 대상 | 1시간 |
+| 캐시 이름 | 대상 | 키 | TTL |
+|----------|------|-----|-----|
+| `todaySpotlight` | 홈 스포트라이트 3편 | `LocalDate.now()` | 1일 (자정 스케줄러가 사전 워밍) |
+| `dailyBoxOffice` | KOBIS 일별 박스오피스 TOP 10 | `LocalDate.now().minusDays(1)` | 1일 |
+| 기본 | TMDB 홈 섹션(현재 상영·개봉 예정 등) | 메서드별 | 1시간 |
+
+**스포트라이트 사전 워밍**
+
+`SpotlightScheduler`가 매일 자정(`cron = "0 0 0 * * *"`)에 `SpotlightService.getTodaySpotlights()`를 호출합니다. 캐시 키가 `LocalDate` 기반이므로 자정 이후 첫 요청에서 cache miss → 신규 픽이 일어나기 전에 스케줄러가 미리 채워 둡니다.
 
 **직렬화**
 
