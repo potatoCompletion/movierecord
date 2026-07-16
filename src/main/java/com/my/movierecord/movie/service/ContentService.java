@@ -4,10 +4,9 @@ import com.my.movierecord.common.service.FileStorageService;
 import com.my.movierecord.movie.domain.Content;
 import com.my.movierecord.movie.domain.ContentId;
 import com.my.movierecord.movie.repository.ContentRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.my.movierecord.tmdb.client.TmdbImageClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 
 @Service
 @Transactional(readOnly = true)
@@ -15,14 +14,14 @@ public class ContentService {
 
     private final ContentRepository contentRepository;
     private final FileStorageService fileStorageService;
-    private final RestClient restClient;
+    private final TmdbImageClient tmdbImageClient;
 
     public ContentService(ContentRepository contentRepository,
             FileStorageService fileStorageService,
-            @Qualifier("tmdbImageRestClient") RestClient restClient) {
+            TmdbImageClient tmdbImageClient) {
         this.contentRepository = contentRepository;
         this.fileStorageService = fileStorageService;
-        this.restClient = restClient;
+        this.tmdbImageClient = tmdbImageClient;
     }
 
     @Transactional
@@ -39,20 +38,13 @@ public class ContentService {
     }
 
     private String downloadAndSave(String posterPath) {
-        try {
-            byte[] bytes = restClient.get()
-                    .uri(posterPath)
-                    .retrieve()
-                    .body(byte[].class);
-            if (bytes == null) {
-                return null;
-            }
-            String extension = posterPath.contains(".")
-                    ? posterPath.substring(posterPath.lastIndexOf('.') + 1).toLowerCase()
-                    : "jpg";
-            return fileStorageService.storeBytes(bytes, extension);
-        } catch (Exception e) {
+        byte[] bytes = tmdbImageClient.download(posterPath);
+        if (bytes == null) {
             return null;
         }
+        String extension = posterPath.contains(".")
+                ? posterPath.substring(posterPath.lastIndexOf('.') + 1).toLowerCase()
+                : "jpg";
+        return fileStorageService.storeBytes(bytes, extension);
     }
 }

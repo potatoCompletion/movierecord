@@ -11,6 +11,7 @@ import com.my.movierecord.record.dto.RecordPageDto;
 import com.my.movierecord.record.dto.SortOption;
 import com.my.movierecord.record.service.WatchRecordSaveCommand;
 import com.my.movierecord.record.service.WatchRecordService;
+import com.my.movierecord.support.SecurityTestConfig;
 import com.my.movierecord.support.WatchRecordFixture;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(RecordController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, SecurityTestConfig.class})
 @AutoConfigureRestDocs(outputDir = "build/generated-snippets")
 @ActiveProfiles("test")
 class RecordControllerTest {
@@ -75,7 +76,7 @@ class RecordControllerTest {
 
     @Test
     void GET_contents_미인증_로그인_리다이렉트() throws Exception {
-        mockMvc.perform(get("/records"))
+        mockMvc.perform(get("/records").param("filter", "mine"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/auth/login"));
     }

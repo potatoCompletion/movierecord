@@ -5,6 +5,7 @@ import com.my.movierecord.auth.service.CustomOAuth2UserService;
 import com.my.movierecord.auth.service.UserService;
 import com.my.movierecord.config.PasswordEncoderConfig;
 import com.my.movierecord.config.SecurityConfig;
+import com.my.movierecord.support.SecurityTestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -25,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(AuthController.class)
-@Import({SecurityConfig.class, PasswordEncoderConfig.class})
+@Import({SecurityConfig.class, PasswordEncoderConfig.class, SecurityTestConfig.class})
 @ActiveProfiles("test")
 class AuthControllerTest {
 

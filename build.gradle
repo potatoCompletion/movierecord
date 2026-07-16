@@ -38,6 +38,10 @@ dependencies {
     implementation files('libs/kobis-opcl-rest-v1.0.jar')
     implementation 'org.webjars.npm:swiper:11.2.6'
     implementation 'org.webjars:webjars-locator-lite:1.0.1'
+    implementation 'io.github.resilience4j:resilience4j-spring-boot4:2.4.0'
+    implementation 'org.springframework.boot:spring-boot-starter-aspectj:4.1.0'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator:4.1.0'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
     testImplementation 'org.springframework.security:spring-security-test'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'

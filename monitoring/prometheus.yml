@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'movierecord'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      # 내부 docker 네트워크 DNS(서비스명 app) + 관리 포트 9090.
+      # 9090 은 host 로 publish 하지 않으므로 이 컨테이너에서만 접근 가능.
+      - targets: ['app:9090']
+        labels:
+          application: movierecord

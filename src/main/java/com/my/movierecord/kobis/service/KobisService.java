@@ -3,6 +3,7 @@ package com.my.movierecord.kobis.service;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import tools.jackson.databind.ObjectMapper;
+import com.my.movierecord.kobis.client.KobisClient;
 import com.my.movierecord.movie.domain.Content;
 import com.my.movierecord.movie.service.ContentService;
 import com.my.movierecord.kobis.dto.BoxOfficeItemDto;
@@ -12,7 +13,6 @@ import com.my.movierecord.tmdb.dto.TmdbSearchItem;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class KobisService {
 
     private static final DateTimeFormatter KOBIS_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    private final KobisOpenAPIRestService kobisOpenAPIRestService;
+    private final KobisClient kobisClient;
     private final TmdbClient tmdbClient;
     private final ContentService contentService;
     private final ObjectMapper objectMapper;
@@ -39,8 +39,10 @@ public class KobisService {
     private List<BoxOfficeItemDto> fetchDailyBoxOffice(LocalDate targetDt) {
         try {
             String dateStr = targetDt.format(KOBIS_DATE);
-            String json = kobisOpenAPIRestService
-                    .getDailyBoxOffice(true, dateStr, "10", "", "", "");
+            String json = kobisClient.fetchDailyBoxOffice(dateStr);
+            if (json == null) {
+                return List.of();
+            }
 
             KobisBoxOfficeResponse response = objectMapper.readValue(json, KobisBoxOfficeResponse.class);
             if (response.boxOfficeResult() == null

@@ -12,6 +12,7 @@ import com.my.movierecord.record.dto.SortOption;
 import com.my.movierecord.record.service.WatchRecordService;
 import com.my.movierecord.record.stats.MyPageStats;
 import com.my.movierecord.record.stats.MyPageStatsService;
+import com.my.movierecord.support.SecurityTestConfig;
 import com.my.movierecord.support.WatchRecordFixture;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(MyPageController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, SecurityTestConfig.class})
 @ActiveProfiles("test")
 class MyPageControllerTest {
 

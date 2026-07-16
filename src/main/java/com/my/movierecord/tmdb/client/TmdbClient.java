@@ -8,17 +8,37 @@ import com.my.movierecord.tmdb.dto.TmdbPersonDetail;
 import com.my.movierecord.tmdb.dto.TmdbSearchItem;
 import com.my.movierecord.tmdb.dto.TmdbTvDetail;
 import com.my.movierecord.tmdb.dto.UpcomingItem;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+/**
+ * TMDB REST API 클라이언트.
+ *
+ * <p>모든 public 호출은 resilience4j(bulkhead/ratelimiter/circuitbreaker/retry) 로 보호된다.
+ * 하이브리드 degradation 정책에 따라 메서드를 두 부류로 나눈다.
+ * <ul>
+ *   <li><b>핵심 콘텐츠</b>(검색 결과, 영화/TV/인물 상세): fallback 없음 → 예외를 전파해
+ *       상위에서 503 에러 페이지로 표면화한다.</li>
+ *   <li><b>부가 영역</b>(자동완성, 홈 캐러셀, 박스오피스 보강, 외부 ID): fallbackMethod로
+ *       빈 결과/null 을 반환해 조용히 degrade 한다.</li>
+ * </ul>
+ */
 @Component
+@Slf4j
 public class TmdbClient {
+
+    private static final String INSTANCE = "tmdbApi";
 
     private static final String SEARCH_MULTI_PATH = "/search/multi";
     private static final String SEARCH_MOVIE_PATH = "/search/movie";
@@ -36,6 +56,11 @@ public class TmdbClient {
         this.restClient = restClient;
     }
 
+    // --- 부가 영역: 자동완성 검색 (실패 시 빈 목록) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE, fallbackMethod = "searchMultiFallback")
     public List<TmdbSearchItem> searchMulti(String query) {
         Map<String, Object> body = restClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -64,6 +89,12 @@ public class TmdbClient {
                 .toList();
     }
 
+    @SuppressWarnings("unused")
+    private List<TmdbSearchItem> searchMultiFallback(String query, Throwable t) {
+        log.warn("TMDB searchMulti failed for '{}': {}", query, t.toString());
+        return List.of();
+    }
+
     private TmdbSearchItem toMultiSearchItem(Map<String, Object> raw) {
         Long id = raw.get("id") instanceof Number n ? n.longValue() : null;
         String mediaType = (String) raw.get("media_type");
@@ -74,6 +105,11 @@ public class TmdbClient {
         return new TmdbSearchItem(id, title, posterPath, mediaType, releaseDate);
     }
 
+    // --- 부가 영역: KOBIS 박스오피스 보강용 영화 검색 (실패 시 빈 목록) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE, fallbackMethod = "searchMovieFallback")
     public List<TmdbSearchItem> searchMovie(String query, String year) {
         Map<String, Object> body = restClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -101,6 +137,12 @@ public class TmdbClient {
                 .toList();
     }
 
+    @SuppressWarnings("unused")
+    private List<TmdbSearchItem> searchMovieFallback(String query, String year, Throwable t) {
+        log.warn("TMDB searchMovie failed for '{}' ({}): {}", query, year, t.toString());
+        return List.of();
+    }
+
     private TmdbSearchItem toMovieSearchItem(Map<String, Object> raw) {
         Long id = raw.get("id") instanceof Number n ? n.longValue() : null;
         String title = (String) raw.get("title");
@@ -109,6 +151,11 @@ public class TmdbClient {
         return new TmdbSearchItem(id, title, posterPath, "movie", releaseDate);
     }
 
+    // --- 핵심 콘텐츠: 통합 검색 결과 (실패 시 예외 전파 → 503) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE)
     public List<TmdbSearchItem> searchMultiUnified(String query) {
         Map<String, Object> body = restClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -148,6 +195,11 @@ public class TmdbClient {
         return new TmdbSearchItem(id, title, posterPath, mediaType, releaseDate);
     }
 
+    // --- 핵심 콘텐츠: 영화 상세 (실패 시 예외 전파 → 503) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE)
     public TmdbMovieDetail getMovieDetail(Long tmdbId) {
         @SuppressWarnings("unchecked")
         Map<String, Object> raw = restClient.get()
@@ -161,6 +213,11 @@ public class TmdbClient {
         return raw != null ? TmdbMovieDetail.from(raw) : null;
     }
 
+    // --- 핵심 콘텐츠: TV 상세 (실패 시 예외 전파 → 503) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE)
     public TmdbTvDetail getTvDetail(Long tmdbId) {
         @SuppressWarnings("unchecked")
         Map<String, Object> raw = restClient.get()
@@ -174,6 +231,11 @@ public class TmdbClient {
         return raw != null ? TmdbTvDetail.from(raw) : null;
     }
 
+    // --- 부가 영역: TV 외부 ID(IMDb) 조회 — 평점 배지용 (실패 시 null) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE, fallbackMethod = "getTvExternalIdsFallback")
     public String getTvExternalIds(Long tmdbId) {
         @SuppressWarnings("unchecked")
         Map<String, Object> raw = restClient.get()
@@ -185,6 +247,17 @@ public class TmdbClient {
         return raw != null ? (String) raw.get("imdb_id") : null;
     }
 
+    @SuppressWarnings("unused")
+    private String getTvExternalIdsFallback(Long tmdbId, Throwable t) {
+        log.warn("TMDB external ids fetch failed for tv {}: {}", tmdbId, t.toString());
+        return null;
+    }
+
+    // --- 부가 영역: 홈 '현재 상영작' 캐러셀 (실패 시 빈 목록) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE, fallbackMethod = "getNowPlayingFallback")
     @SuppressWarnings("unchecked")
     public List<NowPlayingItem> getNowPlaying() {
         Map<String, Object> body = restClient.get()
@@ -202,6 +275,17 @@ public class TmdbClient {
                 results.stream().map(NowPlayingItem::from).limit(10).toList();
     }
 
+    @SuppressWarnings("unused")
+    private List<NowPlayingItem> getNowPlayingFallback(Throwable t) {
+        log.warn("TMDB now playing fetch failed: {}", t.toString());
+        return List.of();
+    }
+
+    // --- 부가 영역: 홈 '곧 개봉해요' 캐러셀 (실패 시 빈 목록) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE, fallbackMethod = "getUpcomingFallback")
     @SuppressWarnings("unchecked")
     public List<UpcomingItem> getUpcoming() {
         LocalDate today = LocalDate.now();
@@ -232,6 +316,17 @@ public class TmdbClient {
                 .toList();
     }
 
+    @SuppressWarnings("unused")
+    private List<UpcomingItem> getUpcomingFallback(Throwable t) {
+        log.warn("TMDB upcoming fetch failed: {}", t.toString());
+        return List.of();
+    }
+
+    // --- 부가 영역: 스포트라이트 후보 발굴 (실패 시 빈 응답) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE, fallbackMethod = "discoverHighRatedFallback")
     @SuppressWarnings("unchecked")
     public TmdbDiscoverResponse discoverHighRated(int page) {
         Map<String, Object> body = restClient.get()
@@ -255,6 +350,17 @@ public class TmdbClient {
         return new TmdbDiscoverResponse(items, totalPages);
     }
 
+    @SuppressWarnings("unused")
+    private TmdbDiscoverResponse discoverHighRatedFallback(int page, Throwable t) {
+        log.warn("TMDB discover high-rated failed for page {}: {}", page, t.toString());
+        return new TmdbDiscoverResponse(List.of(), 1);
+    }
+
+    // --- 핵심 콘텐츠: 인물 상세 (실패 시 예외 전파 → 503) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE)
     public TmdbPersonDetail getPersonDetail(Long tmdbId) {
         @SuppressWarnings("unchecked")
         Map<String, Object> personRaw = restClient.get()
