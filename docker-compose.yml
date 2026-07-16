@@ -93,6 +93,7 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
     # 공개하려면 nginx 서브도메인+auth 를 붙이고, 아니면 SSH 터널로 접근.
     ports:
       - "127.0.0.1:3000:3000"
