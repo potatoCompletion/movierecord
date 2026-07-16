@@ -58,6 +58,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/records/new").authenticated()
                         .requestMatchers(HttpMethod.GET, "/records", "/records/*").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // actuator 는 관리 포트(9090)에서만 실제 노출되고 host 로 publish 하지 않는다.
+                        // 관리 컨텍스트가 이 필터체인을 상속하므로 permitAll 로 열어 Prometheus 스크레이프를 허용한다.
+                        // 공개 8080 쪽에는 actuator 엔드포인트가 없어 404 이므로 노출 위험이 없다.
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
