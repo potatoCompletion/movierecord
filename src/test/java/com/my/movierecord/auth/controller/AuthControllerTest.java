@@ -1,11 +1,16 @@
 package com.my.movierecord.auth.controller;
 
+import com.my.movierecord.auth.dto.TokenPair;
+import com.my.movierecord.auth.exception.InvalidRefreshTokenException;
 import com.my.movierecord.auth.exception.UserAlreadyExistsException;
+import com.my.movierecord.auth.security.CookieUtil;
 import com.my.movierecord.auth.service.CustomOAuth2UserService;
+import com.my.movierecord.auth.service.TokenService;
 import com.my.movierecord.auth.service.UserService;
 import com.my.movierecord.config.PasswordEncoderConfig;
 import com.my.movierecord.config.SecurityConfig;
 import com.my.movierecord.support.SecurityTestConfig;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -15,11 +20,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +45,9 @@ class AuthControllerTest {
 
     @MockitoBean
     UserService userService;
+
+    @MockitoBean
+    TokenService tokenService;
 
     @MockitoBean
     CustomOAuth2UserService customOAuth2UserService;
@@ -124,5 +137,75 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/signup"))
                 .andExpect(model().attributeHasFieldErrors("signupForm", "username"));
+    }
+
+    // ===== POST /auth/token/refresh =====
+
+    @Test
+    void POST_token_refresh_성공시_새_쿠키_발급() throws Exception {
+        given(tokenService.refresh(eq("old-refresh"))).willReturn(new TokenPair("new-access", "new-refresh"));
+
+        mockMvc.perform(post("/auth/token/refresh")
+                        .with(csrf())
+                        .cookie(new Cookie(CookieUtil.REFRESH_TOKEN, "old-refresh")))
+                .andExpect(status().isNoContent())
+                .andExpect(result -> {
+                    var setCookies = result.getResponse().getHeaders("Set-Cookie");
+                    assertThat(setCookies).anyMatch(c -> c.startsWith(CookieUtil.ACCESS_TOKEN + "=new-access")
+                            && c.contains("HttpOnly"));
+                    assertThat(setCookies).anyMatch(c -> c.startsWith(CookieUtil.REFRESH_TOKEN + "=new-refresh")
+                            && c.contains("HttpOnly") && c.contains("Path=/auth"));
+                });
+    }
+
+    @Test
+    void POST_token_refresh_쿠키없으면_401() throws Exception {
+        mockMvc.perform(post("/auth/token/refresh").with(csrf()))
+                .andExpect(status().isUnauthorized());
+        then(tokenService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    void POST_token_refresh_재사용탐지시_401() throws Exception {
+        willThrow(new InvalidRefreshTokenException("reuse")).given(tokenService).refresh(any());
+
+        mockMvc.perform(post("/auth/token/refresh")
+                        .with(csrf())
+                        .cookie(new Cookie(CookieUtil.REFRESH_TOKEN, "revoked-refresh")))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void POST_token_refresh_csrf없으면_403() throws Exception {
+        mockMvc.perform(post("/auth/token/refresh")
+                        .cookie(new Cookie(CookieUtil.REFRESH_TOKEN, "old-refresh")))
+                .andExpect(status().isForbidden());
+    }
+
+    // ===== POST /auth/logout =====
+
+    @Test
+    void POST_logout_토큰폐기_및_쿠키만료() throws Exception {
+        mockMvc.perform(post("/auth/logout")
+                        .with(csrf())
+                        .cookie(new Cookie(CookieUtil.REFRESH_TOKEN, "some-refresh")))
+                .andExpect(status().isNoContent())
+                .andExpect(header().exists("Set-Cookie"))
+                .andExpect(result -> {
+                    var setCookies = result.getResponse().getHeaders("Set-Cookie");
+                    assertThat(setCookies).anyMatch(c -> c.startsWith(CookieUtil.ACCESS_TOKEN + "=")
+                            && c.contains("Max-Age=0"));
+                    assertThat(setCookies).anyMatch(c -> c.startsWith(CookieUtil.REFRESH_TOKEN + "=")
+                            && c.contains("Max-Age=0"));
+                });
+
+        then(tokenService).should().revoke("some-refresh");
+    }
+
+    @Test
+    void POST_logout_csrf없으면_403() throws Exception {
+        mockMvc.perform(post("/auth/logout")
+                        .cookie(new Cookie(CookieUtil.REFRESH_TOKEN, "some-refresh")))
+                .andExpect(status().isForbidden());
     }
 }
