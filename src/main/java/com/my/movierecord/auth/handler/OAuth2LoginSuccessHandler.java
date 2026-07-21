@@ -17,12 +17,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * 폼 로그인 성공 처리. 최근 로그인 시각을 기록하고, 액세스/리프레시 토큰을 발급해
- * httpOnly 쿠키로 내려준 뒤 기록 목록으로 리다이렉트한다.
+ * OAuth2 로그인 성공 처리. 폼 로그인과 동일하게 토큰을 발급해 쿠키로 내려준다.
  */
 @Component
 @RequiredArgsConstructor
-public class LoginSuccessHandler implements AuthenticationSuccessHandler {
+public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserService userService;
     private final UserRepository userRepository;
@@ -36,7 +35,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         String username = ((CustomUserPrincipal) authentication.getPrincipal()).getUsername();
         userService.recordLogin(username);
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalStateException("로그인 사용자를 찾을 수 없습니다: " + username));
+                .orElseThrow(() -> new IllegalStateException("OAuth2 로그인 사용자를 찾을 수 없습니다: " + username));
         TokenPair tokens = tokenService.issueTokenPair(user);
         cookieUtil.writeTokens(response, tokens);
         response.sendRedirect("/records");

@@ -1,5 +1,7 @@
 package com.my.movierecord.common.exception;
 
+import com.my.movierecord.auth.exception.ExpiredRefreshTokenException;
+import com.my.movierecord.auth.exception.InvalidRefreshTokenException;
 import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
@@ -69,6 +71,15 @@ public class GlobalExceptionHandler {
         log.warn("400 Bad Request at {}: {}", request.getRequestURI(), ex.toString());
         return render(request, response, HttpStatus.BAD_REQUEST, VIEW_500,
                 "잘못된 요청입니다.");
+    }
+
+    /** 리프레시 토큰 무효/폐기(재사용 탐지)·만료 → 401. */
+    @ExceptionHandler({InvalidRefreshTokenException.class, ExpiredRefreshTokenException.class})
+    public ModelAndView handleUnauthorized(RuntimeException ex, HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        log.warn("401 Unauthorized at {}: {}", request.getRequestURI(), ex.toString());
+        return render(request, response, HttpStatus.UNAUTHORIZED, VIEW_500,
+                "인증이 필요합니다. 다시 로그인해주세요.");
     }
 
     /** 접근 거부 → 403. */
