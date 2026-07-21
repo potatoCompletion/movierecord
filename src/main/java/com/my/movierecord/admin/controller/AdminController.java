@@ -1,11 +1,9 @@
 package com.my.movierecord.admin.controller;
 
 import com.my.movierecord.auth.domain.User;
+import com.my.movierecord.auth.service.TokenService;
 import com.my.movierecord.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +20,7 @@ import java.security.Principal;
 public class AdminController {
 
     private final UserService userService;
-    private final SessionRegistry sessionRegistry;
+    private final TokenService tokenService;
 
     @GetMapping("/members")
     public String memberList(Model model, Principal principal) {
@@ -40,12 +38,9 @@ public class AdminController {
             return "redirect:/admin/members";
         }
         userService.withdrawUser(id);
-
-        String targetUsername = target.getUsername();
-        sessionRegistry.getAllPrincipals().stream()
-                .filter(p -> p instanceof UserDetails ud && ud.getUsername().equals(targetUsername))
-                .flatMap(p -> sessionRegistry.getAllSessions(p, false).stream())
-                .forEach(SessionInformation::expireNow);
+        // 세션이 없는 토큰 기반 인증에서는 리프레시 토큰을 폐기해 재갱신을 차단한다.
+        // (발급된 액세스 토큰은 짧은 TTL 경과 후 자연 만료 — 계획서 Risks 명시 트레이드오프.)
+        tokenService.revokeAllForUser(id);
 
         return "redirect:/admin/members";
     }

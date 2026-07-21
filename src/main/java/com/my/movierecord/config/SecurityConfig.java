@@ -3,6 +3,11 @@ package com.my.movierecord.config;
 import com.my.movierecord.auth.handler.LoginFailureHandler;
 import com.my.movierecord.auth.handler.LoginSuccessHandler;
 import com.my.movierecord.auth.handler.OAuth2LoginFailureHandler;
+import com.my.movierecord.auth.handler.OAuth2LoginSuccessHandler;
+import com.my.movierecord.auth.security.CookieUtil;
+import com.my.movierecord.auth.security.JwtAuthenticationFilter;
+import com.my.movierecord.auth.security.JwtProvider;
+import com.my.movierecord.auth.security.RestAuthenticationEntryPoint;
 import com.my.movierecord.auth.service.CustomOAuth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,12 +15,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import tools.jackson.databind.ObjectMapper;
 
+/**
+ * 토큰(JWT 액세스 + 서버 보관 리프레시) 기반 stateless 보안 설정.
+ *
+ * <p>세션을 생성하지 않고({@link SessionCreationPolicy#STATELESS}), {@link JwtAuthenticationFilter}가
+ * 매 요청 {@code ACCESS_TOKEN} 쿠키를 검증해 인증을 재구성한다. CSRF 토큰 저장소는 세션 비의존
+ * {@link CookieCsrfTokenRepository}로 전환했다.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -33,10 +46,24 @@ public class SecurityConfig {
     private LoginFailureHandler loginFailureHandler;
 
     @Autowired(required = false)
+    private OAuth2LoginSuccessHandler oauth2LoginSuccessHandler;
+
+    @Autowired(required = false)
     private OAuth2LoginFailureHandler oauth2LoginFailureHandler;
+
+    @Autowired
+    private JwtProvider jwtProvider;
+
+    @Autowired
+    private CookieUtil cookieUtil;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        RestAuthenticationEntryPoint entryPoint = new RestAuthenticationEntryPoint(objectMapper);
+
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -55,6 +82,7 @@ public class SecurityConfig {
                                 "/person/**",
                                 "/api/tmdb/search/unified"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/token/refresh", "/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.GET, "/records/new").authenticated()
                         .requestMatchers(HttpMethod.GET, "/records", "/records/*").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -64,6 +92,9 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/login")
@@ -71,23 +102,17 @@ public class SecurityConfig {
                         .failureHandler(loginFailureHandler)
                         .permitAll()
                 )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/auth/login?logout")
-                        .permitAll()
-                )
+                // 로그아웃은 리프레시 토큰 폐기 + 쿠키 제거가 필요하므로 커스텀 엔드포인트(POST /auth/logout)로 처리한다.
+                .logout(logout -> logout.disable())
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
-                .sessionManagement(session -> session
-                        .sessionConcurrency(concurrency -> concurrency
-                                .maximumSessions(-1)
-                                .sessionRegistry(sessionRegistry())
-                                .expiredUrl("/auth/login?withdrawn")
-                        )
-                );
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, cookieUtil),
+                        UsernamePasswordAuthenticationFilter.class);
 
         if (clientRegistrationRepository != null) {
             http.oauth2Login(oauth2 -> oauth2
                     .loginPage("/auth/login")
-                    .successHandler(loginSuccessHandler)
+                    .successHandler(oauth2LoginSuccessHandler != null ? oauth2LoginSuccessHandler : loginSuccessHandler)
                     .userInfoEndpoint(userInfo -> userInfo
                             .userService(customOAuth2UserService)
                     )
@@ -96,15 +121,5 @@ public class SecurityConfig {
         }
 
         return http.build();
-    }
-
-    @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
-    }
-
-    @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
     }
 }
