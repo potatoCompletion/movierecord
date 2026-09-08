@@ -1,8 +1,21 @@
+x-awslogs-opts: &awslogs-opts
+  awslogs-region: ap-northeast-2
+  awslogs-create-group: "true"
+  mode: non-blocking
+  max-buffer-size: 4m
+
 services:
   app:
     build: .
     container_name: movierecord-app
     restart: always
+    logging:
+      driver: awslogs
+      options:
+        <<: *awslogs-opts
+        awslogs-group: /movierecord/app
+        awslogs-stream: app
+        awslogs-multiline-pattern: '^\d{4}-\d{2}-\d{2}'
     env_file:
       - .env
     depends_on:
@@ -22,6 +35,12 @@ services:
     image: mysql:8.4
     container_name: movierecord-mysql
     restart: always
+    logging:
+      driver: awslogs
+      options:
+        <<: *awslogs-opts
+        awslogs-group: /movierecord/mysql
+        awslogs-stream: mysql
     env_file:
       - .env
     command:
@@ -41,6 +60,12 @@ services:
     image: nginx:stable
     container_name: movierecord-nginx
     restart: always
+    logging:
+      driver: awslogs
+      options:
+        <<: *awslogs-opts
+        awslogs-group: /movierecord/nginx
+        awslogs-stream: nginx
     depends_on:
       - app
     ports:
@@ -60,6 +85,12 @@ services:
     ports:
       - "127.0.0.1:6379:6379"
     restart: always
+    logging:
+      driver: awslogs
+      options:
+        <<: *awslogs-opts
+        awslogs-group: /movierecord/redis
+        awslogs-stream: redis
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
