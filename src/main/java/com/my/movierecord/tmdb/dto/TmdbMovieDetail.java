@@ -1,5 +1,7 @@
 package com.my.movierecord.tmdb.dto;
 
+import com.my.movierecord.tmdb.image.PosterSize;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,8 @@ public record TmdbMovieDetail(
         String overview,
         String posterPath,
         String backdropPath,
+        String posterUrl,     // 완성 URL (w342), 경로 없으면 null
+        String backdropUrl,   // 완성 URL (w1280), 경로 없으면 null
         String releaseDate,
         Integer runtime,
         List<TmdbGenreItem> genres,
@@ -21,7 +25,7 @@ public record TmdbMovieDetail(
         String imdbId
 ) {
     @SuppressWarnings("unchecked")
-    public static TmdbMovieDetail from(Map<String, Object> raw) {
+    public static TmdbMovieDetail from(Map<String, Object> raw, TmdbImageUrlProvider images) {
         Long id = raw.get("id") instanceof Number n ? n.longValue() : null;
         String title = (String) raw.get("title");
         String originalTitle = (String) raw.get("original_title");
@@ -53,7 +57,10 @@ public record TmdbMovieDetail(
         String imdbId = (String) raw.get("imdb_id");
 
         return new TmdbMovieDetail(id, title, originalTitle, tagline, overview, posterPath,
-                backdropPath, releaseDate, runtime, genres, voteAverage, voteCount,
+                backdropPath,
+                images.poster(posterPath, PosterSize.W342),
+                images.backdrop(backdropPath, PosterSize.W1280),
+                releaseDate, runtime, genres, voteAverage, voteCount,
                 originalLanguage, productionCountries, imdbId);
     }
 }

@@ -13,6 +13,7 @@ import com.my.movierecord.record.service.WatchRecordSaveCommand;
 import com.my.movierecord.record.service.WatchRecordService;
 import com.my.movierecord.support.SecurityTestConfig;
 import com.my.movierecord.support.WatchRecordFixture;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(RecordController.class)
-@Import({SecurityConfig.class, SecurityTestConfig.class})
+@Import({SecurityConfig.class, SecurityTestConfig.class, TmdbImageUrlProvider.class})
 @AutoConfigureRestDocs(outputDir = "build/generated-snippets")
 @ActiveProfiles("test")
 class RecordControllerTest {
@@ -137,6 +138,13 @@ class RecordControllerTest {
                 .andExpect(model().attribute("mode", "create"))
                 .andExpect(model().attributeExists("movieForm", "immersionOptions", "storyOptions", "emotionOptions", "tasteOptions"))
                 .andDo(document("records/new-form"));
+    }
+
+    @Test
+    void GET_contents_new_posterPath_있으면_TMDB_썸네일_URL() throws Exception {
+        mockMvc.perform(get("/records/new").param("posterPath", "/abc.jpg").with(user(mockPrincipal())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("existingThumbnailUrl", "https://image.tmdb.org/t/p/w342/abc.jpg"));
     }
 
     // ===== GET /contents/{id}/edit =====

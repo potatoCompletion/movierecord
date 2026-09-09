@@ -8,6 +8,8 @@ import com.my.movierecord.tmdb.dto.TmdbPersonDetail;
 import com.my.movierecord.tmdb.dto.TmdbSearchItem;
 import com.my.movierecord.tmdb.dto.TmdbTvDetail;
 import com.my.movierecord.tmdb.dto.UpcomingItem;
+import com.my.movierecord.tmdb.image.PosterSize;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
@@ -51,9 +53,11 @@ public class TmdbClient {
     private static final String DISCOVER_MOVIE_PATH = "/discover/movie";
 
     private final RestClient restClient;
+    private final TmdbImageUrlProvider images;
 
-    public TmdbClient(@Qualifier("tmdbRestClient") RestClient restClient) {
+    public TmdbClient(@Qualifier("tmdbRestClient") RestClient restClient, TmdbImageUrlProvider images) {
         this.restClient = restClient;
+        this.images = images;
     }
 
     // --- 부가 영역: 자동완성 검색 (실패 시 빈 목록) ---
@@ -102,7 +106,8 @@ public class TmdbClient {
         String title = isTv ? (String) raw.get("name") : (String) raw.get("title");
         String posterPath = (String) raw.get("poster_path");
         String releaseDate = isTv ? (String) raw.get("first_air_date") : (String) raw.get("release_date");
-        return new TmdbSearchItem(id, title, posterPath, mediaType, releaseDate);
+        return new TmdbSearchItem(id, title, posterPath, images.poster(posterPath, PosterSize.W185),
+                mediaType, releaseDate);
     }
 
     // --- 부가 영역: KOBIS 박스오피스 보강용 영화 검색 (실패 시 빈 목록) ---
@@ -148,7 +153,8 @@ public class TmdbClient {
         String title = (String) raw.get("title");
         String posterPath = (String) raw.get("poster_path");
         String releaseDate = (String) raw.get("release_date");
-        return new TmdbSearchItem(id, title, posterPath, "movie", releaseDate);
+        return new TmdbSearchItem(id, title, posterPath, images.poster(posterPath, PosterSize.W185),
+                "movie", releaseDate);
     }
 
     // --- 핵심 콘텐츠: 통합 검색 결과 (실패 시 예외 전파 → 503) ---
@@ -192,7 +198,8 @@ public class TmdbClient {
         String posterPath = isPerson ? (String) raw.get("profile_path") : (String) raw.get("poster_path");
         String releaseDate = isPerson ? null
                 : (isTv ? (String) raw.get("first_air_date") : (String) raw.get("release_date"));
-        return new TmdbSearchItem(id, title, posterPath, mediaType, releaseDate);
+        return new TmdbSearchItem(id, title, posterPath, images.poster(posterPath, PosterSize.W185),
+                mediaType, releaseDate);
     }
 
     // --- 핵심 콘텐츠: 영화 상세 (실패 시 예외 전파 → 503) ---
@@ -210,7 +217,7 @@ public class TmdbClient {
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {
                 });
-        return raw != null ? TmdbMovieDetail.from(raw) : null;
+        return raw != null ? TmdbMovieDetail.from(raw, images) : null;
     }
 
     // --- 핵심 콘텐츠: TV 상세 (실패 시 예외 전파 → 503) ---
@@ -228,7 +235,7 @@ public class TmdbClient {
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {
                 });
-        return raw != null ? TmdbTvDetail.from(raw) : null;
+        return raw != null ? TmdbTvDetail.from(raw, images) : null;
     }
 
     // --- 부가 영역: TV 외부 ID(IMDb) 조회 — 평점 배지용 (실패 시 null) ---
@@ -272,7 +279,7 @@ public class TmdbClient {
         if (body == null) return List.of();
         List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
         return results == null ? List.of() :
-                results.stream().map(NowPlayingItem::from).limit(10).toList();
+                results.stream().map(r -> NowPlayingItem.from(r, images)).limit(10).toList();
     }
 
     @SuppressWarnings("unused")
@@ -310,7 +317,7 @@ public class TmdbClient {
 
         return results.stream()
                 .filter(r -> r.get("release_date") instanceof String s && !s.isBlank())
-                .map(r -> UpcomingItem.from(r, today))
+                .map(r -> UpcomingItem.from(r, today, images))
                 .sorted(Comparator.comparingLong(UpcomingItem::ddays))
                 .limit(8)
                 .toList();
@@ -382,6 +389,6 @@ public class TmdbClient {
                 .body(new ParameterizedTypeReference<>() {
                 });
 
-        return personRaw != null ? TmdbPersonDetail.from(personRaw, creditsRaw) : null;
+        return personRaw != null ? TmdbPersonDetail.from(personRaw, creditsRaw, images) : null;
     }
 }

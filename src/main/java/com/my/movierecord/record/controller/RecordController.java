@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.my.movierecord.tmdb.image.PosterSize;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 
 @Controller
 @RequestMapping("/records")
@@ -35,10 +37,13 @@ public class RecordController {
 
     private final WatchRecordService watchRecordService;
     private final UserRepository userRepository;
+    private final TmdbImageUrlProvider images;
 
-    public RecordController(WatchRecordService watchRecordService, UserRepository userRepository) {
+    public RecordController(WatchRecordService watchRecordService, UserRepository userRepository,
+                            TmdbImageUrlProvider images) {
         this.watchRecordService = watchRecordService;
         this.userRepository = userRepository;
+        this.images = images;
     }
 
     @GetMapping
@@ -117,9 +122,7 @@ public class RecordController {
         }
         populateFormReferences(model);
         model.addAttribute("mode", "create");
-        String thumbnailUrl = (posterPath != null && !posterPath.isBlank())
-                ? "https://image.tmdb.org/t/p/w342" + posterPath : null;
-        model.addAttribute("existingThumbnailUrl", thumbnailUrl);
+        model.addAttribute("existingThumbnailUrl", images.poster(posterPath, PosterSize.W342));
         return "records/form";
     }
 

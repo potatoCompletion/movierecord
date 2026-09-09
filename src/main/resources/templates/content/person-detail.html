@@ -14,7 +14,7 @@
     <div class="person-detail-hero">
         <img class="person-profile-img"
              th:if="${detail.profilePath != null}"
-             th:src="'https://image.tmdb.org/t/p/w342' + ${detail.profilePath}"
+             th:src="${detail.profileUrl}"
              th:alt="${detail.name}">
         <div class="person-profile-placeholder" th:if="${detail.profilePath == null}"></div>
         <div class="person-info">
@@ -37,7 +37,7 @@
                class="filmography-card">
                 <div class="filmography-card-poster">
                     <img th:if="${item.posterPath() != null}"
-                         th:src="'https://image.tmdb.org/t/p/w185' + ${item.posterPath()}"
+                         th:src="${item.posterUrl()}"
                          th:alt="${item.title()}" loading="lazy">
                     <div th:if="${item.posterPath() == null}" class="filmography-card-no-poster">
                         <span th:text="${item.title()}"></span>

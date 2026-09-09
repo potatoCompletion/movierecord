@@ -1,5 +1,7 @@
 package com.my.movierecord.tmdb.dto;
 
+import com.my.movierecord.tmdb.image.PosterSize;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,6 +11,7 @@ public record TmdbPersonDetail(
         Long id,
         String name,
         String profilePath,
+        String profileUrl,    // 완성 URL (w342), 경로 없으면 null
         String biography,
         String birthday,
         String knownForDepartment,
@@ -19,11 +22,13 @@ public record TmdbPersonDetail(
             String mediaType,
             String title,
             String year,
-            String posterPath
+            String posterPath,
+            String posterUrl  // 완성 URL (w185), 경로 없으면 null
     ) {}
 
     @SuppressWarnings("unchecked")
-    public static TmdbPersonDetail from(Map<String, Object> personRaw, Map<String, Object> creditsRaw) {
+    public static TmdbPersonDetail from(Map<String, Object> personRaw, Map<String, Object> creditsRaw,
+                                        TmdbImageUrlProvider images) {
         Long id = personRaw.get("id") instanceof Number n ? n.longValue() : null;
         String name = (String) personRaw.get("name");
         String profilePath = (String) personRaw.get("profile_path");
@@ -31,12 +36,13 @@ public record TmdbPersonDetail(
         String birthday = (String) personRaw.get("birthday");
         String knownForDepartment = (String) personRaw.get("known_for_department");
 
-        return new TmdbPersonDetail(id, name, profilePath, biography, birthday,
-                knownForDepartment, buildFilmography(creditsRaw));
+        return new TmdbPersonDetail(id, name, profilePath, images.profile(profilePath, PosterSize.W342),
+                biography, birthday, knownForDepartment, buildFilmography(creditsRaw, images));
     }
 
     @SuppressWarnings("unchecked")
-    private static List<FilmographyItem> buildFilmography(Map<String, Object> creditsRaw) {
+    private static List<FilmographyItem> buildFilmography(Map<String, Object> creditsRaw,
+                                                          TmdbImageUrlProvider images) {
         if (creditsRaw == null) return List.of();
 
         List<Map<String, Object>> cast =
@@ -45,8 +51,8 @@ public record TmdbPersonDetail(
                 (List<Map<String, Object>>) creditsRaw.getOrDefault("crew", List.of());
 
         Map<Long, FilmographyItem> seen = new LinkedHashMap<>();
-        for (Map<String, Object> item : cast) addItem(item, seen);
-        for (Map<String, Object> item : crew) addItem(item, seen);
+        for (Map<String, Object> item : cast) addItem(item, seen, images);
+        for (Map<String, Object> item : crew) addItem(item, seen, images);
 
         List<FilmographyItem> result = new ArrayList<>(seen.values());
         result.sort((a, b) -> {
@@ -58,7 +64,8 @@ public record TmdbPersonDetail(
         return result;
     }
 
-    private static void addItem(Map<String, Object> raw, Map<Long, FilmographyItem> seen) {
+    private static void addItem(Map<String, Object> raw, Map<Long, FilmographyItem> seen,
+                                TmdbImageUrlProvider images) {
         if (!(raw.get("id") instanceof Number)) return;
         Long tmdbId = ((Number) raw.get("id")).longValue();
         if (seen.containsKey(tmdbId)) return;
@@ -70,6 +77,7 @@ public record TmdbPersonDetail(
         String year = (dateStr != null && dateStr.length() >= 4) ? dateStr.substring(0, 4) : null;
         String posterPath = (String) raw.get("poster_path");
 
-        seen.put(tmdbId, new FilmographyItem(tmdbId, mediaType, title, year, posterPath));
+        seen.put(tmdbId, new FilmographyItem(tmdbId, mediaType, title, year, posterPath,
+                images.poster(posterPath, PosterSize.W185)));
     }
 }

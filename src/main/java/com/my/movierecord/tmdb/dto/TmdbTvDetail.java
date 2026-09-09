@@ -1,5 +1,7 @@
 package com.my.movierecord.tmdb.dto;
 
+import com.my.movierecord.tmdb.image.PosterSize;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +12,8 @@ public record TmdbTvDetail(
         String overview,
         String posterPath,
         String backdropPath,
+        String posterUrl,     // 완성 URL (w342), 경로 없으면 null
+        String backdropUrl,   // 완성 URL (w1280), 경로 없으면 null
         String firstAirDate,
         Integer numberOfSeasons,
         Integer numberOfEpisodes,
@@ -18,7 +22,7 @@ public record TmdbTvDetail(
         Integer voteCount
 ) {
     @SuppressWarnings("unchecked")
-    public static TmdbTvDetail from(Map<String, Object> raw) {
+    public static TmdbTvDetail from(Map<String, Object> raw, TmdbImageUrlProvider images) {
         Long id = raw.get("id") instanceof Number n ? n.longValue() : null;
         String name = (String) raw.get("name");
         String originalName = (String) raw.get("original_name");
@@ -41,6 +45,8 @@ public record TmdbTvDetail(
         Integer voteCount = raw.get("vote_count") instanceof Number n ? n.intValue() : null;
 
         return new TmdbTvDetail(id, name, originalName, overview, posterPath, backdropPath,
+                images.poster(posterPath, PosterSize.W342),
+                images.backdrop(backdropPath, PosterSize.W1280),
                 firstAirDate, numberOfSeasons, numberOfEpisodes, genres, voteAverage, voteCount);
     }
 }

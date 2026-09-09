@@ -8,6 +8,8 @@ import com.my.movierecord.spotlight.repository.SpotlightHistoryRepository;
 import com.my.movierecord.tmdb.client.TmdbClient;
 import com.my.movierecord.tmdb.dto.TmdbDiscoverItem;
 import com.my.movierecord.tmdb.dto.TmdbMovieDetail;
+import com.my.movierecord.tmdb.image.PosterSize;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +38,7 @@ public class SpotlightService {
     private final TmdbClient tmdbClient;
     private final OmdbClient omdbClient;
     private final SpotlightHistoryRepository spotlightHistoryRepository;
+    private final TmdbImageUrlProvider images;
 
     /** 품질 검증을 통과한 영화 데이터 (imdbId, RT 점수 포함) */
     private record MovieWithRatings(TmdbDiscoverItem item, String imdbId, String rtScore) {}
@@ -57,7 +60,7 @@ public class SpotlightService {
     // ── 기존 DB 레코드를 첫 슬라이드로, 나머지는 품질 검증 후 보조 픽업 ─────────
     private List<SpotlightDto> buildListFromExisting(SpotlightHistory primary) {
         List<SpotlightDto> result = new ArrayList<>();
-        result.add(SpotlightDto.from(primary));
+        result.add(SpotlightDto.from(primary, images));
         try {
             int totalPages = fetchTotalPages();
             Set<Long> usedIds = new HashSet<>();
@@ -105,20 +108,20 @@ public class SpotlightService {
                                     .selectedAt(today)
                                     .build()
                     );
-                    result.add(SpotlightDto.from(saved));
+                    result.add(SpotlightDto.from(saved, images));
                 } else {
                     result.add(toSpotlightDto(mwr));
                 }
             }
 
             if (result.isEmpty()) {
-                return fallback != null ? List.of(SpotlightDto.from(fallback)) : List.of();
+                return fallback != null ? List.of(SpotlightDto.from(fallback, images)) : List.of();
             }
             return result;
 
         } catch (Exception e) {
             log.warn("Spotlight fetch failed, using fallback: {}", e.getMessage());
-            return fallback != null ? List.of(SpotlightDto.from(fallback)) : List.of();
+            return fallback != null ? List.of(SpotlightDto.from(fallback, images)) : List.of();
         }
     }
 
@@ -180,11 +183,13 @@ public class SpotlightService {
     }
 
     // ── MovieWithRatings → SpotlightDto 변환 ──────────────────────────────
-    private static SpotlightDto toSpotlightDto(MovieWithRatings mwr) {
+    private SpotlightDto toSpotlightDto(MovieWithRatings mwr) {
         TmdbDiscoverItem item = mwr.item();
         return new SpotlightDto(
                 item.id(), item.title(), item.originalTitle(),
                 item.posterPath(), item.backdropPath(),
+                images.poster(item.posterPath(), PosterSize.W500),
+                images.backdrop(item.backdropPath(), PosterSize.W1280),
                 toReleaseYear(item.releaseDate()), item.overview(),
                 item.voteAverage(), mwr.rtScore()
         );

@@ -12,12 +12,12 @@
 
 <main>
     <div class="detail-hero"
-         th:style="${detail.backdropPath != null} ? 'background-image:url(https://image.tmdb.org/t/p/w1280' + ${detail.backdropPath} + ')' : ''">
+         th:style="${detail.backdropUrl != null} ? 'background-image:url(' + ${detail.backdropUrl} + ')' : ''">
         <div class="detail-hero-overlay"></div>
         <div class="container detail-hero-inner">
             <img class="detail-poster"
                  th:if="${detail.posterPath != null}"
-                 th:src="'https://image.tmdb.org/t/p/w342' + ${detail.posterPath}"
+                 th:src="${detail.posterUrl}"
                  th:alt="${detail.title}">
             <div class="detail-poster detail-poster-placeholder" th:if="${detail.posterPath == null}"></div>
             <div class="detail-info">

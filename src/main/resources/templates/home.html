@@ -21,7 +21,7 @@
         <!-- TMDB backdrop — 초기값은 첫 번째 슬라이드, JS가 전환 시 교체 -->
         <div class="hero-backdrop"
              th:if="${spotlights[0].backdropPath != null}"
-             th:style="|background-image: url('https://image.tmdb.org/t/p/w1280${spotlights[0].backdropPath}')|"></div>
+             th:style="|background-image: url('${spotlights[0].backdropUrl}')|"></div>
         <div class="hero-bg"></div>
         <div class="hero-glow"></div>
         <div class="hero-fade"></div>
@@ -31,7 +31,7 @@
             <div class="hero-poster">
                 <img class="hero-poster-img"
                      th:if="${spotlights[0].posterPath != null}"
-                     th:src="${'https://image.tmdb.org/t/p/w500' + spotlights[0].posterPath}"
+                     th:src="${spotlights[0].posterUrl}"
                      th:alt="${spotlights[0].title}">
                 <div class="poster-art poster-art--no-meta"
                      th:unless="${spotlights[0].posterPath != null}"
@@ -49,8 +49,8 @@
                 <div class="hero-slide"
                      th:each="spotlight, stat : ${spotlights}"
                      th:classappend="${stat.first ? ' active' : ''}"
-                     th:attr="data-poster=${spotlight.posterPath != null ? 'https://image.tmdb.org/t/p/w500' + spotlight.posterPath : ''},
-                              data-backdrop=${spotlight.backdropPath != null ? 'https://image.tmdb.org/t/p/w1280' + spotlight.backdropPath : ''}">
+                     th:attr="data-poster=${spotlight.posterUrl != null ? spotlight.posterUrl : ''},
+                              data-backdrop=${spotlight.backdropUrl != null ? spotlight.backdropUrl : ''}">
                     <h2 class="hero-title" th:text="${spotlight.title}"></h2>
                     <div class="hero-eng">
                         <span th:text="${spotlight.originalTitle}"></span>
@@ -140,7 +140,7 @@
                    th:href="${movie.id != null} ? @{/movie/{id}(id=${movie.id})} : '#'">
                     <div class="np-poster">
                         <img th:if="${movie.posterPath != null}"
-                             th:src="'https://image.tmdb.org/t/p/w500' + ${movie.posterPath}"
+                             th:src="${movie.posterUrl}"
                              th:alt="${movie.title}"
                              class="np-poster-img"
                              loading="lazy"/>
@@ -179,7 +179,7 @@
                    th:href="${movie.id != null} ? @{/movie/{id}(id=${movie.id})} : '#'">
                     <div class="up-poster">
                         <img th:if="${movie.posterPath != null}"
-                             th:src="'https://image.tmdb.org/t/p/w500' + ${movie.posterPath}"
+                             th:src="${movie.posterUrl}"
                              th:alt="${movie.title}"
                              class="up-poster-img"
                              loading="lazy"/>
