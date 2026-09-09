@@ -12,7 +12,7 @@
 2. [주요 기능](#주요-기능)
 3. [회원기능 및 외부 API 연동](#회원기능-및-외부-API-연동)
 4. [패키지 구조](#패키지-구조)
-5. [장애 격리 및 관측성](#장애-격리-및-관측성)
+5. [장애 격리](#장애-격리)
 6. [서버 아키텍처](#서버-아키텍처)
 7. [로컬 실행](#로컬-실행)
 8. [캐시 전략](#캐시-전략)
@@ -31,8 +31,6 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=nginx&logoColor=white)
 ![Resilience4j](https://img.shields.io/badge/Resilience4j-121212?style=flat-square&logo=resilience4j&logoColor=white)
-![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white)
-![Grafana](https://img.shields.io/badge/Grafana-F46800?style=flat-square&logo=grafana&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=gradle&logoColor=white)
 
 | 분류 | 기술 | 선택 이유 |
@@ -46,7 +44,7 @@
 | Cache | Redis (운영) / Spring Cache | TTL 기반 캐싱으로 응답 속도 개선 및 반복 연산 비용 절감 |
 | Infra | Docker + Nginx | 컨테이너 단위 배포, 리버스 프록시로 정적 파일·앱 서버 분리 |
 | Resilience | Resilience4j | 외부 API 3종 장애가 전체 서비스로 전파되지 않도록 격리·차단 |
-| Observability | Actuator + Micrometer / Prometheus / Grafana | 서킷 상태·재시도·지연 시간을 메트릭으로 수집해 대시보드로 시각화 |
+| Observability | Actuator + Micrometer | 헬스 체크와 서킷·재시도 상태, HTTP 지연 메트릭을 관리 포트로 노출 |
 
 ---
 
@@ -267,9 +265,9 @@ com.my.movierecord
 
 ---
 
-## 장애 격리 및 관측성
+## 장애 격리
 
-### 1. Resilience4j — 외부 API 장애 격리
+### Resilience4j — 외부 API 장애 격리
 
 **설계 목표**
 
@@ -324,32 +322,6 @@ Resilience4j 이전에, RestClient 자체에 connect/read 타임아웃을 걸어
 
 ---
 
-### 2. 관측성 — Prometheus + Grafana
-
-**설계 목표**
-
-위 방어 장치들이 실제로 언제·얼마나 동작했는지(서킷이 열렸는지, 재시도가 급증했는지, 지연이 튀는지)를 눈으로 확인할 수 있어야 운영이 됩니다.
-
-**메트릭 파이프라인**
-
-```
-Spring Boot (Actuator + Micrometer)
-   └─ /actuator/prometheus  ← 관리 포트 9090 (서비스 8080과 분리)
-        │  scrape 15s
-        ▼
-   Prometheus ──► Grafana (대시보드 자동 프로비저닝)
-```
-
-- **Actuator + Micrometer**: `resilience4j`·`http.server.requests`·JVM 메트릭을 Prometheus 포맷으로 노출 (`micrometer-registry-prometheus`)
-- **관리 포트 분리**: `management.server.port=9090`으로 actuator를 서비스 포트(8080)에서 떼어내고, Docker Compose에서 9090은 host로 publish하지 않아 **같은 내부 네트워크의 Prometheus 컨테이너만** 스크레이프 가능 — 메트릭 엔드포인트 외부 노출 차단
-- **자동 프로비저닝**: Grafana 데이터소스와 대시보드를 `provisioning/`으로 코드화해 `docker compose up`만으로 대시보드가 바로 뜨도록 구성
-
-**대시보드 구성**
-
-`Circuit state / Failure rate / Retry·RateLimiter·Bulkhead 잔여치 / HTTP 상태별 요청률 / 지연 p95·p99 / JVM Heap·CPU·Thread` 패널을 한 화면에 배치해 방어 장치 상태와 애플리케이션 헬스를 함께 관측합니다.
-
----
-
 ## 서버 아키텍처
 
 AWS EC2 위에서 Docker Compose로 Nginx · Spring Boot · MySQL 세 컨테이너를 운영합니다.
@@ -399,8 +371,6 @@ AWS EC2 위에서 Docker Compose로 Nginx · Spring Boot · MySQL 세 컨테이�
 | Spring Boot | 애플리케이션 서버 (외부 포트 미노출, Docker 내부 통신만) |
 | MySQL 8.4 | 운영 DB (127.0.0.1 바인딩으로 호스트 외부 접근 차단) |
 | Redis | Spring Cache 백엔드, 박스오피스 캐시 저장 (127.0.0.1 바인딩) |
-| Prometheus | 앱 관리 포트(9090)를 15초 간격으로 스크레이프 (127.0.0.1 바인딩) |
-| Grafana | Prometheus 메트릭 시각화, 대시보드·데이터소스 자동 프로비저닝 (127.0.0.1 바인딩) |
 | Let's Encrypt | Certbot으로 SSL 인증서 발급·갱신 |
 
 ### 핵심 설계 포인트
