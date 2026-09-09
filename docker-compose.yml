@@ -26,7 +26,9 @@ services:
     expose:
       - "8080"
       - "9090"          # actuator 관리 포트 — 내부 네트워크 전용(host publish 안 함)
+    mem_limit: 640m
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx400m -XX:MaxMetaspaceSize=128m"
       TZ: Asia/Seoul
     volumes:
       - ./uploads:/app/uploads
@@ -43,9 +45,12 @@ services:
         awslogs-stream: mysql
     env_file:
       - .env
+    mem_limit: 400m
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+      - --innodb-buffer-pool-size=128M
+      - --performance-schema=OFF
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
@@ -60,6 +65,7 @@ services:
     image: nginx:stable
     container_name: movierecord-nginx
     restart: always
+    mem_limit: 64m
     logging:
       driver: awslogs
       options:
@@ -85,6 +91,7 @@ services:
     ports:
       - "127.0.0.1:6379:6379"
     restart: always
+    mem_limit: 64m
     logging:
       driver: awslogs
       options:
