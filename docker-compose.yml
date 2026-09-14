@@ -26,9 +26,9 @@ services:
     expose:
       - "8080"
       - "9090"          # actuator 관리 포트 — 내부 네트워크 전용(host publish 안 함)
-    mem_limit: 760m
+    mem_limit: 900m
     environment:
-      JAVA_TOOL_OPTIONS: "-Xmx520m -XX:MaxMetaspaceSize=128m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -Xlog:gc:file=/tmp/gc.log:time,uptime:filecount=3,filesize=10m"
+      JAVA_TOOL_OPTIONS: "-Xmx450m -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -Xlog:gc:file=/tmp/gc.log:time,uptime:filecount=3,filesize=10m"
       TZ: Asia/Seoul
     volumes:
       - ./uploads:/app/uploads
