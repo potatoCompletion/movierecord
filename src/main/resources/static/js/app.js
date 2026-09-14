@@ -91,8 +91,8 @@
         els.bad.textContent = textOrDash(d.badPoints);
         els.taste.textContent = d.taste || '-';
         if (els.nickname) els.nickname.textContent = d.nickname || '-';
-        els.editLink.href = `/contents/${d.id}/edit`;
-        els.deleteForm.action = `/contents/${d.id}/delete`;
+        els.editLink.href = `/records/${d.id}/edit`;
+        els.deleteForm.action = `/records/${d.id}/delete`;
 
         const canEdit = isAdmin || (currentUserId && String(d.ownerId) === currentUserId);
         els.editLink.style.display = canEdit ? '' : 'none';

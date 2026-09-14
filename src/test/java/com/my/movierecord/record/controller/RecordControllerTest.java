@@ -102,6 +102,10 @@ class RecordControllerTest {
                             "data-owner-id=\"1\"",
                             "data-rating=\"4.5\"");
                     assertThat(html).doesNotContain("location.href='/records/1'");
+                    // 모달 삭제 폼은 action 을 JS 가 채우므로 _csrf hidden 필드가 명시적으로 있어야 한다.
+                    int modalForm = html.indexOf("id=\"modalDeleteForm\"");
+                    assertThat(modalForm).isPositive();
+                    assertThat(html.substring(modalForm)).contains("name=\"_csrf\"");
                 })
                 .andDo(document("records/list"));
     }

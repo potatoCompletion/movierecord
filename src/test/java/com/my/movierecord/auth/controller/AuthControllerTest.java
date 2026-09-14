@@ -189,7 +189,8 @@ class AuthControllerTest {
         mockMvc.perform(post("/auth/logout")
                         .with(csrf())
                         .cookie(new Cookie(CookieUtil.REFRESH_TOKEN, "some-refresh")))
-                .andExpect(status().isNoContent())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
                 .andExpect(header().exists("Set-Cookie"))
                 .andExpect(result -> {
                     var setCookies = result.getResponse().getHeaders("Set-Cookie");

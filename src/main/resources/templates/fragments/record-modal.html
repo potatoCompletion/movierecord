@@ -30,6 +30,8 @@
             <div class="modal-footer">
                 <form id="modalDeleteForm" method="post" style="display:inline"
                       onsubmit="return confirm('정말 삭제하시겠어요?')">
+                    <!-- action 은 app.js 가 채우므로 th:action 이 없고, Thymeleaf 가 _csrf 를 자동 삽입하지 않는다. 직접 넣는다. -->
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                     <button type="submit" class="btn btn-danger">삭제</button>
                 </form>
                 <a id="modalEditLink" class="btn btn-primary">수정</a>

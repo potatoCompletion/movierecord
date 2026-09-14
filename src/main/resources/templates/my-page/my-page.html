@@ -25,7 +25,7 @@
                    th:class="${activeTab == 'profile'} ? 'side-nav-link active' : 'side-nav-link'">내 정보<br>수정</a>
                 <a th:href="@{/admin/users}" class="side-nav-link"
                    sec:authorize="hasRole('ADMIN')">관리자<br>페이지</a>
-                <form th:action="@{/logout}" method="post" class="side-nav-form">
+                <form th:action="@{/auth/logout}" method="post" class="side-nav-form">
                     <button type="submit" class="side-nav-link">로그<br>아웃</button>
                 </form>
             </nav>

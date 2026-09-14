@@ -91,12 +91,12 @@ public class AuthController {
 
     /**
      * 로그아웃. 리프레시 토큰을 폐기(DB revoke + Redis 삭제)하고 인증 쿠키를 즉시 만료시킨다.
+     * 헤더/마이페이지의 폼 POST 로 호출되므로 홈으로 리다이렉트해 화면을 갱신한다.
      */
     @PostMapping("/logout")
-    @ResponseBody
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
         cookieUtil.readRefreshToken(request).ifPresent(tokenService::revoke);
         cookieUtil.clearTokens(response);
-        return ResponseEntity.noContent().build();
+        return "redirect:/";
     }
 }
