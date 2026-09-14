@@ -20,6 +20,13 @@ public class Content {
     @Column(length = 500)
     private String thumbnailPath;
 
+    /**
+     * TMDB poster_path 원본 값 ("/abc123.jpg" 형태).
+     * 로컬 캐싱(thumbnailPath) 제거를 위한 준비 필드로, 기존 레코드는 null일 수 있다.
+     */
+    @Column(length = 255)
+    private String posterPath;
+
     public static Content of(Long tmdbId, String mediaType) {
         Content content = new Content();
         content.id = ContentId.of(tmdbId, mediaType);
@@ -28,5 +35,9 @@ public class Content {
 
     public void updateThumbnailPath(String path) {
         this.thumbnailPath = path;
+    }
+
+    public void updatePosterPath(String posterPath) {
+        this.posterPath = posterPath;
     }
 }

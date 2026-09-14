@@ -30,6 +30,7 @@ public class ContentService {
                 .orElseGet(() -> {
                     Content content = Content.of(tmdbId, mediaType);
                     if (posterPath != null && !posterPath.isBlank()) {
+                        content.updatePosterPath(posterPath);
                         String localPath = downloadAndSave(posterPath);
                         content.updateThumbnailPath(localPath);
                     }

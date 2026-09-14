@@ -448,6 +448,16 @@ OMDB_API_KEY=your_key
 docker compose up -d
 ```
 
+#### 스키마 변경 시 수동 DDL 적용
+
+운영 프로파일은 `spring.jpa.hibernate.ddl-auto=validate`이며 Flyway/Liquibase를 사용하지 않습니다.
+엔티티에 컬럼이 추가되면 배포 전에 운영 DB에 아래 DDL을 사람이 직접 실행해야 합니다.
+실행하지 않으면 앱 기동 시 스키마 검증 단계에서 실패합니다.
+
+| 적용 시점 | DDL |
+|-----------|-----|
+| `Content.posterPath` 추가 (TMDB 포스터 로컬 캐싱 제거 준비) | `ALTER TABLE content ADD COLUMN poster_path VARCHAR(255) NULL;` |
+
 ---
 
 ## 캐시 전략
