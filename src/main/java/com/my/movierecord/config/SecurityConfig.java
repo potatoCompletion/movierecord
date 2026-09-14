@@ -19,6 +19,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import tools.jackson.databind.ObjectMapper;
 
@@ -92,7 +93,15 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        // 기본 CsrfAuthenticationStrategy 는 "인증 시" 기존 XSRF-TOKEN 쿠키를 삭제하고
+                        // 새 토큰은 지연 생성으로 남긴다. 그런데 sessionCreationPolicy 를 지정하면
+                        // SessionManagementFilter 가 등록되어, JWT 필터가 인증을 채운 매 요청마다 이 전략이
+                        // 실행된다. 폼을 렌더링하지 않는 JSON 응답(예: /api/tmdb/search) 은 새 토큰을 저장하지
+                        // 않으므로 브라우저 쿠키만 사라지고, 이어지는 폼 POST 가 403 이 된다.
+                        // 세션이 없어 토큰 고정(fixation) 회전이 의미 없으므로 no-op 전략으로 바꾼다.
+                        .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy()))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(form -> form
