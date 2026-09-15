@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
  */
 class CacheConfigTest {
 
-    private static final String CACHE_VERSION_PREFIX = "v2:";
+    private static final String CACHE_VERSION_PREFIX = "v3:";
 
     private RedisCacheManager cacheManager;
 

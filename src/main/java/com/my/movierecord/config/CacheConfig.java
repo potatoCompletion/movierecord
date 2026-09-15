@@ -19,9 +19,11 @@ public class CacheConfig {
 
     /**
      * 캐시 키 버전 접두사. 캐시 값은 타입 정보 없이 JSON으로 저장되어 LinkedHashMap 으로 복원되므로,
-     * DTO 구조가 바뀌면 이 값을 올려 옛 캐시를 무효화한다.
+     * 캐시된 값의 구조 또는 의미가 바뀌면 이 값을 올려 옛 캐시를 무효화한다.
+     * 필드 구성이 그대로여도 값의 형식이나 출처가 바뀌면 대상이다 (예: 포스터 URL 이 /uploads/ 경로에서 TMDB CDN URL 로 변경).
+     * 올리지 않으면 TTL 만료 전까지 옛 값이 그대로 서빙된다.
      */
-    private static final String CACHE_VERSION = "v2";
+    private static final String CACHE_VERSION = "v3";
 
     @Bean
     @Profile("prod")
