@@ -158,7 +158,7 @@ class RecordControllerTest {
 
     @Test
     void GET_contents_id_edit_기존값_채워짐() throws Exception {
-        WatchRecord record = WatchRecordFixture.createWatchRecordWithContent(1L, "thumb.jpg", "/abc.jpg");
+        WatchRecord record = WatchRecordFixture.createWatchRecordWithContent(1L, "/abc.jpg");
         given(watchRecordService.get(1L)).willReturn(record);
 
         mockMvc.perform(get("/records/1/edit").with(user(mockPrincipal())))
@@ -274,7 +274,7 @@ class RecordControllerTest {
 
     @Test
     void POST_contents_id_수정_검증_실패_existingThumbnailUrl_복원() throws Exception {
-        WatchRecord record = WatchRecordFixture.createWatchRecordWithContent(1L, "thumb.jpg", "/abc.jpg");
+        WatchRecord record = WatchRecordFixture.createWatchRecordWithContent(1L, "/abc.jpg");
         given(watchRecordService.get(1L)).willReturn(record);
 
         org.springframework.util.LinkedMultiValueMap<String, String> params = validFormParams();

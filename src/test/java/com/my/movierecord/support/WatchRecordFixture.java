@@ -48,9 +48,8 @@ public class WatchRecordFixture {
         return record;
     }
 
-    public static WatchRecord createWatchRecordWithContent(Long id, String thumbnailPath, String posterPath) {
+    public static WatchRecord createWatchRecordWithContent(Long id, String posterPath) {
         Content content = Content.of(12345L, "movie");
-        content.updateThumbnailPath(thumbnailPath);
         content.updatePosterPath(posterPath);
         WatchRecord record = WatchRecord.builder()
                 .title("테스트 영화")

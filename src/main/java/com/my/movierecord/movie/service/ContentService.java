@@ -1,10 +1,8 @@
 package com.my.movierecord.movie.service;
 
-import com.my.movierecord.common.service.FileStorageService;
 import com.my.movierecord.movie.domain.Content;
 import com.my.movierecord.movie.domain.ContentId;
 import com.my.movierecord.movie.repository.ContentRepository;
-import com.my.movierecord.tmdb.client.TmdbImageClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,17 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ContentService {
 
     private final ContentRepository contentRepository;
-    private final FileStorageService fileStorageService;
-    private final TmdbImageClient tmdbImageClient;
 
-    public ContentService(ContentRepository contentRepository,
-            FileStorageService fileStorageService,
-            TmdbImageClient tmdbImageClient) {
+    public ContentService(ContentRepository contentRepository) {
         this.contentRepository = contentRepository;
-        this.fileStorageService = fileStorageService;
-        this.tmdbImageClient = tmdbImageClient;
     }
 
+    /**
+     * (tmdbId, mediaType) 에 해당하는 콘텐츠를 찾고, 없으면 posterPath 만 저장해 새로 만든다.
+     * 포스터는 TMDB CDN 에서 직접 서빙하므로 이미지를 내려받지 않는다.
+     */
     @Transactional
     public Content findOrCreate(Long tmdbId, String mediaType, String posterPath) {
         return contentRepository.findById(ContentId.of(tmdbId, mediaType))
@@ -31,21 +27,8 @@ public class ContentService {
                     Content content = Content.of(tmdbId, mediaType);
                     if (posterPath != null && !posterPath.isBlank()) {
                         content.updatePosterPath(posterPath);
-                        String localPath = downloadAndSave(posterPath);
-                        content.updateThumbnailPath(localPath);
                     }
                     return contentRepository.save(content);
                 });
-    }
-
-    private String downloadAndSave(String posterPath) {
-        byte[] bytes = tmdbImageClient.download(posterPath);
-        if (bytes == null) {
-            return null;
-        }
-        String extension = posterPath.contains(".")
-                ? posterPath.substring(posterPath.lastIndexOf('.') + 1).toLowerCase()
-                : "jpg";
-        return fileStorageService.storeBytes(bytes, extension);
     }
 }
