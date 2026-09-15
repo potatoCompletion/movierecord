@@ -31,7 +31,7 @@ public interface WatchRecordRepository extends JpaRepository<WatchRecord, Long> 
             SELECT wr.content.id.tmdbId       AS tmdbId,
                    wr.content.id.mediaType    AS mediaType,
                    wr.title                   AS title,
-                   wr.content.thumbnailPath   AS posterUrl,
+                   wr.content.posterPath      AS posterPath,
                    AVG(wr.rating)             AS avgRating,
                    COUNT(wr)                  AS reviewCount
             FROM WatchRecord wr
@@ -40,7 +40,7 @@ public interface WatchRecordRepository extends JpaRepository<WatchRecord, Long> 
             GROUP BY wr.content.id.tmdbId,
                      wr.content.id.mediaType,
                      wr.title,
-                     wr.content.thumbnailPath
+                     wr.content.posterPath
             ORDER BY AVG(wr.rating) DESC, COUNT(wr) DESC
             """)
     List<TopRatingProjection> findTopRated(@Param("startDateTime")LocalDateTime startDateTime, Pageable pageable);

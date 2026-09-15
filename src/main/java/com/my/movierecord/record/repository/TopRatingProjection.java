@@ -4,7 +4,7 @@ public interface TopRatingProjection {
     Long getTmdbId();
     String getMediaType();
     String getTitle();
-    String getPosterUrl();
+    String getPosterPath();
     Double getAvgRating();
     Long getReviewCount();
 }

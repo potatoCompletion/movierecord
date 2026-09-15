@@ -7,6 +7,7 @@ import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.dto.RecordPageDto;
 import com.my.movierecord.record.repository.WatchRecordRepository;
 import com.my.movierecord.support.WatchRecordFixture;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,9 @@ class WatchRecordServiceTest {
 
     @Mock
     UserRepository userRepository;
+
+    @Mock
+    TmdbImageUrlProvider images;
 
     @InjectMocks
     WatchRecordService watchRecordService;

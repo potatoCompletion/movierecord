@@ -2,6 +2,8 @@ package com.my.movierecord.record.dto;
 
 import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.enums.Emotion;
+import com.my.movierecord.tmdb.image.PosterSize;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
@@ -10,7 +12,7 @@ public record RecordDetail(
         Long id,
         String title,
         LocalDate watchedDate,
-        String thumbnailUrl,
+        String thumbnailUrl,   // TMDB CDN 완성 URL (w342), posterPath 없으면 null
         String oneLiner,
         String immersion,
         String story,
@@ -22,9 +24,9 @@ public record RecordDetail(
         String nickname,
         Long userId
 ) {
-    public static RecordDetail from(WatchRecord wr) {
-        String thumbnailUrl = (wr.getContent() != null && wr.getContent().getThumbnailPath() != null)
-                ? "/uploads/" + wr.getContent().getThumbnailPath()
+    public static RecordDetail from(WatchRecord wr, TmdbImageUrlProvider images) {
+        String thumbnailUrl = wr.getContent() != null
+                ? images.poster(wr.getContent().getPosterPath(), PosterSize.W342)
                 : null;
         String nickname = wr.getUser() != null ? wr.getUser().getDisplayNickname() : null;
         Long userId = wr.getUser() != null ? wr.getUser().getId() : null;

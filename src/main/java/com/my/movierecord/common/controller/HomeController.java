@@ -1,8 +1,11 @@
 package com.my.movierecord.common.controller;
 
 import com.my.movierecord.kobis.service.KobisService;
+import com.my.movierecord.record.dto.RecentRecordItem;
+import com.my.movierecord.record.dto.TopRatingItem;
 import com.my.movierecord.record.repository.WatchRecordRepository;
 import com.my.movierecord.spotlight.service.SpotlightService;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import com.my.movierecord.tmdb.service.TmdbHomeService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +26,7 @@ public class HomeController {
     private final TmdbHomeService tmdbHomeService;
     private final SpotlightService spotlightService;
     private final WatchRecordRepository watchRecordRepository;
+    private final TmdbImageUrlProvider images;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -40,8 +44,12 @@ public class HomeController {
 
         // ── DB: 이번 주 인기 평점 TOP 5 / 최근 감상평 4건 ─────────────────────
         LocalDateTime startDateTime = LocalDateTime.now().minusDays(7);
-        model.addAttribute("topRatings",    watchRecordRepository.findTopRated(startDateTime, PageRequest.of(0, 3)));
-        model.addAttribute("recentReviews", watchRecordRepository.findTop4ByOrderByCreatedAtDesc());
+        model.addAttribute("topRatings", watchRecordRepository.findTopRated(startDateTime, PageRequest.of(0, 3)).stream()
+                .map(p -> TopRatingItem.from(p, images))
+                .toList());
+        model.addAttribute("recentReviews", watchRecordRepository.findTop4ByOrderByCreatedAtDesc().stream()
+                .map(wr -> RecentRecordItem.from(wr, images))
+                .toList());
 
         return "home";
     }

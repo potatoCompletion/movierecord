@@ -67,6 +67,9 @@ class RecordControllerTest {
     @MockitoBean
     CustomOAuth2UserService customOAuth2UserService;
 
+    @Autowired
+    TmdbImageUrlProvider images;
+
     @BeforeEach
     void setUp() {
         given(userRepository.findByUsername(any(String.class)))
@@ -87,7 +90,7 @@ class RecordControllerTest {
         WatchRecord record = WatchRecordFixture.createWatchRecordWithId(1L);
         PageImpl<WatchRecord> page = new PageImpl<>(List.of(record), PageRequest.of(0, 20), 1);
         given(watchRecordService.list(any(Pageable.class)))
-                .willReturn(RecordPageDto.of(page, page.map(RecordListItem::from).toList()));
+                .willReturn(RecordPageDto.of(page, page.map(wr -> RecordListItem.from(wr, images)).toList()));
 
         mockMvc.perform(get("/records").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
@@ -155,7 +158,7 @@ class RecordControllerTest {
 
     @Test
     void GET_contents_id_edit_기존값_채워짐() throws Exception {
-        WatchRecord record = WatchRecordFixture.createWatchRecordWithContent(1L, "thumb.jpg");
+        WatchRecord record = WatchRecordFixture.createWatchRecordWithContent(1L, "thumb.jpg", "/abc.jpg");
         given(watchRecordService.get(1L)).willReturn(record);
 
         mockMvc.perform(get("/records/1/edit").with(user(mockPrincipal())))
@@ -163,7 +166,7 @@ class RecordControllerTest {
                 .andExpect(view().name("records/form"))
                 .andExpect(model().attribute("mode", "edit"))
                 .andExpect(model().attribute("movieId", 1L))
-                .andExpect(model().attribute("existingThumbnailUrl", "/uploads/thumb.jpg"))
+                .andExpect(model().attribute("existingThumbnailUrl", "https://image.tmdb.org/t/p/w342/abc.jpg"))
                 .andDo(document("records/edit-form"));
     }
 
@@ -271,7 +274,7 @@ class RecordControllerTest {
 
     @Test
     void POST_contents_id_수정_검증_실패_existingThumbnailUrl_복원() throws Exception {
-        WatchRecord record = WatchRecordFixture.createWatchRecordWithContent(1L, "thumb.jpg");
+        WatchRecord record = WatchRecordFixture.createWatchRecordWithContent(1L, "thumb.jpg", "/abc.jpg");
         given(watchRecordService.get(1L)).willReturn(record);
 
         org.springframework.util.LinkedMultiValueMap<String, String> params = validFormParams();
@@ -283,7 +286,7 @@ class RecordControllerTest {
                 .params(params))
                 .andExpect(status().isOk())
                 .andExpect(view().name("records/form"))
-                .andExpect(model().attribute("existingThumbnailUrl", "/uploads/thumb.jpg"));
+                .andExpect(model().attribute("existingThumbnailUrl", "https://image.tmdb.org/t/p/w342/abc.jpg"));
 
         then(watchRecordService).should().get(1L);
     }

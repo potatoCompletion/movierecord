@@ -225,10 +225,11 @@
                      th:text="${stat.count}"></div>
                 <div class="rr-poster">
                     <img th:if="${item.posterUrl != null}"
-                         th:src="'/uploads/' + ${item.posterUrl}"
+                         th:src="${item.posterUrl}"
                          th:alt="${item.title}"
                          class="rr-poster-img"
-                         loading="lazy"/>
+                         loading="lazy"
+                         onerror="this.onerror=null;this.src='/images/poster-fallback.svg'"/>
                     <div th:unless="${item.posterUrl != null}"
                          class="poster-art poster-art--no-meta">
                         <div class="pa-rule"></div>
@@ -274,12 +275,13 @@
                    '--rc-accent:#a8c3e8; --rc-avatar-bg:rgba(168,195,232,0.19); --rc-avatar-bd:rgba(168,195,232,0.33);' :
                    '--rc-accent:#c8a8e8; --rc-avatar-bg:rgba(200,168,232,0.19); --rc-avatar-bd:rgba(200,168,232,0.33);')}">
                 <div class="rc-poster">
-                    <img th:if="${review.content.thumbnailPath != null}"
-                         th:src="'/uploads/' + ${review.content.thumbnailPath}"
+                    <img th:if="${review.posterUrl != null}"
+                         th:src="${review.posterUrl}"
                          th:alt="${review.title}"
                          class="rc-poster-img"
-                         loading="lazy"/>
-                    <div th:unless="${review.content.thumbnailPath != null}"
+                         loading="lazy"
+                         onerror="this.onerror=null;this.src='/images/poster-fallback.svg'"/>
+                    <div th:unless="${review.posterUrl != null}"
                          class="poster-art poster-art--no-meta">
                         <div class="pa-rule"></div>
                         <div class="pa-eng" th:text="${review.title}"></div>
@@ -289,9 +291,9 @@
                     <div>
                         <div class="rc-head">
                             <span class="rc-avatar"
-                                  th:text="${#strings.substring(review.user.displayNickname, 0, 1)}"></span>
+                                  th:text="${#strings.substring(review.nickname, 0, 1)}"></span>
                             <span class="rc-nick"
-                                  th:text="${review.user.displayNickname}"></span>
+                                  th:text="${review.nickname}"></span>
                             <span class="rc-date"
                                   th:text="${#temporals.format(review.createdAt, 'MM.dd')}"></span>
                         </div>

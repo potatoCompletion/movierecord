@@ -10,6 +10,7 @@ import com.my.movierecord.kobis.dto.BoxOfficeItemDto;
 import com.my.movierecord.kobis.dto.KobisBoxOfficeResponse;
 import com.my.movierecord.tmdb.client.TmdbClient;
 import com.my.movierecord.tmdb.dto.TmdbSearchItem;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -28,6 +29,7 @@ public class KobisService {
     private final TmdbClient tmdbClient;
     private final ContentService contentService;
     private final ObjectMapper objectMapper;
+    private final TmdbImageUrlProvider images;
 
     @Cacheable(value = "dailyBoxOffice", key = "T(java.time.LocalDate).now().minusDays(1).toString()")
     public List<BoxOfficeItemDto> getDailyBoxOffice() {
@@ -57,7 +59,7 @@ public class KobisService {
                     .map(item -> {
                         String year = item.openDt().split("-")[0];
                         Content content = findContent(item.movieNm(), year);
-                        return BoxOfficeItemDto.of(item, content);
+                        return BoxOfficeItemDto.of(item, content, images);
                     })
                     .toList();
         } catch (Exception e) {

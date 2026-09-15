@@ -8,6 +8,7 @@ import com.my.movierecord.record.domain.WatchRecord;
 import com.my.movierecord.record.dto.RecordListItem;
 import com.my.movierecord.record.dto.RecordPageDto;
 import com.my.movierecord.record.repository.WatchRecordRepository;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,18 +24,21 @@ public class WatchRecordService {
     private final WatchRecordRepository watchRecordRepository;
     private final ContentService contentService;
     private final UserRepository userRepository;
+    private final TmdbImageUrlProvider images;
 
     public WatchRecordService(WatchRecordRepository watchRecordRepository,
                               ContentService contentService,
-                              UserRepository userRepository) {
+                              UserRepository userRepository,
+                              TmdbImageUrlProvider images) {
         this.watchRecordRepository = watchRecordRepository;
         this.contentService = contentService;
         this.userRepository = userRepository;
+        this.images = images;
     }
 
     public RecordPageDto list(Pageable pageable) {
         Page<WatchRecord> page = watchRecordRepository.findAll(pageable);
-        List<RecordListItem> items = page.map(RecordListItem::from).toList();
+        List<RecordListItem> items = page.map(wr -> RecordListItem.from(wr, images)).toList();
         return RecordPageDto.of(page, items);
     }
 
@@ -66,7 +70,7 @@ public class WatchRecordService {
 
     public RecordPageDto listByUser(Long userId, Pageable pageable) {
         Page<WatchRecord> page = watchRecordRepository.findByUserId(userId, pageable);
-        List<RecordListItem> items = page.map(RecordListItem::from).toList();
+        List<RecordListItem> items = page.map(wr -> RecordListItem.from(wr, images)).toList();
         return RecordPageDto.of(page, items);
     }
 

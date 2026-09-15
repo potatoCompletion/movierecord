@@ -100,7 +100,7 @@ public class RecordController {
             currentUserId = user.getId();
             isAdmin = "ROLE_ADMIN".equals(user.getRole());
         }
-        model.addAttribute("item", RecordDetail.from(record));
+        model.addAttribute("item", RecordDetail.from(record, images));
         model.addAttribute("currentUserId", currentUserId);
         model.addAttribute("isAdmin", isAdmin);
         return "records/detail";
@@ -224,9 +224,9 @@ public class RecordController {
     }
 
     private String thumbnailUrl(WatchRecord record) {
-        if (record.getContent() == null || record.getContent().getThumbnailPath() == null) {
+        if (record.getContent() == null) {
             return null;
         }
-        return "/uploads/" + record.getContent().getThumbnailPath();
+        return images.poster(record.getContent().getPosterPath(), PosterSize.W342);
     }
 }

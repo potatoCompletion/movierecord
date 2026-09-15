@@ -4,6 +4,7 @@ import com.my.movierecord.common.controller.HomeController;
 import com.my.movierecord.kobis.service.KobisService;
 import com.my.movierecord.record.repository.WatchRecordRepository;
 import com.my.movierecord.spotlight.service.SpotlightService;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import com.my.movierecord.tmdb.service.TmdbHomeService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +45,9 @@ class HomeControllerTest {
 
     @Mock
     WatchRecordRepository watchRecordRepository;
+
+    @Mock
+    TmdbImageUrlProvider images;
 
     @InjectMocks
     HomeController homeController;

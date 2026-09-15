@@ -14,6 +14,7 @@ import com.my.movierecord.record.stats.MyPageStats;
 import com.my.movierecord.record.stats.MyPageStatsService;
 import com.my.movierecord.support.SecurityTestConfig;
 import com.my.movierecord.support.WatchRecordFixture;
+import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(MyPageController.class)
-@Import({SecurityConfig.class, SecurityTestConfig.class})
+@Import({SecurityConfig.class, SecurityTestConfig.class, TmdbImageUrlProvider.class})
 @ActiveProfiles("test")
 class MyPageControllerTest {
 
@@ -63,6 +64,9 @@ class MyPageControllerTest {
 
     @MockitoBean
     CustomOAuth2UserService customOAuth2UserService;
+
+    @Autowired
+    TmdbImageUrlProvider images;
 
     @BeforeEach
     void setUp() {
@@ -93,7 +97,7 @@ class MyPageControllerTest {
         WatchRecord record = WatchRecordFixture.createWatchRecordWithId(1L);
         PageImpl<WatchRecord> page = new PageImpl<>(List.of(record), PageRequest.of(0, 20), 1);
         given(watchRecordService.listByUser(any(Long.class), any(Pageable.class)))
-                .willReturn(RecordPageDto.of(page, page.map(RecordListItem::from).toList()));
+                .willReturn(RecordPageDto.of(page, page.map(wr -> RecordListItem.from(wr, images)).toList()));
 
         mockMvc.perform(get("/my-page/records").with(user(mockPrincipal())))
                 .andExpect(status().isOk())
