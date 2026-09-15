@@ -316,7 +316,6 @@ Resilience4j 이전에, RestClient 자체에 connect/read 타임아웃을 걸어
 | 클라이언트 | Connect | Read | 비고 |
 |-----------|---------|------|------|
 | TMDB API | 3s | 5s | |
-| TMDB 이미지 | 3s | 10s | 이미지 응답 지연 감안 |
 | OMDb | 3s | 5s | |
 | KOBIS | — | — | 공식 SDK라 전송 타임아웃 제어 불가 → **Bulkhead로 자원 격리**로 대체 방어 |
 
@@ -338,16 +337,16 @@ AWS EC2 위에서 Docker Compose로 Nginx · Spring Boot · MySQL 세 컨테이�
  │  │  Docker Compose Network           │  │
  │  │                                   │  │
  │  │  ┌─────────────┐                  │  │
- │  │  │    Nginx    │  /uploads/ →     │  │
- │  │  │  :80 / :443 │  볼륨 직접 서빙    │  │
+ │  │  │    Nginx    │                  │  │
+ │  │  │  :80 / :443 │                  │  │
  │  │  └──────┬──────┘                  │  │
  │  │         │ proxy_pass              │  │
  │  │         │ http://app:8080         │  │
  │  │         ▼                         │  │
- │  │  ┌──────────────┐   ┌───────────┐ │  │
- │  │  │ Spring Boot  │─▶│  uploads/ │ │  │
- │  │  │   (expose)   │   │  (volume) │ │  │
- │  │  │    :8080     │   └───────────┘ │  │
+ │  │  ┌──────────────┐                 │  │
+ │  │  │ Spring Boot  │                 │  │
+ │  │  │   (expose)   │                 │  │
+ │  │  │    :8080     │                 │  │
  │  │  └──────┬───────┘                 │  │
  │  │         │ JDBC / Redis            │  │
  │  │    ┌────┴────┐                    │  │
@@ -367,7 +366,7 @@ AWS EC2 위에서 Docker Compose로 Nginx · Spring Boot · MySQL 세 컨테이�
 | 컴포넌트 | 역할 |
 |---------|------|
 | AWS EC2 | 단일 인스턴스에서 전체 스택 운영 |
-| Nginx | HTTP → HTTPS 리다이렉트, SSL 종단, 리버스 프록시, 정적 파일 서빙 |
+| Nginx | HTTP → HTTPS 리다이렉트, SSL 종단, 리버스 프록시 |
 | Spring Boot | 애플리케이션 서버 (외부 포트 미노출, Docker 내부 통신만) |
 | MySQL 8.4 | 운영 DB (127.0.0.1 바인딩으로 호스트 외부 접근 차단) |
 | Redis | Spring Cache 백엔드, 박스오피스 캐시 저장 (127.0.0.1 바인딩) |
@@ -383,17 +382,6 @@ Nginx가 80포트의 모든 요청을 443으로 301 리다이렉트하고, Let's
 # HTTP → HTTPS 리다이렉트
 location / {
     return 301 https://$host$request_uri;
-}
-```
-
-**정적 파일 직접 서빙**
-
-업로드 이미지(`/uploads/`)는 Spring Boot를 거치지 않고 Nginx가 볼륨을 공유해 직접 응답합니다. 불필요한 WAS 부하를 줄이고 `expires 30d`로 브라우저 캐싱을 적용합니다.
-
-```nginx
-location /uploads/ {
-    alias /app/uploads/;
-    expires 30d;
 }
 ```
 
@@ -451,12 +439,13 @@ docker compose up -d
 #### 스키마 변경 시 수동 DDL 적용
 
 운영 프로파일은 `spring.jpa.hibernate.ddl-auto=validate`이며 Flyway/Liquibase를 사용하지 않습니다.
-엔티티에 컬럼이 추가되면 배포 전에 운영 DB에 아래 DDL을 사람이 직접 실행해야 합니다.
-실행하지 않으면 앱 기동 시 스키마 검증 단계에서 실패합니다.
+엔티티에 컬럼이 추가되면 배포 전에, 엔티티에서 컬럼이 제거되면 배포 후에 운영 DB에 아래 DDL을 사람이 직접 실행해야 합니다.
+순서를 지키지 않으면 앱 기동 시 스키마 검증 단계에서 실패합니다(엔티티에 없는 컬럼이 DB에 남아 있는 것은 검증에 걸리지 않는다).
 
 | 적용 시점 | DDL |
 |-----------|-----|
 | `Content.posterPath` 추가 (TMDB 포스터 로컬 캐싱 제거 준비) | `ALTER TABLE content ADD COLUMN poster_path VARCHAR(255) NULL;` |
+| `Content.thumbnailPath` 제거 (TMDB 포스터 로컬 캐싱 코드 제거 커밋 **배포 후** 실행) | `ALTER TABLE content DROP COLUMN thumbnail_path;` |
 
 ---
 

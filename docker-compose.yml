@@ -30,8 +30,6 @@ services:
     environment:
       JAVA_TOOL_OPTIONS: "-Xmx450m -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -Xlog:gc:file=/tmp/gc.log:time,uptime:filecount=3,filesize=10m"
       TZ: Asia/Seoul
-    volumes:
-      - ./uploads:/app/uploads
 
   mysql:
     image: mysql:8.4
@@ -81,7 +79,6 @@ services:
       # - "443:443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./uploads:/app/uploads:ro
       - ./docker/certbot/www:/var/www/certbot:ro
       - ./docker/certbot/conf:/etc/letsencrypt:ro
 

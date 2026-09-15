@@ -38,7 +38,6 @@ out/
 
 ### Runtime data (do not commit) ###
 /data/
-/uploads/
 *.mv.db
 *.trace.db
 *.lock.db
