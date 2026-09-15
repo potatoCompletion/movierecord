@@ -4,12 +4,14 @@ import com.my.movierecord.auth.handler.LoginFailureHandler;
 import com.my.movierecord.auth.handler.LoginSuccessHandler;
 import com.my.movierecord.auth.handler.OAuth2LoginFailureHandler;
 import com.my.movierecord.auth.handler.OAuth2LoginSuccessHandler;
+import com.my.movierecord.auth.security.CookieOAuth2AuthorizationRequestRepository;
 import com.my.movierecord.auth.security.CookieUtil;
 import com.my.movierecord.auth.security.JwtAuthenticationFilter;
 import com.my.movierecord.auth.security.JwtProvider;
 import com.my.movierecord.auth.security.RestAuthenticationEntryPoint;
 import com.my.movierecord.auth.service.CustomOAuth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,6 +19,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
@@ -29,6 +33,10 @@ import tools.jackson.databind.ObjectMapper;
  * <p>세션을 생성하지 않고({@link SessionCreationPolicy#STATELESS}), {@link JwtAuthenticationFilter}가
  * 매 요청 {@code ACCESS_TOKEN} 쿠키를 검증해 인증을 재구성한다. CSRF 토큰 저장소는 세션 비의존
  * {@link CookieCsrfTokenRepository}로 전환했다.
+ *
+ * <p>세션이 전혀 만들어지지 않도록 OAuth2 인가 요청 저장소도 쿠키 기반
+ * ({@link CookieOAuth2AuthorizationRequestRepository})을 쓴다. 리다이렉트 flash 속성은 {@code WebConfig}의
+ * 쿠키 기반 FlashMapManager 가 담당한다.
  */
 @Configuration
 @EnableWebSecurity
@@ -61,8 +69,22 @@ public class SecurityConfig {
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * OAuth2 로그인 인가 요청(state/nonce)을 세션 대신 서명된 쿠키에 보관한다.
+     * 기본 HttpSession 저장소는 소셜 로그인 시작 시 JSESSIONID 를 발급하므로 교체한다.
+     */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository(
+            @Value("${app.jwt.secret}") String secret,
+            @Value("${app.cookie.secure:false}") boolean secure) {
+        return new CookieOAuth2AuthorizationRequestRepository(objectMapper, secret, secure);
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository)
+            throws Exception {
         RestAuthenticationEntryPoint entryPoint = new RestAuthenticationEntryPoint(objectMapper);
 
         http
@@ -121,6 +143,8 @@ public class SecurityConfig {
         if (clientRegistrationRepository != null) {
             http.oauth2Login(oauth2 -> oauth2
                     .loginPage("/auth/login")
+                    .authorizationEndpoint(endpoint -> endpoint
+                            .authorizationRequestRepository(authorizationRequestRepository))
                     .successHandler(oauth2LoginSuccessHandler != null ? oauth2LoginSuccessHandler : loginSuccessHandler)
                     .userInfoEndpoint(userInfo -> userInfo
                             .userService(customOAuth2UserService)

@@ -299,6 +299,9 @@ class RecordControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/records"))
                 .andExpect(flash().attribute("success", "감상평이 삭제되었습니다."))
+                // flash 는 세션이 아니라 쿠키(FLASH)로 전달돼야 한다 — JSESSIONID 발급 방지.
+                .andExpect(result -> assertThat(result.getResponse().getHeaders("Set-Cookie"))
+                        .anyMatch(h -> h.startsWith("FLASH=")))
                 .andDo(document("records/delete"));
     }
 
