@@ -3,6 +3,7 @@
 영화·TV 시리즈 감상 기록 웹 서비스. TMDB·KOBIS·OMDb 세 API를 연동해 홈 화면을 구성하고, 통합 검색으로 작품을 찾아 별점·감정·몰입감·스토리·취향 일치도를 기록합니다. 마이페이지에서 감상 통계를 확인할 수 있습니다.
 
 > 개인 프로젝트 | Java 21 / Spring Boot | **서비스: [mu-ra-bel.com](https://mu-ra-bel.com)**
+> 데모 계정: `demo` / (비밀번호)
 
 
 ![홈 화면](docs/images/home.png)
@@ -733,6 +734,7 @@ SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 ### 운영 배포
 
 `.env` 파일에 환경 변수를 작성한 뒤 실행합니다. Nginx가 80 포트를 받아 앱 서버로 프록시합니다.
+`DEMO_PASSWORD`를 `.env`에 넣으면 기동 시 체험용 `demo` 계정(ROLE_USER, ACTIVE)이 생성되고, 없으면 건너뜁니다.
 
 ```bash
 docker compose up -d
