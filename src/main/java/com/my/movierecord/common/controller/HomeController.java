@@ -5,6 +5,7 @@ import com.my.movierecord.record.dto.RecentRecordItem;
 import com.my.movierecord.record.dto.TopRatingItem;
 import com.my.movierecord.record.repository.WatchRecordRepository;
 import com.my.movierecord.spotlight.service.SpotlightService;
+import com.my.movierecord.tmdb.dto.UpcomingCard;
 import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import com.my.movierecord.tmdb.service.TmdbHomeService;
 import java.time.LocalDate;
@@ -40,7 +41,8 @@ public class HomeController {
 
         // ── TMDB: 현재 상영작 / 곧 개봉해요 ───────────────────────────
         model.addAttribute("nowPlaying", tmdbHomeService.getNowPlaying());
-        model.addAttribute("upcoming",   tmdbHomeService.getUpcoming());
+        // D-Day 는 캐시 저장 시점이 아니라 요청 시점 기준으로 계산하고, 개봉일이 지난 항목은 제외한다.
+        model.addAttribute("upcoming",   UpcomingCard.fromAll(tmdbHomeService.getUpcoming(), LocalDate.now()));
 
         // ── DB: 이번 주 인기 평점 TOP 5 / 최근 감상평 4건 ─────────────────────
         LocalDateTime startDateTime = LocalDateTime.now().minusDays(7);

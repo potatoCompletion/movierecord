@@ -5,9 +5,10 @@ import com.my.movierecord.tmdb.dto.TmdbDiscoverItem;
 import com.my.movierecord.tmdb.dto.TmdbDiscoverResponse;
 import com.my.movierecord.tmdb.dto.TmdbMovieDetail;
 import com.my.movierecord.tmdb.dto.TmdbPersonDetail;
+import com.my.movierecord.tmdb.dto.TmdbReleaseDates;
 import com.my.movierecord.tmdb.dto.TmdbSearchItem;
 import com.my.movierecord.tmdb.dto.TmdbTvDetail;
-import com.my.movierecord.tmdb.dto.UpcomingItem;
+import com.my.movierecord.tmdb.dto.UpcomingCandidate;
 import com.my.movierecord.tmdb.image.PosterSize;
 import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
@@ -15,7 +16,6 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +45,7 @@ public class TmdbClient {
     private static final String SEARCH_MULTI_PATH = "/search/multi";
     private static final String SEARCH_MOVIE_PATH = "/search/movie";
     private static final String MOVIE_PATH = "/movie/{id}";
+    private static final String MOVIE_RELEASE_DATES_PATH = "/movie/{id}/release_dates";
     private static final String TV_PATH = "/tv/{id}";
     private static final String PERSON_PATH = "/person/{id}";
     private static final String PERSON_CREDITS_PATH = "/person/{id}/combined_credits";
@@ -288,13 +289,16 @@ public class TmdbClient {
         return List.of();
     }
 
-    // --- 부가 영역: 홈 '곧 개봉해요' 캐러셀 (실패 시 빈 목록) ---
+    // --- 부가 영역: 홈 '곧 개봉해요' 후보 (실패 시 빈 목록) ---
+    // discover 는 KR 극장 개봉일로 필터링하지만 응답의 release_date 는 최초(전세계) 개봉일이다.
+    // 한국 개봉일은 TmdbHomeService 가 getKoreanReleaseDate 로 작품별로 보강한다.
+    // (같은 클래스 안에서 호출하면 AOP 프록시를 거치지 않아 resilience4j 가 적용되지 않는다.)
     @Bulkhead(name = INSTANCE)
     @RateLimiter(name = INSTANCE)
     @CircuitBreaker(name = INSTANCE)
     @Retry(name = INSTANCE, fallbackMethod = "getUpcomingFallback")
     @SuppressWarnings("unchecked")
-    public List<UpcomingItem> getUpcoming() {
+    public List<UpcomingCandidate> getUpcoming() {
         LocalDate today = LocalDate.now();
         Map<String, Object> body = restClient.get()
                 .uri(b -> b.path(DISCOVER_MOVIE_PATH)
@@ -315,18 +319,41 @@ public class TmdbClient {
         List<Map<String, Object>> results = (List<Map<String, Object>>) body.get("results");
         if (results == null) return List.of();
 
+        // discover 의 popularity 순서를 그대로 두고 상위 8건만 취한다. 최초 개봉일로 정렬하면
+        // 옛 작품(재개봉작)이 항상 앞자리를 차지한다. 개봉일 정렬은 KR 개봉일 확정 후 서비스가 한다.
         return results.stream()
                 .filter(r -> r.get("release_date") instanceof String s && !s.isBlank())
-                .map(r -> UpcomingItem.from(r, today, images))
-                .sorted(Comparator.comparingLong(UpcomingItem::ddays))
+                .map(r -> UpcomingCandidate.from(r, images))
                 .limit(8)
                 .toList();
     }
 
     @SuppressWarnings("unused")
-    private List<UpcomingItem> getUpcomingFallback(Throwable t) {
+    private List<UpcomingCandidate> getUpcomingFallback(Throwable t) {
         log.warn("TMDB upcoming fetch failed: {}", t.toString());
         return List.of();
+    }
+
+    // --- 부가 영역: 영화의 한국 극장 개봉일 조회 (실패 시 null → 호출측이 discover 날짜로 폴백) ---
+    @Bulkhead(name = INSTANCE)
+    @RateLimiter(name = INSTANCE)
+    @CircuitBreaker(name = INSTANCE)
+    @Retry(name = INSTANCE, fallbackMethod = "getKoreanReleaseDateFallback")
+    public LocalDate getKoreanReleaseDate(Long tmdbId, LocalDate today) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> raw = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(MOVIE_RELEASE_DATES_PATH)
+                        .build(tmdbId))
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+        return TmdbReleaseDates.koreanTheatricalDate(raw, today).orElse(null);
+    }
+
+    @SuppressWarnings("unused")
+    private LocalDate getKoreanReleaseDateFallback(Long tmdbId, LocalDate today, Throwable t) {
+        log.warn("TMDB release dates fetch failed for movie {}: {}", tmdbId, t.toString());
+        return null;
     }
 
     // --- 부가 영역: 스포트라이트 후보 발굴 (실패 시 빈 응답) ---

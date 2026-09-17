@@ -684,6 +684,12 @@
     box-shadow: 0 0 18px var(--up-accent-22, rgba(232, 184, 75, 0.13));
     white-space: nowrap;
 }
+/* 재개봉작: 같은 뱃지 형태에 보조색만 바꿔 신작과 구분한다 */
+.upcoming-rail .up-dday--rerelease {
+    --up-accent: #7fd3c8;
+    --up-accent-55: rgba(127, 211, 200, 0.55);
+    --up-accent-22: rgba(127, 211, 200, 0.22);
+}
 
 .upcoming-rail .up-datestrip {
     position: absolute;

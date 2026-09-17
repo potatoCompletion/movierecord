@@ -98,7 +98,7 @@
         <div class="section-heading">
             <div>
                 <div class="eyebrow" th:text="|Daily Rank · ${boxOfficeBaseDayText}|"></div>
-                <h2>박스오피스 TOP 10 <span class="count">실시간</span></h2>
+                <h2>박스오피스 TOP 10 <span class="count">전일 기준</span></h2>
                 <p class="subtitle">요즘은 이런 영화를 많이 봐요!</p>
             </div>
         </div>
@@ -188,8 +188,9 @@
                             <div class="pa-rule"></div>
                             <div class="pa-eng" th:text="${movie.originalTitle}"></div>
                         </div>
-                        <div class="up-dday"
-                             th:text="${movie.ddays == 0 ? 'D-DAY' : 'D-' + movie.ddays}"></div>
+                        <div class="up-dday" th:if="${movie.ddays >= 0}"
+                             th:classappend="${movie.reRelease} ? 'up-dday--rerelease' : null"
+                             th:text="${movie.reRelease ? '재개봉 · ' : ''} + ${movie.ddays == 0 ? 'D-DAY' : 'D-' + movie.ddays}"></div>
                         <div class="up-datestrip">
                             <span class="up-date"
                                   th:text="${movie.releaseDateText}"></span>

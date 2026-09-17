@@ -4,6 +4,8 @@ import com.my.movierecord.common.controller.HomeController;
 import com.my.movierecord.kobis.service.KobisService;
 import com.my.movierecord.record.repository.WatchRecordRepository;
 import com.my.movierecord.spotlight.service.SpotlightService;
+import com.my.movierecord.tmdb.dto.UpcomingCard;
+import com.my.movierecord.tmdb.dto.UpcomingItem;
 import com.my.movierecord.tmdb.image.TmdbImageUrlProvider;
 import com.my.movierecord.tmdb.service.TmdbHomeService;
 import java.util.List;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -75,5 +78,36 @@ class HomeControllerTest {
                 .andExpect(model().attributeExists(
                         "spotlights", "boxOffice", "boxOfficeBaseDayText",
                         "nowPlaying", "upcoming", "topRatings", "recentReviews"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void 곧_개봉해요는_요청_시점_ddays로_변환하고_개봉일이_지난_항목은_제외한다() throws Exception {
+        LocalDate today = LocalDate.now();
+        given(spotlightService.getSpotlights(any(LocalDate.class))).willReturn(List.of());
+        given(kobisService.getDailyBoxOffice()).willReturn(List.of());
+        given(tmdbHomeService.getNowPlaying()).willReturn(List.of());
+        given(tmdbHomeService.getUpcoming()).willReturn(List.of(
+                upcomingItem(1L, today.minusDays(1), false),   // 캐시가 묵어 개봉일이 지난 항목
+                upcomingItem(2L, today, false),
+                upcomingItem(3L, today.plusDays(3), true)));   // 재개봉작
+        given(watchRecordRepository.findTopRated(any(LocalDateTime.class), any(Pageable.class)))
+                .willReturn(List.of());
+        given(watchRecordRepository.findTop4ByOrderByCreatedAtDesc()).willReturn(List.of());
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(result -> {
+                    List<UpcomingCard> upcoming =
+                            (List<UpcomingCard>) result.getModelAndView().getModel().get("upcoming");
+                    assertThat(upcoming).extracting(UpcomingCard::id).containsExactly(2L, 3L);
+                    assertThat(upcoming).extracting(UpcomingCard::ddays).containsExactly(0L, 3L);
+                    assertThat(upcoming).extracting(UpcomingCard::reRelease).containsExactly(false, true);
+                });
+    }
+
+    private static UpcomingItem upcomingItem(long id, LocalDate releaseDate, boolean reRelease) {
+        return new UpcomingItem(id, "제목" + id, "Title" + id, "/p.jpg", "https://img/p.jpg",
+                releaseDate.toString(), reRelease);
     }
 }

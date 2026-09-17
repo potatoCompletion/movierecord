@@ -4,6 +4,7 @@ import com.my.movierecord.omdb.client.OmdbClient;
 import com.my.movierecord.tmdb.client.TmdbClient;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import java.io.IOException;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,8 @@ class ExternalClientResilienceTest {
     void 부가_TMDB_호출은_실패시_빈결과로_degrade() {
         assertThat(tmdbClient.getNowPlaying()).isEmpty();
         assertThat(tmdbClient.getUpcoming()).isEmpty();
+        // 작품별 한국 개봉일 조회 실패는 null 로 degrade 되어 호출측이 discover 날짜로 폴백한다.
+        assertThat(tmdbClient.getKoreanReleaseDate(1L, LocalDate.now())).isNull();
     }
 
     @Test
