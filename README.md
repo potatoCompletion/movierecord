@@ -750,15 +750,14 @@ docker compose up -d
 
 - 엔티티를 바꾸면 같은 커밋에 `V{n+1}__*.sql`을 추가합니다. 기동 시 마이그레이션이 검증보다 먼저 실행되므로 컬럼 추가는 순서 문제가 없습니다. 컬럼 삭제는 앱 롤백 시 복구할 수 없으므로 한 배포 뒤로 미룹니다.
 - 이미 배포된 버전 파일은 수정하지 않습니다. 체크섬이 달라져 기동에 실패합니다.
-- 운영 DB는 Flyway 도입 이전에 만들어졌으므로 `V1__init.sql`을 실행하지 않고 baseline(version 1)으로 등록합니다(`spring.flyway.baseline-on-migrate=true`). 첫 배포가 성공하면 이 설정을 제거합니다. 운영에는 엔티티가 없는 잔재 테이블 `daily_box_office`가 남아 있어 새 설치와 다릅니다. 정리는 `DROP TABLE IF EXISTS`로 작성합니다.
+- 운영 DB는 Flyway 도입 이전에 만들어졌으므로 2026-09-17 첫 배포에서 `V1__init.sql`을 실행하지 않고 baseline(version 1)으로 등록했습니다. 이후 버전(V2~)부터는 운영과 새 설치가 같은 파일을 실행합니다.
 
-**Flyway 첫 배포 절차**
+**마이그레이션이 포함된 배포 절차**
 
 1. 배포 전 전체 백업: `docker compose exec mysql sh -c 'mysqldump --single-transaction -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' > backup.sql`
-2. `docker compose up -d --build` 로 기동
-3. `flyway_schema_history`에 version 1, type `BASELINE` 행이 있는지 확인: `docker compose exec mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -e "SELECT version, description, type, success FROM flyway_schema_history"'`
+2. `docker compose up -d --build` 로 기동. Flyway가 새 버전을 적용한 뒤 Hibernate가 검증합니다.
+3. 적용 결과 확인: `docker compose exec mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -e "SELECT version, description, type, success FROM flyway_schema_history"'`
 4. 홈, 로그인, 감상 기록 페이지 스모크 테스트
-5. `application-prod.properties`에서 `baseline-on-migrate`, `baseline-version` 두 줄을 제거하는 후속 커밋
 
 ---
 
