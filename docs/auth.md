@@ -58,7 +58,7 @@ url = switch (oae.getError().getErrorCode()) {
 
 폼 로그인·소셜 로그인 어느 경로로 시도해도 PENDING·WITHDRAWN 계정은 동일한 안내 메시지 화면으로 리다이렉트됩니다.
 
-**면접관용 데모 계정**
+**데모 계정**
 
 운영에서는 `.env`의 `DEMO_PASSWORD`가 설정되어 있을 때만 기동 시 `ProdDataInitializer`가 `demo` 계정(ROLE_USER, ACTIVE)을 시딩합니다. 값이 없으면 경고 로그만 남기고 건너뛰며, 이미 존재하면 다시 만들지 않습니다. 반면 관리자 계정은 `ADMIN_PASSWORD`가 없으면 기동 자체를 실패시킵니다. 데모는 있으면 좋은 것이고 관리자는 없으면 운영이 불가능하기 때문입니다. 승인 절차 없이 감상 기록과 마이페이지 통계를 바로 체험하기 위한 계정입니다.
 
