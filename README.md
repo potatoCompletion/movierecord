@@ -5,7 +5,7 @@
 영화·TV 시리즈 감상 기록 웹 서비스. TMDB·KOBIS·OMDb 세 API를 연동해 홈 화면을 구성하고, 통합 검색으로 작품을 찾아 별점·감정·몰입감·스토리·취향 일치도를 기록합니다. 마이페이지에서 감상 통계를 확인할 수 있습니다.
 
 > 개인 프로젝트 | Java 21 / Spring Boot | **서비스: [mu-ra-bel.com](https://mu-ra-bel.com)**
-> 데모 계정: `demo` / (비밀번호)
+> 데모 계정: `demo` / `demo`
 
 
 ![홈 화면](docs/images/home.png)
