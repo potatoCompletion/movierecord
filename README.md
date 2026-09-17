@@ -724,12 +724,12 @@ JWT 서명 시크릿(`APP_JWT_SECRET`)은 로컬 프로파일에 개발용 기�
 SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 ```
 
-`local` 프로파일은 H2 파일 DB(`./data/`)와 인메모리 캐시를 사용하므로 MySQL·Redis 없이 실행됩니다.
+`local` 프로파일은 H2 파일 DB(`./data/`)와 인메모리 캐시를 사용하므로 MySQL·Redis 없이 실행됩니다. 스키마는 Flyway가 만듭니다. Flyway 도입 이전에 만든 `./data/` 가 있으면 기동이 실패하므로 먼저 삭제합니다(`rm -rf ./data`).
 
 | 항목 | 값 |
 |------|---|
 | H2 콘솔 | http://localhost:8080/h2-console |
-| JDBC URL | `jdbc:h2:file:./data/movierecord;AUTO_SERVER=TRUE` |
+| JDBC URL | `jdbc:h2:file:./data/movierecord;AUTO_SERVER=TRUE;MODE=MySQL` |
 | 사용자 | `sa` |
 | 비밀번호 | (없음) |
 
@@ -744,18 +744,21 @@ SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 docker compose up -d
 ```
 
-#### 스키마 변경 시 수동 DDL 적용
+#### 스키마 마이그레이션 (Flyway)
 
-운영 프로파일은 `spring.jpa.hibernate.ddl-auto=validate`이며 Flyway/Liquibase를 사용하지 않습니다.
-엔티티에 컬럼이 추가되면 배포 전에, 엔티티에서 컬럼이 제거되면 배포 후에 운영 DB에 아래 DDL을 사람이 직접 실행해야 합니다.
-순서를 지키지 않으면 앱 기동 시 스키마 검증 단계에서 실패합니다(엔티티에 없는 컬럼이 DB에 남아 있는 것은 검증에 걸리지 않습니다).
+스키마는 `src/main/resources/db/migration/V{n}__{설명}.sql` 로만 변경합니다. 앱이 기동할 때 Flyway가 미적용 버전을 순서대로 실행하고 `flyway_schema_history`에 기록하며, 그다음 Hibernate가 엔티티와 스키마를 검증합니다(`ddl-auto=validate`). 로컬 H2(`MODE=MySQL`)와 테스트도 같은 파일로 스키마를 만들므로 문법 오류와 엔티티 불일치는 로컬에서 바로 드러납니다. 다만 H2는 MySQL 고유 동작(FK 보조 인덱스 자동 생성, 콜레이션 등)까지 재현하지 않으므로 MySQL 전용 구문은 따로 확인합니다.
 
-적용 이력은 다음과 같습니다.
+- 엔티티를 바꾸면 같은 커밋에 `V{n+1}__*.sql`을 추가합니다. 기동 시 마이그레이션이 검증보다 먼저 실행되므로 컬럼 추가는 순서 문제가 없습니다. 컬럼 삭제는 앱 롤백 시 복구할 수 없으므로 한 배포 뒤로 미룹니다.
+- 이미 배포된 버전 파일은 수정하지 않습니다. 체크섬이 달라져 기동에 실패합니다.
+- 운영 DB는 Flyway 도입 이전에 만들어졌으므로 `V1__init.sql`을 실행하지 않고 baseline(version 1)으로 등록합니다(`spring.flyway.baseline-on-migrate=true`). 첫 배포가 성공하면 이 설정을 제거합니다. 운영에는 엔티티가 없는 잔재 테이블 `daily_box_office`가 남아 있어 새 설치와 다릅니다. 정리는 `DROP TABLE IF EXISTS`로 작성합니다.
 
-| 적용 시점 | DDL |
-|-----------|-----|
-| `Content.posterPath` 추가 (배포 **전**) | `ALTER TABLE content ADD COLUMN poster_path VARCHAR(255) NULL;` |
-| `Content.thumbnailPath` 제거 (배포 **후**) | `ALTER TABLE content DROP COLUMN thumbnail_path;` |
+**Flyway 첫 배포 절차**
+
+1. 배포 전 전체 백업: `docker compose exec mysql sh -c 'mysqldump --single-transaction -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' > backup.sql`
+2. `docker compose up -d --build` 로 기동
+3. `flyway_schema_history`에 version 1, type `BASELINE` 행이 있는지 확인: `docker compose exec mysql sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -e "SELECT version, description, type, success FROM flyway_schema_history"'`
+4. 홈, 로그인, 감상 기록 페이지 스모크 테스트
+5. `application-prod.properties`에서 `baseline-on-migrate`, `baseline-version` 두 줄을 제거하는 후속 커밋
 
 ---
 
