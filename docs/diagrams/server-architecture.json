@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "movierecord / Server Architecture",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "users", "type": "external", "label": "사용자 브라우저", "sublabel": "mu-ra-bel.com", "pos": [40, 200], "size": [150, 64] },
+    { "id": "posterCdn", "type": "external", "label": "TMDB CDN", "sublabel": "포스터 이미지", "pos": [40, 40], "size": [150, 64] },
+    { "id": "eip", "type": "cloud", "label": "Elastic IP", "sublabel": "고정 IP", "pos": [250, 200], "size": [150, 64] },
+    { "id": "nginx", "type": "security", "label": "Nginx", "sublabel": ":80 → 301 · :443 SSL", "tag": "64m", "pos": [470, 200], "size": [150, 64] },
+    { "id": "app", "type": "backend", "label": "Spring Boot", "sublabel": ":8080 · 관리 :9090", "tag": "900m · -Xmx450m", "pos": [760, 200], "size": [150, 64] },
+    { "id": "mysql", "type": "database", "label": "MySQL 8.4", "sublabel": "127.0.0.1:3306", "tag": "400m", "pos": [1010, 200], "size": [150, 64] },
+    { "id": "redis", "type": "database", "label": "Redis", "sublabel": "127.0.0.1:6379", "tag": "64m", "pos": [1010, 320], "size": [150, 64] },
+    { "id": "extApi", "type": "external", "label": "TMDB · KOBIS · OMDb", "sublabel": "외부 API 3종", "pos": [760, 40], "size": [150, 64] },
+    { "id": "hostAgent", "type": "backend", "label": "호스트 수집기", "sublabel": "CW Agent · systemd timer", "pos": [470, 440], "size": [150, 64] },
+    { "id": "cloudwatch", "type": "cloud", "label": "CloudWatch", "sublabel": "지표 · 로그 · 알람", "pos": [760, 600], "size": [150, 64] },
+    { "id": "sns", "type": "cloud", "label": "SNS", "sublabel": "이메일 알림", "pos": [1010, 600], "size": [150, 64] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "AWS EC2 t4g.small · ARM64", "wraps": ["nginx", "app", "mysql", "redis", "hostAgent"], "pad": 40 },
+    { "kind": "security-group", "label": "Docker Compose 네트워크", "wraps": ["nginx", "app", "mysql", "redis"], "pad": 20 }
+  ],
+  "connections": [
+    { "id": "users-to-eip", "from": "users", "to": "eip", "label": "HTTPS", "variant": "emphasis" },
+    { "id": "eip-to-nginx", "from": "eip", "to": "nginx", "label": ":80 / :443", "variant": "emphasis" },
+    { "id": "nginx-to-app", "from": "nginx", "to": "app", "label": "proxy_pass :8080", "variant": "emphasis" },
+    { "id": "app-to-mysql", "from": "app", "to": "mysql", "label": "JDBC" },
+    { "id": "app-to-redis", "from": "app", "to": "redis", "label": "캐시" },
+    { "id": "app-to-ext", "from": "app", "to": "extApi", "label": "RestClient + Resilience4j", "variant": "dashed" },
+    { "id": "users-to-cdn", "from": "users", "to": "posterCdn", "label": "이미지 직접 요청", "variant": "dashed" },
+    { "id": "health-check", "from": "hostAgent", "to": "app", "label": "health :9090", "variant": "security" },
+    { "id": "app-logs", "from": "app", "to": "cloudwatch", "label": "awslogs", "labelAt": [835, 572] },
+    { "id": "host-metrics", "from": "hostAgent", "to": "cloudwatch", "label": "지표" },
+    { "id": "alarm", "from": "cloudwatch", "to": "sns", "label": "알람" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "요청 경로", "items": ["Nginx가 :80을 :443으로 301 리다이렉트하고 SSL 종단", "앱 8080은 expose만, 호스트에 publish하지 않음", "포스터는 브라우저가 TMDB CDN에서 직접 로드"] },
+    { "dot": "rose", "title": "격리", "items": ["MySQL·Redis는 127.0.0.1 바인딩", "Actuator는 내부 전용 관리 포트 9090", "컨테이너별 mem_limit으로 메모리 독점 방지"] },
+    { "dot": "emerald", "title": "관측", "items": ["컨테이너 4종 로그를 awslogs(non-blocking)로 전송", "호스트 지표와 1분 HealthStatus를 CloudWatch에 적재", "알람은 SNS 이메일로 발송"] }
+  ]
+}

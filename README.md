@@ -86,47 +86,9 @@
 
 AWS EC2 단일 인스턴스 위에서 Docker Compose로 Nginx · Spring Boot · MySQL · Redis 네 컨테이너를 운영하고, 지표·로그는 인스턴스 외부의 CloudWatch에 적재합니다. 구성 요소, ARM64 전환, 컨테이너 메모리 상한, 기술 스택 상세, 패키지 구조는 [docs/architecture.md](docs/architecture.md)에 있습니다.
 
-```
-                        Internet
-                            │
-                            ▼
-                  Elastic IP (고정 IP)
-                            │
-                HTTP :80 / HTTPS :443
-                            │
- ┌──────────────────────────┼─────────────────────────────┐
- │  AWS EC2 t4g.small (ARM64 / Amazon Linux 2023)         │
- │  ┌───────────────────────┼───────────────────────────┐ │
- │  │  Docker Compose Network                           │ │
- │  │                       ▼                           │ │
- │  │              ┌─────────────┐                      │ │
- │  │              │    Nginx    │  mem_limit 64m       │ │
- │  │              │  :80 / :443 │                      │ │
- │  │              └──────┬──────┘                      │ │
- │  │                     │ proxy_pass                  │ │
- │  │                     │ http://app:8080             │ │
- │  │                     ▼                             │ │
- │  │              ┌──────────────┐                     │ │
- │  │              │ Spring Boot  │  mem_limit 900m     │ │
- │  │              │ :8080  (app) │  -Xmx450m           │ │
- │  │              │ :9090  (관리)│                     │ │
- │  │              └──────┬───────┘                     │ │
- │  │                     │ JDBC / Redis                │ │
- │  │              ┌──────┴──────┐                      │ │
- │  │              ▼             ▼                      │ │
- │  │       ┌────────────┐ ┌────────────┐               │ │
- │  │       │ MySQL 8.4  │ │   Redis    │               │ │
- │  │       │ 127.0.0.1  │ │ 127.0.0.1  │               │ │
- │  │       │   :3306    │ │   :6379    │               │ │
- │  │       │   400m     │ │    64m     │               │ │
- │  │       └────────────┘ └────────────┘               │ │
- │  └───────────────────────────────────────────────────┘ │
- │         │ 호스트 지표 (CloudWatch Agent)                │
- │         │ 컨테이너 로그 (awslogs 드라이버)              │
- └─────────┼───────────────────────────────────────────────┘
-           ▼
-    AWS CloudWatch ──→ SNS ──→ 이메일 알림
-```
+![서버 아키텍처](docs/images/architecture.svg)
+
+> [스펙 JSON](docs/diagrams/server-architecture.json)을 Archify로 렌더링·검증한 다이어그램입니다. 확대·경로 추적이 되는 인터랙티브 버전은 [docs/diagrams/server-architecture.html](docs/diagrams/server-architecture.html)을 내려받아 브라우저로 열면 됩니다.
 
 ---
 
