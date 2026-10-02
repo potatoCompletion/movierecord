@@ -1,0 +1,55 @@
+<!--
+  원본: th:fragment 아님 — templates/records/list.html:44-84 의 .empty-state 블록
+  (같은 블록이 templates/my-page/my-page.html:44, 161 에 복제되어 있고, search/results.html:22 는 SVG 없는 단순형)
+  (스타일: static/css/records.css:346-410 .empty-state/.empty-illustration/.empty-reel-spin)
+  th:if / sec:authorize 제거, th:href 는 정적 href 로 치환. SVG 는 원본에서 그대로 추출.
+-->
+<section class="ds-cell"><h4>With illustration + CTA (records list)</h4><div id="r0">
+
+<div class="empty-state">
+    <div class="empty-illustration">
+        <svg viewBox="0 0 100 100" width="140" height="140" aria-hidden="true">
+            <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="0.5"
+                    stroke-opacity="0.15" stroke-dasharray="2 6"/>
+            <g class="empty-reel-spin">
+                <circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" stroke-width="1.2"
+                        stroke-opacity="0.35"/>
+                <circle cx="50" cy="14" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                        stroke-opacity="0.55"/>
+                <circle cx="81.2" cy="32" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                        stroke-opacity="0.55"/>
+                <circle cx="81.2" cy="68" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                        stroke-opacity="0.55"/>
+                <circle cx="50" cy="86" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                        stroke-opacity="0.55"/>
+                <circle cx="18.8" cy="68" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                        stroke-opacity="0.55"/>
+                <circle cx="18.8" cy="32" r="3.5" fill="none" stroke="currentColor" stroke-width="1"
+                        stroke-opacity="0.55"/>
+                <line x1="50" y1="41" x2="50" y2="22" stroke="currentColor" stroke-width="1.2"
+                      stroke-opacity="0.22"/>
+                <line x1="57.8" y1="54.5" x2="74.2" y2="64" stroke="currentColor" stroke-width="1.2"
+                      stroke-opacity="0.22"/>
+                <line x1="42.2" y1="54.5" x2="25.8" y2="64" stroke="currentColor" stroke-width="1.2"
+                      stroke-opacity="0.22"/>
+                <circle cx="50" cy="50" r="9" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-opacity="0.55"/>
+                <circle cx="50" cy="50" r="3.5" fill="currentColor" fill-opacity="0.35"/>
+            </g>
+            <text x="50" y="52.5" text-anchor="middle"
+                  font-family="'Playfair Display', Georgia, serif"
+                  font-size="7" fill="currentColor" fill-opacity="0.45"
+                  letter-spacing="1.8" font-style="italic">EMPTY REEL
+            </text>
+        </svg>
+    </div>
+    <h2>아직 기록된 감상평이 없어요</h2>
+    <p>방금 본 영화의 첫 한 줄을 남겨보세요.</p>
+    <a href="/records/new" class="btn btn-primary">＋ 첫 감상평 등록하기</a>
+</div></section>
+
+<section class="ds-cell"><h4>Search — no results</h4><div id="r1">
+    <div class="empty-state">
+        <p>"인셉숀" 에 대한 검색 결과가 없습니다.</p>
+    </div>
+</div></section>

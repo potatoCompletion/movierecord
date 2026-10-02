@@ -1,0 +1,17 @@
+{
+  "projectId": "0d67c166-8977-47ea-bffe-2e588028d733",
+  "shape": "static",
+  "pkg": "murabel-thymeleaf",
+  "globalName": "Murabel",
+  "buildCmd": "node .design-sync/build-static.mjs",
+  "readmeHeader": ".design-sync/conventions.md",
+  "componentCss": ["style.css", "records.css", "my-page.css"],
+  "components": [
+    { "name": "Button", "group": "Actions" },
+    { "name": "FormField", "group": "Forms" },
+    { "name": "EmotionChip", "group": "Forms" },
+    { "name": "StarRating", "group": "Forms" },
+    { "name": "MovieCard", "group": "Records" },
+    { "name": "EmptyState", "group": "Feedback" }
+  ]
+}

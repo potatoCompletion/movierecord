@@ -1,0 +1,32 @@
+<!--
+  원본: th:fragment 아님 — 클래스 기반 요소 (스타일: static/css/style.css:237-294 .btn*)
+  마크업 출처:
+    - templates/fragments/record-modal.html:30-38  (th:fragment="detailModal" 푸터: danger/primary/secondary)
+    - templates/fragments/layout.html:46-55         (th:fragment="header" 사용자 영역: ghost/secondary + btn-sm)
+    - templates/auth/signup.html:51                 (btn-primary btn-block)
+  th:* 속성 제거, th:href 는 정적 href 로 치환.
+-->
+<section class="ds-cell"><h4>Variants</h4><div id="r0">
+    <div class="modal-footer">
+        <form id="modalDeleteForm" method="post" style="display:inline" action="/records/42/delete">
+            <button type="submit" class="btn btn-danger">삭제</button>
+        </form>
+        <a id="modalEditLink" class="btn btn-primary" href="/records/42/edit">수정</a>
+        <button type="button" class="btn btn-secondary" data-modal-close>닫기</button>
+    </div>
+</div></section>
+
+<section class="ds-cell"><h4>Small (header)</h4><div id="r1">
+    <div class="header-user">
+        <span class="header-username">무비러버</span>
+        <a href="/my-page" class="btn btn-ghost btn-sm">마이페이지</a>
+        <a href="/admin/members" class="btn btn-ghost btn-sm">관리자 페이지</a>
+        <form action="/auth/logout" method="post" style="display:inline">
+            <button type="submit" class="btn btn-secondary btn-sm">로그아웃</button>
+        </form>
+    </div>
+</div></section>
+
+<section class="ds-cell"><h4>Block (auth form)</h4><div id="r2">
+    <button type="submit" class="btn btn-primary btn-block">회원가입</button>
+</div></section>

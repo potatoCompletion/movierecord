@@ -1,0 +1,51 @@
+<!--
+  원본: th:fragment 아님 — 페이지마다 인라인으로 반복되는 .form-group 블록
+  (스타일: static/css/style.css:296-371 .form-control/.form-group/.field-error/.field-hint/.char-counter)
+  마크업 출처:
+    - templates/auth/signup.html:27-31        (기본 텍스트 입력 + field-error)
+    - templates/records/form.html:45-49       (date 입력, form-group-date)
+    - templates/records/form.html:51-57       (textarea + char-counter)
+    - templates/my-page/my-page.html:280-292  (input-row + 버튼 + field-hint)
+  th:field 는 렌더 결과(name/value)로, th:errors 는 실제 검증 메시지 예시로 치환.
+-->
+<section class="ds-cell"><h4>Text input</h4><div id="r0">
+    <div class="form-group">
+        <label for="name">이름</label>
+        <input type="text" id="name" name="name" value="" class="form-control"
+               placeholder="실명을 입력하세요" autocomplete="name">
+    </div>
+    <div class="form-group">
+        <label for="username">아이디</label>
+        <input type="text" id="username" name="username" value="mu" class="form-control"
+               placeholder="사용할 아이디를 입력하세요" autocomplete="username">
+        <span class="field-error">아이디는 4자 이상 20자 이하로 입력해주세요.</span>
+    </div>
+</div></section>
+
+<section class="ds-cell"><h4>Date + textarea (record form)</h4><div id="r1">
+    <div class="form-group form-group-date">
+        <label for="watchedDate">감상일 <span class="required">*</span></label>
+        <input type="date" id="watchedDate" name="watchedDate" value="2026-09-27" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="oneLiner">한줄평</label>
+        <textarea id="oneLiner" name="oneLiner" class="form-control"
+                  maxlength="1000" data-counter="oneLinerCount"
+                  placeholder="이 작품을 한 줄로 표현한다면?">계단을 오르내리는 카메라만으로 계급을 말하는 영화.</textarea>
+        <div class="char-counter"><span id="oneLinerCount">27</span>/1000</div>
+    </div>
+</div></section>
+
+<section class="ds-cell"><h4>Input row + hint (my page)</h4><div id="r2">
+    <div class="form-group">
+        <label for="nickname">새 닉네임</label>
+        <div class="input-row">
+            <input type="text" id="nickname" name="nickname" value="기생충팬"
+                   class="form-control"
+                   placeholder="닉네임 입력 (한글, 영문, 숫자, _)"
+                   autocomplete="off">
+            <button type="button" class="btn btn-secondary">중복 확인</button>
+        </div>
+        <span id="nicknameCheckResult" class="field-hint field-success">사용 가능한 닉네임입니다.</span>
+    </div>
+</div></section>

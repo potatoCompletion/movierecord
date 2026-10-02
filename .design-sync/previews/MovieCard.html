@@ -1,0 +1,131 @@
+<!--
+  원본: th:fragment 아님 — templates/records/list.html:88-131 의 article.movie-card.style-side
+  (같은 마크업이 templates/my-page/my-page.html:191-232 에 복제되어 있음)
+  (스타일: static/css/records.css:106-305 .movie-grid/.movie-card/.movie-thumb/.card-emotion-badge)
+  th:each 는 카드 4장으로 펼침. th:attr(data-*) / th:style(background-image) / th:text 는 렌더 결과로 치환.
+  포스터: TMDB CDN w342 (TmdbImageUrlProvider, PosterSize.W342 와 동일한 URL 형태).
+-->
+<section class="ds-cell"><h4>Grid (records list)</h4><div id="r0">
+    <div class="movie-grid">
+        <article class="movie-card style-side" role="button" tabindex="0"
+                 data-id="101" data-title="기생충" data-watched-date="2026-09-27"
+                 data-thumbnail-url="https://image.tmdb.org/t/p/w342/jjHccoFjbqlfr4VGLVLT7yek0Xn.jpg"
+                 data-one-liner="계단을 오르내리는 카메라만으로 계급을 말하는 영화."
+                 data-immersion="GOOD" data-story="GOOD" data-emotion="TENSE"
+                 data-emotions="tense:긴장|linger:여운" data-taste="MATCH" data-rating="4.5"
+                 data-nickname="무비러버" data-owner-id="7">
+            <div class="movie-thumb"
+                 style="background-image:url(https://image.tmdb.org/t/p/w342/jjHccoFjbqlfr4VGLVLT7yek0Xn.jpg)">
+                <span class="movie-thumb-rating">★ <span>4.5</span></span>
+            </div>
+            <div class="movie-info">
+                <div>
+                    <h3 class="movie-title" title="기생충">기생충</h3>
+                    <div class="movie-meta">
+                        <span>2026-09-27</span>
+                    </div>
+                    <div class="card-emotions">
+                        <span class="card-emotion-badge" style="background:var(--emo-tense)">긴장</span>
+                        <span class="card-emotion-badge" style="background:var(--emo-linger)">여운</span>
+                    </div>
+                </div>
+                <div class="card-nickname">
+                    by <span>무비러버</span>
+                </div>
+            </div>
+        </article>
+        <article class="movie-card style-side" role="button" tabindex="0"
+                 data-id="102" data-title="인터스텔라" data-watched-date="2026-09-14"
+                 data-thumbnail-url="https://image.tmdb.org/t/p/w342/gDN2NWtHbs8ZWEBQM8Dh5OVXdb4.jpg"
+                 data-rating="5.0" data-nickname="별헤는밤" data-owner-id="12">
+            <div class="movie-thumb"
+                 style="background-image:url(https://image.tmdb.org/t/p/w342/gDN2NWtHbs8ZWEBQM8Dh5OVXdb4.jpg)">
+                <span class="movie-thumb-rating">★ <span>5.0</span></span>
+            </div>
+            <div class="movie-info">
+                <div>
+                    <h3 class="movie-title" title="인터스텔라">인터스텔라</h3>
+                    <div class="movie-meta">
+                        <span>2026-09-14</span>
+                    </div>
+                    <div class="card-emotions">
+                        <span class="card-emotion-badge" style="background:var(--emo-sad)">슬픔</span>
+                        <span class="card-emotion-badge" style="background:var(--emo-linger)">여운</span>
+                    </div>
+                </div>
+                <div class="card-nickname">
+                    by <span>별헤는밤</span>
+                </div>
+            </div>
+        </article>
+        <article class="movie-card style-side" role="button" tabindex="0"
+                 data-id="103" data-title="센과 치히로의 행방불명" data-watched-date="2026-08-30"
+                 data-thumbnail-url="https://image.tmdb.org/t/p/w342/u1L4qxIu5sC2P082uMHYt7Ifvnj.jpg"
+                 data-rating="4.0" data-nickname="토토로" data-owner-id="3">
+            <div class="movie-thumb"
+                 style="background-image:url(https://image.tmdb.org/t/p/w342/u1L4qxIu5sC2P082uMHYt7Ifvnj.jpg)">
+                <span class="movie-thumb-rating">★ <span>4.0</span></span>
+            </div>
+            <div class="movie-info">
+                <div>
+                    <h3 class="movie-title" title="센과 치히로의 행방불명">센과 치히로의 행방불명</h3>
+                    <div class="movie-meta">
+                        <span>2026-08-30</span>
+                    </div>
+                    <div class="card-emotions">
+                        <span class="card-emotion-badge" style="background:var(--emo-funny)">웃김</span>
+                    </div>
+                </div>
+                <div class="card-nickname">
+                    by <span>토토로</span>
+                </div>
+            </div>
+        </article>
+        <article class="movie-card style-side" role="button" tabindex="0"
+                 data-id="104" data-title="아가씨" data-watched-date="2026-08-02"
+                 data-thumbnail-url="https://image.tmdb.org/t/p/w342/2as91uhVX6RjDQw3Y5pFWITv3iA.jpg"
+                 data-rating="3.5" data-nickname="무비러버" data-owner-id="7">
+            <div class="movie-thumb"
+                 style="background-image:url(https://image.tmdb.org/t/p/w342/2as91uhVX6RjDQw3Y5pFWITv3iA.jpg)">
+                <span class="movie-thumb-rating">★ <span>3.5</span></span>
+            </div>
+            <div class="movie-info">
+                <div>
+                    <h3 class="movie-title" title="아가씨">아가씨</h3>
+                    <div class="movie-meta">
+                        <span>2026-08-02</span>
+                    </div>
+                </div>
+                <div class="card-nickname">
+                    by <span>무비러버</span>
+                </div>
+            </div>
+        </article>
+    </div>
+</div></section>
+
+<section class="ds-cell"><h4>No poster</h4><div id="r1">
+    <div class="movie-grid">
+        <article class="movie-card style-side" role="button" tabindex="0"
+                 data-id="105" data-title="이름 없는 단편" data-watched-date="2026-07-19"
+                 data-rating="3.0" data-nickname="토토로" data-owner-id="3">
+            <div class="movie-thumb">
+                <span class="movie-thumb-rating">★ <span>3.0</span></span>
+            </div>
+            <div class="movie-info">
+                <div>
+                    <h3 class="movie-title" title="이름 없는 단편">이름 없는 단편</h3>
+                    <div class="movie-meta">
+                        <span>2026-07-19</span>
+                    </div>
+                    <div class="card-emotions">
+                        <span class="card-emotion-badge" style="background:var(--emo-none)">없음</span>
+                    </div>
+                </div>
+                <div class="card-nickname">
+                    by <span>토토로</span>
+                </div>
+            </div>
+        </article>
+    </div>
+</div></section>
