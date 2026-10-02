@@ -1,0 +1,68 @@
+<!--
+  원본: th:fragment 아님 — templates/records/form.html:60-92 의 .chip-group 블록
+  (스타일: static/css/records.css:418-468 .chip-group/.chip/.chip[data-emo])
+  th:each 는 실제 enum 값(Immersion / Emotion)으로 펼치고, th:field 는 렌더 결과(name/value/checked)로 치환.
+  감정 코드·라벨: record/enums/Emotion.java (funny 웃김, tense 긴장, sad 슬픔, linger 여운, scary 공포, none 없음)
+-->
+<section class="ds-cell"><h4>Single select (몰입감)</h4><div id="r0">
+    <div class="form-group">
+        <label>몰입감 <span class="required">*</span></label>
+        <div class="chip-group">
+            <label class="chip-label">
+                <input type="radio" name="immersion" value="GOOD" checked>
+                <span class="chip">좋음</span>
+            </label>
+            <label class="chip-label">
+                <input type="radio" name="immersion" value="NORMAL">
+                <span class="chip">보통</span>
+            </label>
+            <label class="chip-label">
+                <input type="radio" name="immersion" value="BAD">
+                <span class="chip">별로</span>
+            </label>
+        </div>
+    </div>
+</div></section>
+
+<section class="ds-cell"><h4>Emotion multi-select (감정)</h4><div id="r1">
+    <div class="form-group">
+        <label>감정 <span class="required">*</span> <small>(중복 선택 가능)</small></label>
+        <div class="chip-group">
+            <label class="chip-label">
+                <input type="checkbox" name="emotions" value="FUNNY">
+                <span class="chip" data-emo="funny">웃김</span>
+            </label>
+            <label class="chip-label">
+                <input type="checkbox" name="emotions" value="TENSE" checked>
+                <span class="chip" data-emo="tense">긴장</span>
+            </label>
+            <label class="chip-label">
+                <input type="checkbox" name="emotions" value="SAD">
+                <span class="chip" data-emo="sad">슬픔</span>
+            </label>
+            <label class="chip-label">
+                <input type="checkbox" name="emotions" value="LINGERING" checked>
+                <span class="chip" data-emo="linger">여운</span>
+            </label>
+            <label class="chip-label">
+                <input type="checkbox" name="emotions" value="SCARY">
+                <span class="chip" data-emo="scary">공포</span>
+            </label>
+            <label class="chip-label">
+                <input type="checkbox" name="emotions" value="NONE">
+                <span class="chip" data-emo="none">없음</span>
+            </label>
+        </div>
+    </div>
+</div></section>
+
+<section class="ds-cell"><h4>All emotions selected</h4><div id="r2">
+    <div class="chip-group">
+        <label class="chip-label"><input type="checkbox" name="emotions-all" value="FUNNY" checked><span class="chip" data-emo="funny">웃김</span></label>
+        <label class="chip-label"><input type="checkbox" name="emotions-all" value="TENSE" checked><span class="chip" data-emo="tense">긴장</span></label>
+        <label class="chip-label"><input type="checkbox" name="emotions-all" value="SAD" checked><span class="chip" data-emo="sad">슬픔</span></label>
+        <label class="chip-label"><input type="checkbox" name="emotions-all" value="LINGERING" checked><span class="chip" data-emo="linger">여운</span></label>
+        <label class="chip-label"><input type="checkbox" name="emotions-all" value="SCARY" checked><span class="chip" data-emo="scary">공포</span></label>
+        <label class="chip-label"><input type="checkbox" name="emotions-all" value="NONE" checked><span class="chip" data-emo="none">없음</span></label>
+    </div>
+</div></section>
